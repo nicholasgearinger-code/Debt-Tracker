@@ -72,7 +72,23 @@ $('exportCsv').onclick=()=>{let rows=[['Debt','Date','Payment','Estimated intere
 $('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text()),arr=Array.isArray(obj)?obj:obj.debts;if(!Array.isArray(arr)||!confirm('Replace current records with this backup?'))return;debts=arr;if(obj.budget&&Array.isArray(obj.budget.bills)){budget={pay:Number(obj.budget.pay)||0,bills:obj.budget.bills};$('bPay').value=budget.pay||'';localStorage.setItem(BKEY,JSON.stringify(budget))}if(Array.isArray(obj.recurring)){recurring=obj.recurring;localStorage.setItem(CKEY,JSON.stringify(recurring));renderCalendar()}save();alert('Backup restored.')}catch{alert('Could not read that backup.')}e.target.value=''};
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 render();
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      // Check for updates on page load
+      reg.update();
+    }).catch(() => {});
 
+    // Automatically reload when a new service worker takes over
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
+  });
+}
 /* ClearPath calendar, reminders and optional account sync */
 const CKEY='clearpath-recurring-bills-v1',SKEY='clearpath-sync-config-v1';
 let recurring=[];try{recurring=JSON.parse(localStorage.getItem(CKEY)||'[]');if(!Array.isArray(recurring))recurring=[]}catch{recurring=[]}
