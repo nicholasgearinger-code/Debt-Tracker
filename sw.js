@@ -1,4 +1,5 @@
-const CACHE='clearpath-v1';
+const CACHE='clearpath-v3';
+const CACHE_NAME = 'clearpath-v3';
 const FILES=['./','./index.html','./manifest.json'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES))));
 self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
