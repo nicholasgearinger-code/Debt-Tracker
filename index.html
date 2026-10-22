@@ -1,141 +1,195 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#101c30"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>ClearPath — Debt Tracker</title><link rel="manifest" href="manifest.json">
-<style>:root{--navy:#19234f;--ink:#19234f;--muted:#68718a;--green:#00ad68;--mint:#7ee787;--bg:#f4f5f7;--line:#e3e5eb;--red:#b83f4b;--amber:#e9b949}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input{font:inherit}button{border:0;border-radius:11px;padding:11px 15px;background:var(--navy);color:#fff;font-weight:700;cursor:pointer}button:hover{opacity:.9}button.secondary{background:#e7e9f0;color:var(--ink)}button.danger{background:#fae9e7;color:#9a352d}.wrap{max-width:1040px;margin:auto;padding:max(18px,env(safe-area-inset-top)) 18px 46px}.hero{background:var(--navy);color:#fff;padding:28px 28px 34px;border-radius:0 0 24px 24px;margin:-18px -18px 20px;position:relative;overflow:hidden}.hero:after{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:linear-gradient(90deg,#80e783 0 17%,#55c980 17% 34%,#00ad68 34% 50%,#80e783 50% 67%,#55c980 67% 84%,#00ad68 84%)}.hero h1{margin:8px 0 4px;font-size:clamp(25px,4vw,34px);font-weight:850;letter-spacing:-.035em}.hero .sub{color:#d0d5e7;font-size:13px}.big{font-size:clamp(38px,8vw,54px);font-weight:850;letter-spacing:-.05em;margin:10px 0 0}.bar{display:flex;height:13px;border-radius:99px;overflow:hidden;background:#e7ebf0;margin:12px 0 8px}.bar.sm{height:8px;margin:10px 0 6px}.bar i{display:block;height:100%;transition:width .3s}.hero .bar{background:#33416c}.leg{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}.hero .leg{color:#cbd2e5}.leg b{color:inherit}.hero .leg b{color:#fff}.nav{display:flex;gap:8px;overflow:auto;margin:14px 0 18px;padding-bottom:2px}.nav button{white-space:nowrap;flex:1;min-width:max-content}.nav button.active{background:#d9f5e6;color:#12633f}.card{background:#fff;border:1px solid #e7e8ed;box-shadow:0 5px 18px #19234f08;border-radius:19px;padding:19px;min-width:0;margin-bottom:16px}.card h2,.card h3{margin:0 0 12px;letter-spacing:-.02em}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.balance{font-size:23px;font-weight:850;letter-spacing:-.035em}.muted{color:var(--muted);font-size:13px}.warning{color:var(--red)}.good{color:#168454}.item{padding:13px 0;border-top:1px solid var(--line)}.item:first-of-type{border-top:0}.chip{font-size:12px;font-weight:750;padding:5px 9px;border-radius:99px;white-space:nowrap;background:#e3f7ec;color:#176743}.chip.bad{background:#fae9e7;color:#9a352d}.chip.tag{background:#fff0d0;color:#855d16}.chip.due{background:#fff0d0;color:#855d16}.msg{padding:13px 14px;border-radius:13px;margin-top:10px;font-size:14px;background:#e4f7ed;color:#245c43}.msg.bad{background:#fae9e7;color:#9a352d}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;font-weight:750;color:#536075}.field input{width:100%;min-width:0;border:1px solid #d5d9e3;background:#fff;border-radius:11px;padding:12px;color:var(--ink);font-size:16px;outline:none}.field input:focus{border-color:#00ad68;box-shadow:0 0 0 3px #00ad681b}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.smallbtn{padding:8px 11px;font-size:12px}.x{background:none;color:var(--red);padding:4px 6px;font-size:13px}.empty{padding:28px;text-align:center;color:var(--muted)}.hidden{display:none!important}footer{margin:20px 2px;color:var(--muted);font-size:12px}.history{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}#interestBox .item{padding:14px 0}#bSum .bar{height:18px;border-radius:7px}@media(max-width:560px){.wrap{padding-left:12px;padding-right:12px}.hero{margin:-18px -12px 16px;padding:24px 18px 28px}.nav button{flex:0 0 auto}.card{padding:15px;border-radius:16px}.formgrid{grid-template-columns:1fr}.row{gap:8px}.balance{font-size:20px}}.chartrow{display:grid;grid-template-columns:minmax(90px,1fr) 3fr auto;gap:10px;align-items:center;margin:12px 0;font-size:13px}.charttrack{height:12px;background:#e8ebf0;border-radius:99px;overflow:hidden}.chartfill{height:100%;border-radius:99px;background:var(--green)}.duecard{border:1px solid var(--line);padding:12px;border-radius:13px;margin:10px 0}.duecard.overdue{border-color:#e9b6b6;background:#fff8f7}.duecard.paid{background:#f0fbf5}.smallmuted{font-size:12px;color:var(--muted)}code{background:#f0f2f6;border-radius:4px;padding:2px 4px;overflow-wrap:anywhere}@media(max-width:560px){.chartrow{grid-template-columns:90px 1fr auto;gap:7px;font-size:12px}.nav{margin-left:-2px;margin-right:-2px}}</style></head><body><main class="wrap">
-<header class="hero"><h1>CLEARPATH FINANCIAL</h1><div class="sub">YOUR MONEY, WITH A CLEARER PLAN · DEBT & BUDGET DASHBOARD</div><div style="height:18px"></div><div class="sub">TOTAL DEBT REMAINING</div><div class="big" id="totalDebt">$0.00</div><div id="heroBar"></div></header>
-<nav class="nav"><button class="active" data-tab="overview">Overview</button><button class="secondary" data-tab="debts">Debts</button><button class="secondary" data-tab="budget">Budget</button><button class="secondary" data-tab="calendar">Bills & reminders</button><button class="secondary" data-tab="sync">Sync</button><button class="secondary" data-tab="backup">Backup</button></nav>
-<section id="overview">
-  <!-- Container where overview.js injects the animated ring chart & view toggle -->
-  <div id="ov2"></div>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101c30">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>ClearPath — Debt Tracker</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {--navy:#19234f; --ink:#19234f; --muted:#68718a; --green:#00ad68; --mint:#7ee787; --bg:#f4f5f7; --line:#e3e5eb; --red:#b83f4b; --amber:#e9b949}
+    * {box-sizing:border-box}
+    body {margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif}
+    button, input {font:inherit}
+    button {border:0; border-radius:11px; padding:11px 15px; background:var(--navy); color:#fff; font-weight:700; cursor:pointer}
+    button:hover {opacity:.9}
+    button.secondary {background:#e7e9f0; color:var(--ink)}
+    button.danger {background:#fae9e7; color:#9a352d}
+    .wrap {max-width:1040px; margin:auto; padding:max(18px, env(safe-area-inset-top)) 18px 46px}
+    .hero {background:var(--navy); color:#fff; padding:28px 28px 34px; border-radius:0 0 24px 24px; margin:-18px -18px 20px; position:relative; overflow:hidden}
+    .hero:after {content:""; position:absolute; top:0; left:0; right:0; height:8px; background:linear-gradient(90deg,#80e783 0 17%,#55c980 17% 34%,#00ad68 34% 50%,#80e783 50% 67%,#55c980 67% 84%,#00ad68 84%)}
+    .hero h1 {margin:8px 0 4px; font-size:clamp(25px, 4vw, 34px); font-weight:850; letter-spacing:-.035em}
+    .hero .sub {color:#d0d5e7; font-size:13px}
+    .big {font-size:clamp(38px, 8vw, 54px); font-weight:850; letter-spacing:-.05em; margin:10px 0 0}
+    .bar {display:flex; height:13px; border-radius:99px; overflow:hidden; background:#e7ebf0; margin:12px 0 8px}
+    .bar.sm {height:8px; margin:10px 0 6px}
+    .bar i {display:block; height:100%; transition:width .3s}
+    .hero .bar {background:#33416c}
+    .leg {display:flex; justify-content:space-between; gap:8px; font-size:12px; color:var(--muted)}
+    .hero .leg {color:#cbd2e5}
+    .leg b {color:inherit}
+    .hero .leg b {color:#fff}
+    .nav {display:flex; gap:8px; overflow:auto; margin:14px 0 18px; padding-bottom:2px}
+    .nav button {white-space:nowrap; flex:1; min-width:max-content}
+    .nav button.active {background:#d9f5e6; color:#12633f}
+    .card {background:#fff; border:1px solid #e7e8ed; box-shadow:0 5px 18px #19234f08; border-radius:19px; padding:19px; min-width:0; margin-bottom:16px}
+    .card h2, .card h3 {margin:0 0 12px; letter-spacing:-.02em}
+    .row {display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .hidden {display:none !important}
+    .muted {color:var(--muted); font-size:13px}
+    .formgrid {display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px}
+    .field label {display:block; font-size:12px; font-weight:700; color:var(--muted); margin-bottom:4px}
+    .field input {width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:9px}
+    .actions {display:flex; gap:8px; margin-top:14px; flex-wrap:wrap}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <h1>CLEARPATH FINANCIAL</h1>
+      <div class="sub">YOUR MONEY, WITH A CLEARER PLAN · DEBT & BUDGET DASHBOARD</div>
+      <div style="height:18px"></div>
+      <div class="sub">TOTAL DEBT REMAINING</div>
+      <div class="big" id="totalDebt">$0.00</div>
+      <div id="heroBar"></div>
+    </header>
 
-  <!-- Fallback/structural containers needed by overview.js -->
-  <div class="card" style="display:none">
-    <h2>Beating the interest</h2>
-    <div id="interestBox" class="muted">Add a debt to see how much you need to pay.</div>
-  </div>
-  <div class="card" style="display:none">
-    <h2>Progress by debt</h2>
-    <div id="overviewList" class="muted"></div>
-  </div>
-</section>
+    <nav class="nav">
+      <button class="active" data-tab="overview">Overview</button>
+      <button class="secondary" data-tab="debts">Debts</button>
+      <button class="secondary" data-tab="budget">Budget</button>
+      <button class="secondary" data-tab="calendar">Bills & reminders</button>
+      <button class="secondary" data-tab="sync">Sync</button>
+      <button class="secondary" data-tab="backup">Backup</button>
+    </nav>
 
+    <section id="overview">
+      <div id="ov2"></div>
+      <div class="card" style="display:none">
+        <h2>Beating the interest</h2>
+        <div id="interestBox" class="muted">Add a debt to see how much you need to pay.</div>
+      </div>
+      <div class="card" style="display:none">
+        <h2>Progress by debt</h2>
+        <div id="overviewList" class="muted"></div>
+      </div>
+    </section>
 
-<section id="debts" class="hidden"><div class="row" style="margin:8px 0 12px"><h2 style="margin:0">Your debts</h2><button id="addDebtBtn">+ Add debt</button></div>
-<div id="debtForm" class="card hidden"><h2 id="formTitle">Add a debt</h2><form id="debtEditor"><div class="formgrid"><div class="field"><label for="name">Debt name</label><input id="name" required placeholder="e.g. Visa credit card"></div><div class="field"><label for="balance">Current balance ($)</label><input id="balance" type="number" min="0.01" step=".01" required></div><div class="field"><label for="start">Original balance ($)</label><input id="start" type="number" min="0.01" step=".01" placeholder="Same as current"></div><div class="field"><label for="apr">APR (%)</label><input id="apr" type="number" min="0" step=".01" required></div><div class="field"><label for="payment">Usual payment ($)</label><input id="payment" type="number" min="0" step=".01" required></div><div class="field"><label for="minimum">Minimum payment ($)</label><input id="minimum" type="number" min="0" step=".01"></div><div class="field"><label for="due">Next due date</label><input id="due" type="date"></div></div><div class="actions"><button type="submit">Save debt</button><button type="button" class="secondary" id="cancelEdit">Cancel</button></div></form></div>
-<p class="muted" id="debtHint"></p><div id="debtList"></div></section>
+    <section id="debts" class="hidden">
+      <div class="row" style="margin:8px 0 12px">
+        <h2 style="margin:0">Your debts</h2>
+        <button id="addDebtBtn">+ Add debt</button>
+      </div>
+      <div id="debtForm" class="card hidden">
+        <h2 id="formTitle">Add a debt</h2>
+        <form id="debtEditor">
+          <div class="formgrid">
+            <div class="field"><label for="name">Debt name</label><input id="name" required placeholder="e.g. Visa credit card"></div>
+            <div class="field"><label for="balance">Current balance ($)</label><input id="balance" type="number" min="0.01" step=".01" required></div>
+            <div class="field"><label for="start">Original balance ($)</label><input id="start" type="number" min="0.01" step=".01" placeholder="Same as current"></div>
+            <div class="field"><label for="apr">APR (%)</label><input id="apr" type="number" min="0" step=".01" required></div>
+            <div class="field"><label for="payment">Usual payment ($)</label><input id="payment" type="number" min="0" step=".01" required></div>
+            <div class="field"><label for="minimum">Minimum payment ($)</label><input id="minimum" type="number" min="0" step=".01"></div>
+            <div class="field"><label for="due">Next due date</label><input id="due" type="date"></div>
+          </div>
+          <div class="actions">
+            <button type="submit">Save debt</button>
+            <button type="button" class="secondary" id="cancelEdit">Cancel</button>
+          </div>
+        </form>
+      </div>
+      <p class="muted" id="debtHint"></p>
+      <div id="debtList"></div>
+    </section>
 
-<section id="budget" class="hidden"><div class="card"><h2>Bi-weekly paycheck</h2><div class="field"><label for="bPay">Take-home pay per paycheck ($)</label><input id="bPay" type="number" inputmode="decimal" min="0" step=".01"></div><div id="bSum"></div><div id="budgetChart" style="margin-top:18px"></div></div>
-<div class="card"><h2>Monthly bills</h2><div id="bBills"></div><div class="formgrid" style="margin-top:10px"><div class="field"><label for="bName">Bill name</label><input id="bName" placeholder="e.g. Rent"></div><div class="field"><label for="bAmt">Monthly amount ($)</label><input id="bAmt" type="number" inputmode="decimal" min="0" step=".01"></div></div><div class="actions"><button id="addBill">Add bill</button></div></div></section>
+    <section id="budget" class="hidden">
+      <div class="card">
+        <h2>Bi-weekly paycheck</h2>
+        <div class="field"><label for="bPay">Take-home pay per paycheck ($)</label><input id="bPay" type="number" inputmode="decimal" min="0" step=".01"></div>
+        <div id="bSum"></div>
+        <div id="budgetChart" style="margin-top:18px"></div>
+      </div>
+      <div class="card">
+        <h2>Monthly bills</h2>
+        <div id="bBills"></div>
+        <div class="formgrid" style="margin-top:10px">
+          <div class="field"><label for="bName">Bill name</label><input id="bName" placeholder="e.g. Rent"></div>
+          <div class="field"><label for="bAmt">Monthly amount ($)</label><input id="bAmt" type="number" inputmode="decimal" min="0" step=".01"></div>
+        </div>
+        <div class="actions"><button id="addBill">Add bill</button></div>
+      </div>
+    </section>
 
-<section id="calendar" class="hidden"><div class="card"><div class="row"><h2 style="margin:0">Bills & due dates</h2><button id="notifyBtn">Enable reminders</button></div><p class="muted">Track recurring bills and mark them paid each month. Browser reminders work while ClearPath is open; mobile background notifications are not guaranteed.</p><div id="calendarSummary"></div></div><div class="card"><h2>Add a recurring bill</h2><div class="formgrid"><div class="field"><label for="cName">Bill name</label><input id="cName" placeholder="e.g. Electricity"></div><div class="field"><label for="cAmt">Amount ($)</label><input id="cAmt" type="number" min="0" step=".01"></div><div class="field"><label for="cDue">Due day of month</label><input id="cDue" type="number" min="1" max="31" placeholder="e.g. 15"></div><div class="field"><label for="cCategory">Category</label><input id="cCategory" placeholder="Housing, utilities, food…"></div></div><div class="actions"><button id="addRecurring">Add bill</button></div></div><div class="card"><h2>This month</h2><div id="calendarList"></div></div></section>
+    <section id="calendar" class="hidden">
+      <div class="card">
+        <div class="row">
+          <h2 style="margin:0">Bills & due dates</h2>
+          <button id="notifyBtn">Enable reminders</button>
+        </div>
+        <p class="muted">Track recurring bills and mark them paid each month.</p>
+        <div id="calendarSummary"></div>
+      </div>
+    </section>
 
-<section id="sync" class="hidden"><div class="card"><h2>Sync across devices</h2><p class="muted">Cross-device sync needs a private data service and sign-in. Your repository is public, so never put a service-role key or password in the code. Configure a Supabase project with Row Level Security first, then add its project URL and public anon key here. The anon key is designed for browser use only when database policies are correctly restricted.</p><div class="formgrid"><div class="field"><label for="syncUrl">Supabase project URL</label><input id="syncUrl" type="url" placeholder="https://your-project.supabase.co"></div><div class="field"><label for="syncKey">Supabase anon/public key</label><input id="syncKey" type="password" autocomplete="off" placeholder="Public anon key"></div><div class="field"><label for="syncEmail">Account email</label><input id="syncEmail" type="email" autocomplete="email" placeholder="you@example.com"></div><div class="field"><label for="syncPassword">Password</label><input id="syncPassword" type="password" autocomplete="current-password" placeholder="Account password"></div></div><div class="actions"><button id="saveSyncConfig">Save connection settings</button><button class="secondary" id="syncSignUp">Create account</button><button class="secondary" id="syncSignIn">Sign in</button><button id="syncNow">Sync now</button><button class="danger" id="syncSignOut">Sign out</button></div><div id="syncStatus" class="msg">Not connected. Local data remains on this device until you configure and sign in.</div><p class="muted">Setup required: create a Supabase table named <code>clearpath_data</code> with columns <code>user_id uuid primary key references auth.users(id)</code>, <code>payload jsonb not null</code>, and <code>updated_at timestamptz default now()</code>. Enable RLS and add policies allowing authenticated users to select, insert, and update only rows where <code>auth.uid() = user_id</code>. Configure your site URL in Supabase Auth. Do not enable public table access.</p></div></section>
+    <section id="sync" class="hidden">
+      <div class="card">
+        <h2>Sync across devices</h2>
+        <p class="muted">Sync your records across devices using Supabase connection.</p>
+      </div>
+    </section>
 
-<section id="backup" class="hidden"><div class="card"><h2>Back up your records</h2><p class="muted">Your debts and budget are stored in this browser on this device. Export backups periodically, especially before changing phones or browsers.</p><div class="actions"><button id="export">Export backup (.json)</button><button id="exportCsv" class="secondary">Export payments (.csv)</button></div><hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><div class="field"><label for="importFile">Restore a ClearPath JSON backup</label><input type="file" id="importFile" accept=".json,application/json"></div><p class="muted">Restoring replaces current local records. Export first if needed.</p></div></section>
-<footer>Estimates only, not lender statements. Monthly interest is approximated as balance × APR ÷ 12. Lenders may calculate interest daily or apply fees. Records stay in this browser and are not synced between devices. Avoid shared devices.</footer></main>
-<script>
-const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0),KEY='clearpath-debts-v1',BKEY='clearpath-budget-v1';
-let debts=[],budget={pay:0,bills:[]},editing=null;
-try{debts=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(debts))debts=[]}catch{debts=[]}
-try{const b=JSON.parse(localStorage.getItem(BKEY)||'null');if(b&&Array.isArray(b.bills))budget={pay:Number(b.pay)||0,bills:b.bills}}catch{}
-function save(){localStorage.setItem(KEY,JSON.stringify(debts));render()}
-function saveBudget(){localStorage.setItem(BKEY,JSON.stringify(budget));renderBudget()}
-const interest=d=>Math.max(0,d.balance)*Math.max(0,d.apr)/1200,total=k=>debts.reduce((s,d)=>s+(Number(d[k])||0),0);
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const orig=d=>Math.max(Number(d.startBalance)||d.balance,d.balance);
-function bar(parts,cls=''){const t=parts.reduce((a,p)=>a+Math.max(0,p.v),0)||1;return'<div class="bar '+cls+'">'+parts.map(p=>'<i style="width:'+Math.max(0,p.v)/t*100+'%;background:'+p.c+'"></i>').join('')+'</div>'}
-function months(b,apr,p){if(b<=0)return 0;const r=apr/1200;if(!p)return Infinity;if(!r)return Math.ceil(b/p);if(p<=b*r)return Infinity;return Math.ceil(-Math.log(1-b*r/p)/Math.log(1+r))}
-const fm=m=>m===Infinity?'never at this payment':m<12?m+' mo':Math.floor(m/12)+'y '+(m%12)+'m';
+    <section id="backup" class="hidden">
+      <div class="card">
+        <h2>Back up your records</h2>
+        <div class="actions">
+          <button id="export">Export backup (.json)</button>
+        </div>
+      </div>
+    </section>
 
-function render(){
-  const bal=total('balance'),pay=total('payment'),int=debts.reduce((s,d)=>s+interest(d),0),o=debts.reduce((s,d)=>s+orig(d),0),paid=Math.max(0,o-bal);
-  $('totalDebt').textContent=money(bal);
-  $('heroBar').innerHTML=debts.length?bar([{v:paid,c:'var(--mint)'},{v:bal,c:'#4c6a96'}])+'<div class="leg"><span>Paid <b>'+money(paid)+'</b> ('+(o?Math.round(paid/o*100):0)+'%)</span><span>Left <b>'+money(bal)+'</b></span></div>':'<div class="sub">No debts tracked yet</div>';
-  const gap=int-pay;
-  $('interestBox').innerHTML=debts.length?'<p class="muted" style="margin:0">Interest costs about <b style="color:var(--ink)">'+money(int)+'</b> a month. Anything you pay above a debt\'s interest reduces what you owe.</p><div class="msg '+(gap<0?'':'bad')+'">'+(gap<0?'Your '+money(pay)+'/mo covers interest, with '+money(-gap)+' going to principal.':'You need to pay more than '+money(int)+'/mo just to stop balances growing. That is '+money(gap)+' more than your current payments.')+'</div><div style="margin-top:8px">'+[...debts].sort((a,b)=>b.apr-a.apr).map(d=>{const i=interest(d),x=d.payment-i;return'<div class="item"><div class="row"><div><strong>'+esc(d.name)+'</strong><div class="muted">Interest '+money(i)+'/mo · pay over '+money(i)+' · clear in '+fm(months(d.balance,d.apr,d.payment))+'</div></div><span class="chip '+(x>0?'':'bad')+'">'+(x>0?'+'+money(x)+' principal':'short '+money(-x))+'</span></div></div>'}).join('')+'</div>':'Add a debt to see how much you need to pay.';
-  $('overviewList').innerHTML=debts.length?debts.map(d=>{const p=Math.max(0,orig(d)-d.balance);return'<div class="item"><div class="row"><strong>'+esc(d.name)+'</strong><span class="muted">'+Math.round(p/orig(d)*100)+'% paid</span></div>'+bar([{v:p,c:'#4c9c7a'},{v:d.balance,c:'#c9d3e0'}],'sm')+'<div class="leg"><span>Paid '+money(p)+'</span><span>Left '+money(d.balance)+'</span></div></div>'}).join(''):'<div class="empty">No debts added yet. Open the Debts tab and tap “Add debt.”</div>';
-  const sorted=[...debts].sort((a,b)=>b.apr-a.apr),focus=sorted.find(d=>d.balance>0);
-  $('debtHint').textContent=debts.length>1?'Highest APR first. Extra money on the top debt saves the most interest.':'';
-  $('debtList').innerHTML=debts.length?sorted.map(d=>{const p=Math.max(0,orig(d)-d.balance),i=interest(d),late=d.due&&d.due<=new Date().toISOString().slice(0,10);return'<article class="card"><div class="row"><div><h3 style="margin:0">'+esc(d.name)+(d===focus&&debts.length>1?' <span class="chip tag">Extra goes here</span>':'')+'</h3><div class="muted">'+d.apr+'% APR · pays '+money(d.payment)+'/mo'+(d.minimum?' (min '+money(d.minimum)+')':'')+'</div></div><div class="balance">'+money(d.balance)+'</div></div>'+bar([{v:p,c:'#4c9c7a'},{v:d.balance,c:'#c9d3e0'}],'sm')+'<div class="row muted"><span>Paid '+money(p)+'</span><span class="chip '+(late?'due':'')+'">'+(d.due?'Due '+esc(d.due):'No due date')+'</span></div><div class="row" style="margin-top:8px"><span class="muted">Est. monthly interest</span><strong class="warning">'+money(i)+'</strong></div><div class="row"><span class="muted">Principal from usual payment</span><strong class="'+(d.payment>i?'good':'warning')+'">'+money(d.payment-i)+'</strong></div><div class="actions"><button class="smallbtn" onclick="recordPayment(\''+d.id+'\')">Record payment</button><button class="smallbtn secondary" onclick="editDebt(\''+d.id+'\')">Edit</button><button class="smallbtn danger" onclick="removeDebt(\''+d.id+'\')">Delete</button></div>'+((d.history||[]).length?'<div class="history"><strong>Recent payments</strong>'+d.history.slice(-5).reverse().map(h=>'<div class="row muted" style="margin-top:7px"><span>'+esc(h.date)+' · '+money(h.amount)+'</span><span>Interest '+money(h.interest)+' / principal '+money(h.principal)+'</span></div>').join('')+'</div>':'')+'</article>'}).join(''):'<div class="card empty">No debts added yet.</div>';
-  renderBudget()}
-<script>
-const $ = id => document.getElementById(id);
-const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n) || 0);
+    <footer>Estimates only, not lender statements. Monthly interest is approximated as balance × APR ÷ 12.</footer>
+  </main>
 
-// Storage Keys
-const KEY = 'clearpath-debts-v1';
-const BKEY = 'clearpath-budget-v1';
-const CKEY = 'clearpath-recurring-bills-v1';
+  <script>
+    const $ = id => document.getElementById(id);
+    const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n) || 0);
 
-let debts = [], budget = { pay: 0, bills: [] }, recurring = [], editing = null;
+    const KEY = 'clearpath-debts-v1';
+    const BKEY = 'clearpath-budget-v1';
 
-// Load Data
-function loadAllData() {
-  try { debts = JSON.parse(localStorage.getItem(KEY) || '[]'); if (!Array.isArray(debts)) debts = []; } catch { debts = []; }
-  try { 
-    const b = JSON.parse(localStorage.getItem(BKEY) || 'null'); 
-    budget = (b && Array.isArray(b.bills)) ? { pay: Number(b.pay)||0, bills: b.bills } : { pay: 0, bills: [] }; 
-  } catch { budget = { pay: 0, bills: [] }; }
-  try { recurring = JSON.parse(localStorage.getItem(CKEY) || '[]'); if (!Array.isArray(recurring)) recurring = []; } catch { recurring = []; }
-}
+    let debts = [], budget = { pay: 0, bills: [] };
 
-// Save Data
-function save() { localStorage.setItem(KEY, JSON.stringify(debts)); render(); }
-function saveBudget() { localStorage.setItem(BKEY, JSON.stringify(budget)); renderBudget(); }
-function saveRecurring() { localStorage.setItem(CKEY, JSON.stringify(recurring)); renderCalendar(); }
+    function loadAllData() {
+      try { debts = JSON.parse(localStorage.getItem(KEY) || '[]'); if (!Array.isArray(debts)) debts = []; } catch { debts = []; }
+      try { const b = JSON.parse(localStorage.getItem(BKEY) || 'null'); if (b && Array.isArray(b.bills)) budget = { pay: Number(b.pay) || 0, bills: b.bills }; } catch {}
+    }
 
-// Helper calculations
-const interest = d => Math.max(0, d.balance) * Math.max(0, d.apr) / 1200;
-const total = k => debts.reduce((s, d) => s + (Number(d[k]) || 0), 0);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const orig = d => Math.max(Number(d.startBalance) || d.balance, d.balance);
+    function render() {
+      const bal = debts.reduce((s, d) => s + (Number(d.balance) || 0), 0);
+      const totalDebtEl = $('totalDebt');
+      if (totalDebtEl) totalDebtEl.textContent = money(bal);
+    }
 
-function bar(parts, cls = '') {
-  const t = parts.reduce((a, p) => a + Math.max(0, p.v), 0) || 1;
-  return '<div class="bar ' + cls + '">' + parts.map(p => '<i style="width:' + Math.max(0, p.v) / t * 100 + '%;background:' + p.c + '"></i>').join('') + '</div>';
-}
+    function switchTab(tab) {
+      document.querySelectorAll('main section').forEach(s => s.classList.toggle('hidden', s.id !== tab));
+      document.querySelectorAll('.nav button').forEach(b => {
+        b.classList.toggle('active', b.dataset.tab === tab);
+        b.classList.toggle('secondary', b.dataset.tab !== tab);
+      });
+      loadAllData();
+      render();
+    }
 
-function months(b, apr, p) {
-  if (b <= 0) return 0;
-  const r = apr / 1200;
-  if (!p) return Infinity;
-  if (!r) return Math.ceil(b / p);
-  if (p <= b * r) return Infinity;
-  return Math.ceil(-Math.log(1 - b * r / p) / Math.log(1 + r));
-}
-const fm = m => m === Infinity ? 'never at this payment' : m < 12 ? m + ' mo' : Math.floor(m / 12) + 'y ' + (m % 12) + 'm';
-
-function render() {
-  const bal = total('balance'), pay = total('payment'), int = debts.reduce((s, d) => s + interest(d), 0), o = debts.reduce((s, d) => s + orig(d), 0), paid = Math.max(0, o - bal);
-  $('totalDebt').textContent = money(bal);
-  $('heroBar').innerHTML = debts.length ? bar([{ v: paid, c: 'var(--mint)' }, { v: bal, c: '#4c6a96' }]) + '<div class="leg"><span>Paid <b>' + money(paid) + '</b> (' + (o ? Math.round(paid / o * 100) : 0) + '%)</span><span>Left <b>' + money(bal) + '</b></span></div>' : '<div class="sub">No debts tracked yet</div>';
-  const gap = int - pay;
-  $('interestBox').innerHTML = debts.length ? '<p class="muted" style="margin:0">Interest costs about <b style="color:var(--ink)">' + money(int) + '</b> a month. Anything you pay above a debt\'s interest reduces what you owe.</p><div class="msg ' + (gap < 0 ? '' : 'bad') + '">' + (gap < 0 ? 'Your ' + money(pay) + '/mo covers interest, with ' + money(-gap) + ' going to principal.' : 'You need to pay more than ' + money(int) + '/mo just to stop balances growing. That is ' + money(gap) + ' more than your current payments.') + '</div><div style="margin-top:8px">' + [...debts].sort((a, b) => b.apr - a.apr).map(d => { const i = interest(d), x = d.payment - i; return '<div class="item"><div class="row"><div><strong>' + esc(d.name) + '</strong><div class="muted">Interest ' + money(i) + '/mo · pay over ' + money(i) + ' · clear in ' + fm(months(d.balance, d.apr, d.payment)) + '</div></div><span class="chip ' + (x > 0 ? '' : 'bad') + '">' + (x > 0 ? '+' + money(x) + ' principal' : 'short ' + money(-x)) + '</span></div></div>'; }).join('') + '</div>' : 'Add a debt to see how much you need to pay.';
-  $('overviewList').innerHTML = debts.length ? debts.map(d => { const p = Math.max(0, orig(d) - d.balance); return '<div class="item"><div class="row"><strong>' + esc(d.name) + '</strong><span class="muted">' + Math.round(p / orig(d) * 100) + '% paid</span></div>' + bar([{ v: p, c: '#4c9c7a' }, { v: d.balance, c: '#c9d3e0' }], 'sm') + '<div class="leg"><span>Paid ' + money(p) + '</span><span>Left ' + money(d.balance) + '</span></div></div>'; }).join('') : '<div class="empty">No debts added yet. Open the Debts tab and tap “Add debt.”</div>';
-  const sorted = [...debts].sort((a, b) => b.apr - a.apr), focus = sorted.find(d => d.balance > 0);
-  $('debtHint').textContent = debts.length > 1 ? 'Highest APR first. Extra money on the top debt saves the most interest.' : '';
-  $('debtList').innerHTML = debts.length ? sorted.map(d => { const p = Math.max(0, orig(d) - d.balance), i = interest(d), late = d.due && d.due <= new Date().toISOString().slice(0, 10); return '<article class="card"><div class="row"><div><h3 style="margin:0">' + esc(d.name) + (d === focus && debts.length > 1 ? ' <span class="chip tag">Extra goes here</span>' : '') + '</h3><div class="muted">' + d.apr + '% APR · pays ' + money(d.payment) + '/mo' + (d.minimum ? ' (min ' + money(d.minimum) + ')' : '') + '</div></div><div class="balance">' + money(d.balance) + '</div></div>' + bar([{ v: p, c: '#4c9c7a' }, { v: d.balance, c: '#c9d3e0' }], 'sm') + '<div class="row muted"><span>Paid ' + money(p) + '</span><span class="chip ' + (late ? 'due' : '') + '">' + (d.due ? 'Due ' + esc(d.due) : 'No due date') + '</span></div><div class="row" style="margin-top:8px"><span class="muted">Est. monthly interest</span><strong class="warning">' + money(i) + '</strong></div><div class="row"><span class="muted">Principal from usual payment</span><strong class="' + (d.payment > i ? 'good' : 'warning') + '">' + money(d.payment - i) + '</strong></div><div class="actions"><button class="smallbtn" onclick="recordPayment(\'' + d.id + '\')">Record payment</button><button class="smallbtn secondary" onclick="editDebt(\''+ d.id + '\')">Edit</button><button class="smallbtn danger" onclick="removeDebt(\'' + d.id + '\')">Delete</button></div>' + ((d.history || []).length ? '<div class="history"><strong>Recent payments</strong>' + d.history.slice(-5).reverse().map(h => '<div class="row muted" style="margin-top:7px"><span>' + esc(h.date) + ' · ' + money(h.amount) + '</span><span>Interest ' + money(h.interest) + ' / principal ' + money(h.principal) + '</span></div>').join('') + '</div>' : '') + '</article>'; }).join('') : '<div class="card empty">No debts added yet.</div>';
-  renderBudget();
-}
-
-function switchTab(tab) {
-  document.querySelectorAll('main section').forEach(s => s.classList.toggle('hidden', s.id !== tab));
-  document.querySelectorAll('.nav button').forEach(b => {
-    b.classList.toggle('active', b.dataset.tab === tab);
-    b.classList.toggle('secondary', b.dataset.tab !== tab);
-  });
-  loadAllData();
-  render();
-}
-
-document.querySelectorAll('.nav button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
-
-// Initialize application
-loadAllData();
-render();
-</script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.nav button').forEach(b => {
+        b.onclick = () => switchTab(b.dataset.tab);
+      });
+      loadAllData();
+      render();
+    });
+  </script>
+  <script src="overview.js"></script>
 </body>
 </html>
