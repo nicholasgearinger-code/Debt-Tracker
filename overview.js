@@ -1,7 +1,11 @@
 /* ClearPath Overview: one animated segmented ring with two views (Monthly / Debts).
    Loads after the main script; reads debts, budget and recurring, and redraws on every update. */
 (function () {
+  // Use safe DOM lookup in case $ isn't globally declared
+  const $ = id => document.getElementById(id);
   const ov = $('overview');
+  if (!ov) return; // Guard clause in case overview container isn't in DOM yet
+
   // Hidden copies of the old containers keep the original render() code from hitting missing elements.
   ov.innerHTML = '<div id="ov2"></div><div class="hidden"><div id="interestBox"></div><div id="overviewList"></div></div>';
 
@@ -35,22 +39,28 @@
   }
 
   function build() {
-    const inc = (Number(budget.pay) || 0) * 26 / 12;
-    // Bills = Budget-tab bills + recurring bills, matched by name so nothing is counted twice
+    const inc = (Number(typeof budget !== 'undefined' ? budget.pay : 0) || 0) * 26 / 12;
     const map = new Map();
-    budget.bills.forEach(b => map.set(String(b.name).trim().toLowerCase(), { name: b.name, amt: Number(b.amt) || 0 }));
-    recurring.forEach(b => { const k = String(b.name).trim().toLowerCase(); if (!map.has(k)) map.set(k, { name: b.name, amt: Number(b.amt) || 0 }); });
+    if (typeof budget !== 'undefined' && budget.bills) {
+      budget.bills.forEach(b => map.set(String(b.name).trim().toLowerCase(), { name: b.name, amt: Number(b.amt) || 0 }));
+    }
+    if (typeof recurring !== 'undefined') {
+      recurring.forEach(b => { const k = String(b.name).trim().toLowerCase(); if (!map.has(k)) map.set(k, { name: b.name, amt: Number(b.amt) || 0 }); });
+    }
     const bills = [...map.values()].filter(b => b.amt > 0).sort((a, b) => b.amt - a.amt);
-    const billT = bills.reduce((s, b) => s + b.amt, 0), debtP = total('payment'), left = inc - billT - debtP;
+    const billT = bills.reduce((s, b) => s + b.amt, 0);
+    const debtP = typeof total === 'function' ? total('payment') : 0;
+    const left = inc - billT - debtP;
     const warm = [PAIRS[1], PAIRS[2], PAIRS[3], PAIRS[1], PAIRS[2]];
     const m = bills.slice(0, 5).map((b, i) => ({ n: b.name, v: b.amt, p: warm[i], kind: 'bill' }));
     if (bills.length > 5) m.push({ n: 'Other bills (' + (bills.length - 5) + ')', v: bills.slice(5).reduce((s, b) => s + b.amt, 0), p: PAIRS[7], kind: 'bill' });
     if (debtP > 0) m.push({ n: 'Debt payments', v: debtP, p: ['#4c6a96', '#19234f'], kind: 'debt' });
     if (left > 0) m.push({ n: 'Left over', v: left, p: PAIRS[0], kind: 'left' });
     const order = [4, 5, 6, 2, 1, 3, 0, 7];
-    const d = [...debts].sort((a, b) => b.balance - a.balance).map((x, i) => {
-      const iv = interest(x), ok = x.payment > iv;
-      return { id: x.id, n: x.name, v: x.balance, p: PAIRS[order[i % 8]], apr: x.apr, ok, sub: ok ? x.apr + '% APR' : 'Pay at least ' + money(Math.ceil(iv * 100) / 100 + 0.01), short: ok ? 0 : iv - x.payment };
+    const dList = typeof debts !== 'undefined' ? debts : [];
+    const d = [...dList].sort((a, b) => b.balance - a.balance).map((x, i) => {
+      const iv = typeof interest === 'function' ? interest(x) : 0, ok = x.payment > iv;
+      return { id: x.id, n: x.name, v: x.balance, p: PAIRS[order[i % 8]], apr: x.apr, ok, sub: ok ? x.apr + '% APR' : 'Pay at least ' + (typeof money === 'function' ? money(Math.ceil(iv * 100) / 100 + 0.01) : iv), short: ok ? 0 : iv - x.payment };
     });
     return { inc, billT, debtP, left, m, d };
   }
@@ -81,9 +91,9 @@
   function detailHtml(s) {
     const rows = a => a.map(x => '<div class="row"><span class="muted">' + x[0] + '</span><strong>' + x[1] + '</strong></div>').join('');
     if (view === 'debts') {
-      const d = debts.find(x => x.id === s.id); if (!d) return '';
-      const i = interest(d);
-      return '<div class="det">' + rows([['Balance', money(d.balance)], ['APR', d.apr + '%'], ['Your payment', money(d.payment) + '/mo'], ['Interest', money(i) + '/mo'], ['Goes to principal', d.payment > i ? money(d.payment - i) : 'nothing'], ['Paid off in', fm(months(d.balance, d.apr, d.payment))]]) +
+      const d = (typeof debts !== 'undefined' ? debts : []).find(x => x.id === s.id); if (!d) return '';
+      const i = typeof interest === 'function' ? interest(d) : 0;
+      return '<div class="det">' + rows([['Balance', money(d.balance)], ['APR', d.apr + '%'], ['Your payment', money(d.payment) + '/mo'], ['Interest', money(i) + '/mo'], ['Goes to principal', d.payment > i ? money(d.payment - i) : 'nothing'], ['Paid off in', typeof fm === 'function' && typeof months === 'function' ? fm(months(d.balance, d.apr, d.payment)) : '']]) +
         '<div class="actions"><button class="smallbtn" onclick="recordPayment(\'' + d.id + '\')">Record payment</button><button class="smallbtn secondary" onclick="switchTab(\'debts\');editDebt(\'' + d.id + '\')">Edit</button></div></div>';
     }
     const t = S.reduce((a, x) => a + x.v, 0);
@@ -91,10 +101,10 @@
       (s.kind === 'bill' ? '<div class="actions"><button class="smallbtn secondary" onclick="switchTab(\'budget\')">Edit bills</button></div>' : s.kind === 'debt' ? '<div class="actions"><button class="smallbtn secondary" onclick="switchTab(\'debts\')">Edit debts</button></div>' : '') + '</div>';
   }
 
-  // What-if: avalanche payoff simulation. Each debt gets its own payment; extra money and freed-up payments go to the highest APR.
   let extra = 0;
   function sim(ex) {
-    const B = debts.map(d => ({ b: d.balance, r: d.apr / 1200, p: d.payment, apr: d.apr }));
+    const dList = typeof debts !== 'undefined' ? debts : [];
+    const B = dList.map(d => ({ b: d.balance, r: d.apr / 1200, p: d.payment, apr: d.apr }));
     const pool = B.reduce((s, x) => s + x.p, 0) + ex;
     let n = 0, intr = 0;
     while (B.some(x => x.b > 0.005) && n < 720) {
@@ -135,15 +145,15 @@
       el.innerHTML = h; return;
     }
 
-    // Center text (default state)
     if (view === 'month') {
       ctrDefault = '<small>Monthly income</small><b>' + money(M.inc) + '</b><em>' + (M.left >= 0 ? money(M.left) + ' left over' : '<span class="warning">' + money(-M.left) + ' over budget</span>') + '</em>';
     } else {
-      const bal = total('balance'), o = debts.reduce((s, x) => s + orig(x), 0), pct = o ? Math.round(Math.max(0, o - bal) / o * 100) : 0;
+      const bal = typeof total === 'function' ? total('balance') : 0;
+      const dList = typeof debts !== 'undefined' ? debts : [];
+      const o = dList.reduce((s, x) => s + (typeof orig === 'function' ? orig(x) : 0), 0), pct = o ? Math.round(Math.max(0, o - bal) / o * 100) : 0;
       ctrDefault = '<small>Total remaining</small><b>' + money(bal) + '</b><em>' + pct + '% paid off</em>';
     }
 
-    // Ring
     let a = 0, defs = '', paths = '', labels = '';
     const gap = S.length > 1 ? 7 : 0;
     S.forEach((s, i) => {
@@ -156,7 +166,6 @@
     });
     h += '<div class="rwrap"><svg class="rg" viewBox="0 0 320 320" role="img" aria-label="Chart"><defs>' + defs + '</defs>' + paths + labels + '</svg><div class="ctr">' + ctrDefault + '</div></div>';
 
-    // Message
     if (view === 'month') {
       h += M.left >= 0
         ? '<div class="msg">After bills and debt payments you keep ' + money(M.left) + ' a month (' + (M.inc ? Math.round(M.left / M.inc * 100) : 0) + '% of income).</div>'
@@ -171,17 +180,15 @@
     h += '<div id="detail"></div>';
     if (view === 'debts') h += '<div class="wi"><div class="row"><strong>What if I pay extra?</strong><strong id="exl">' + money(extra) + '</strong></div><input type="range" id="ex" min="0" max="1000" step="25" value="' + extra + '"><div class="muted">Extra per month, sent to your highest-APR debt. Freed-up payments roll to the next debt.</div><div class="res" id="wires" style="margin-top:8px"></div></div>';
 
-    // Legend
     h += '<div class="lgd" style="margin-top:8px">' + S.map((s, i) =>
-      '<div class="row" data-i="' + i + '" style="animation-delay:' + (0.3 + i * 0.06).toFixed(2) + 's"><div class="nm"><i class="dot" style="background:linear-gradient(135deg,' + s.p[0] + ',' + s.p[1] + ')"></i><div><strong>' + esc(s.n) + '</strong>' +
-      (view === 'debts' ? '<span class="' + (s.ok ? 'muted' : 'warning') + '">' + esc(s.sub) + '</span>' : '') + '</div></div><div class="am"><b>' + money(s.v) + '</b><small>' + Math.round(s.v / t * 100) + '%</small></div></div>').join('') + '</div></div>';
+      '<div class="row" data-i="' + i + '" style="animation-delay:' + (0.3 + i * 0.06).toFixed(2) + 's"><div class="nm"><i class="dot" style="background:linear-gradient(135deg,' + s.p[0] + ',' + s.p[1] + ')"></i><div><strong>' + (typeof esc === 'function' ? esc(s.n) : s.n) + '</strong>' +
+      (view === 'debts' ? '<span class="' + (s.ok ? 'muted' : 'warning') + '">' + (typeof esc === 'function' ? esc(s.sub) : s.sub) + '</span>' : '') + '</div></div><div class="am"><b>' + money(s.v) + '</b><small>' + Math.round(s.v / t * 100) + '%</small></div></div>').join('') + '</div></div>';
 
     el.innerHTML = h;
     drawWhatIf();
     const cb = el.querySelector('.ctr b'); if (cb) countUp(cb);
   }
 
-  // Tap a segment or legend row to inspect it; tap the toggle to switch views
   $('ov2').addEventListener('click', e => {
     const v = e.target.closest('[data-view]');
     if (v) { view = v.dataset.view; return draw(); }
@@ -194,12 +201,19 @@
   $('ov2').addEventListener('touchstart', e => { sx = e.target.closest('.rwrap') ? e.touches[0].clientX : null; }, { passive: true });
   $('ov2').addEventListener('touchend', e => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) > 60) { view = view === 'month' ? 'debts' : 'month'; draw(); } }, { passive: true });
 
-  // Redraw whenever existing code updates the budget or calendar (render() calls renderBudget()).
-  const rb = renderBudget; renderBudget = function () { rb(); draw(); };
-  const rc = renderCalendar; renderCalendar = function () { rc(); draw(); };
+  // Safely hook function overrides if they exist globally
+  if (typeof renderBudget === 'function') {
+    const rb = renderBudget; 
+    renderBudget = function () { rb(); draw(); };
+  }
+  if (typeof renderCalendar === 'function') {
+    const rc = renderCalendar; 
+    renderCalendar = function () { rc(); draw(); };
+  }
+
   const tabBtn = document.querySelector('.nav button[data-tab="overview"]');
-  if (tabBtn) tabBtn.addEventListener('click', draw); // replay the animation when you return to Overview
+  if (tabBtn) tabBtn.addEventListener('click', draw);
+
   console.log('ClearPath overview.js loaded');
   draw();
 })();
-
