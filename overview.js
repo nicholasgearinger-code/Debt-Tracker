@@ -237,7 +237,7 @@
     ov2Container.addEventListener('touchend', e => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) > 60) { view = view === 'month' ? 'debts' : 'month'; draw(); } }, { passive: true });
   }
 
-  // Hook into data save/render triggers to update automatically
+  // Safely hook render functions if declared globally
   if (typeof window.render === 'function') {
     const origRender = window.render;
     window.render = function () { origRender(); draw(); };
