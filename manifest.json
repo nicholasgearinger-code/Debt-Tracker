@@ -1,0 +1,10 @@
+{
+  "name": "ClearPath Debt Tracker",
+  "short_name": "ClearPath",
+  "description": "Track debt balances, due dates, payments and estimated interest.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f3f5f8",
+  "theme_color": "#101c30",
+  "icons": []
+}
