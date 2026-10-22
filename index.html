@@ -8,7 +8,16 @@
 <header class="hero"><h1>CLEARPATH FINANCIAL</h1><div class="sub">YOUR MONEY, WITH A CLEARER PLAN · DEBT & BUDGET DASHBOARD</div><div style="height:18px"></div><div class="sub">TOTAL DEBT REMAINING</div><div class="big" id="totalDebt">$0.00</div><div id="heroBar"></div></header>
 <nav class="nav"><button class="active" data-tab="overview">Overview</button><button class="secondary" data-tab="debts">Debts</button><button class="secondary" data-tab="budget">Budget</button><button class="secondary" data-tab="calendar">Bills & reminders</button><button class="secondary" data-tab="sync">Sync</button><button class="secondary" data-tab="backup">Backup</button></nav>
 
-<section id="overview"><div class="card"><h2>Beating the interest</h2><div id="interestBox" class="muted">Add a debt to see how much you need to pay.</div></div><div class="card"><h2>Progress by debt</h2><div id="overviewList" class="muted"></div></div></section>
+<section id="overview">
+  <div class="card">
+    <h2>Beating the interest</h2>
+    <div id="interestBox" class="muted">Add a debt to see how much you need to pay.</div>
+  </div>
+  <div class="card">
+    <h2>Progress by debt</h2>
+    <div id="overviewList" class="muted"></div>
+  </div>
+</section>
 
 <section id="debts" class="hidden"><div class="row" style="margin:8px 0 12px"><h2 style="margin:0">Your debts</h2><button id="addDebtBtn">+ Add debt</button></div>
 <div id="debtForm" class="card hidden"><h2 id="formTitle">Add a debt</h2><form id="debtEditor"><div class="formgrid"><div class="field"><label for="name">Debt name</label><input id="name" required placeholder="e.g. Visa credit card"></div><div class="field"><label for="balance">Current balance ($)</label><input id="balance" type="number" min="0.01" step=".01" required></div><div class="field"><label for="start">Original balance ($)</label><input id="start" type="number" min="0.01" step=".01" placeholder="Same as current"></div><div class="field"><label for="apr">APR (%)</label><input id="apr" type="number" min="0" step=".01" required></div><div class="field"><label for="payment">Usual payment ($)</label><input id="payment" type="number" min="0" step=".01" required></div><div class="field"><label for="minimum">Minimum payment ($)</label><input id="minimum" type="number" min="0" step=".01"></div><div class="field"><label for="due">Next due date</label><input id="due" type="date"></div></div><div class="actions"><button type="submit">Save debt</button><button type="button" class="secondary" id="cancelEdit">Cancel</button></div></form></div>
