@@ -256,13 +256,60 @@
     }
 
     // Render Bills & Calendar View
-    function renderCalendar() {
+        function renderCalendar() {
       const calList = $('calendarList');
-      if (!calList) return;
+      const calGrid = $('calendarGrid');
+      if (!calList || !calGrid) return;
 
       const today = new Date();
-      const currentMonth = today.toISOString().slice(0, 7);
+      const currentYear = today.getFullYear();
+      const currentMonthIndex = today.getMonth(); // 0-indexed (0 = Jan, 11 = Dec)
+      const currentMonthStr = today.toISOString().slice(0, 7); // "YYYY-MM"
+      const currentDayNumber = today.getDate();
 
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      
+      const monthTitleEl = $('calendarMonthTitle');
+      if (monthTitleEl) monthTitleEl.textContent = `${monthNames[currentMonthIndex]} ${currentYear}`;
+
+      // 1. Render Visual Calendar Grid
+      const daysInMonth = new Date(currentYear, currentMonthIndex + 1, 0).getDate();
+      const firstDayOfWeek = new Date(currentYear, currentMonthIndex, 1).getDay(); // Day of week (0=Sun)
+
+      let gridHTML = '';
+
+      // Blank slots before the 1st of the month
+      for (let i = 0; i < firstDayOfWeek; i++) {
+        gridHTML += `<div style="background:#f8f9fa; border-radius:8px; min-height:64px; opacity:0.3;"></div>`;
+      }
+
+      // Render cells for each day of the month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayBills = recurring.filter(b => Number(b.day) === day);
+        const isToday = day === currentDayNumber;
+
+        gridHTML += `
+          <div style="background:${isToday ? '#edf4ff' : '#fff'}; border:1px solid ${isToday ? 'var(--navy)' : '#e7e8ed'}; border-radius:8px; padding:6px; min-height:68px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div style="font-weight:700; font-size:12px; color:${isToday ? 'var(--navy)' : 'var(--ink)'};">
+              ${day}${isToday ? ' <span style="font-size:10px; font-weight:normal; color:var(--navy);">(Today)</span>' : ''}
+            </div>
+            <div>
+              ${dayBills.map(b => {
+                const isPaid = b.lastPaidMonth === currentMonthStr;
+                return `
+                  <div style="background:${isPaid ? '#d9f5e6' : '#fae9e7'}; color:${isPaid ? '#12633f' : '#9a352d'}; font-size:10px; font-weight:700; padding:2px 4px; border-radius:4px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${esc(b.name)} - ${money(b.amount)}">
+                    ${isPaid ? '✓ ' : ''}${esc(b.name)}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      calGrid.innerHTML = gridHTML;
+
+      // 2. Render Itemized List View
       if (!recurring.length) {
         calList.innerHTML = '<div class="muted">No recurring bills added yet. Add one above!</div>';
         return;
@@ -271,7 +318,7 @@
       const sorted = [...recurring].sort((a, b) => a.day - b.day);
 
       calList.innerHTML = sorted.map(b => {
-        const isPaid = b.lastPaidMonth === currentMonth;
+        const isPaid = b.lastPaidMonth === currentMonthStr;
         return `
           <div class="card" style="margin-bottom:10px; padding:12px 16px;">
             <div class="row">
