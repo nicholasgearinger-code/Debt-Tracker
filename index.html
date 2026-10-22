@@ -123,15 +123,39 @@
     </section>
 
     <section id="calendar" class="hidden">
-      <div class="card">
-        <div class="row">
-          <h2 style="margin:0">Bills & due dates</h2>
-          <button id="notifyBtn">Enable reminders</button>
+  <div class="card">
+    <div class="row">
+      <h2 style="margin:0">Bills & due dates</h2>
+      <button id="notifyBtn">Enable reminders</button>
+    </div>
+    <p class="muted">Track recurring bills and mark them paid each month.</p>
+    
+    <div style="margin-top:16px">
+      <div class="formgrid">
+        <div class="field">
+          <label for="cName">Bill Name</label>
+          <input id="cName" placeholder="e.g. Rent, Netflix">
         </div>
-        <p class="muted">Track recurring bills and mark them paid each month.</p>
-        <div id="calendarSummary"></div>
+        <div class="field">
+          <label for="cAmt">Monthly Amount ($)</label>
+          <input id="cAmt" type="number" min="0" step=".01" placeholder="0.00">
+        </div>
+        <div class="field">
+          <label for="cDay">Day of Month Due (1–31)</label>
+          <input id="cDay" type="number" min="1" max="31" placeholder="15">
+        </div>
       </div>
-    </section>
+      <div class="actions" style="margin-top:10px">
+        <button id="addCalendarBill">Add Recurring Bill</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Upcoming Due Dates</h2>
+    <div id="calendarList"></div>
+  </div>
+</section>
 
     <section id="sync" class="hidden">
       <div class="card">
