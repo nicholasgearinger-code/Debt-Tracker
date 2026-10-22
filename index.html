@@ -121,35 +121,54 @@
         <div class="actions"><button id="addBill">Add bill</button></div>
       </div>
     </section>
-    <section id="calendar" class="hidden">
+       <section id="calendar" class="hidden">
+      <!-- 1. Visual Calendar Grid at the Top -->
       <div class="card">
-        <div class="row">
-          <h2 style="margin:0">Bills & due dates</h2>
+        <div class="row" style="margin-bottom:12px">
+          <div>
+            <h2 style="margin:0" id="calendarMonthTitle">Monthly Schedule</h2>
+            <div class="muted" id="calendarMonthSub">Visual schedule of upcoming bills</div>
+          </div>
           <button id="notifyBtn">Enable reminders</button>
         </div>
-        <p class="muted">Track recurring bills and mark them paid each month.</p>
         
-        <!-- Add Recurring Bill Form -->
-        <div style="margin-top:16px">
-          <div class="formgrid">
-            <div class="field">
-              <label for="cName">Bill Name</label>
-              <input id="cName" placeholder="e.g. Rent, Netflix">
-            </div>
-            <div class="field">
-              <label for="cAmt">Monthly Amount ($)</label>
-              <input id="cAmt" type="number" min="0" step=".01" placeholder="0.00">
-            </div>
-            <div class="field">
-              <label for="cDay">Day of Month Due (1–31)</label>
-              <input id="cDay" type="number" min="1" max="31" placeholder="15">
-            </div>
+        <!-- Day-of-week Header -->
+        <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; font-weight:700; text-align:center; font-size:12px; color:var(--muted); margin-bottom:8px;">
+          <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
+        </div>
+
+        <!-- 31-Day Grid Container -->
+        <div id="calendarGrid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px;"></div>
+      </div>
+
+      <!-- 2. Add Recurring Bill Form -->
+      <div class="card">
+        <h2>Add recurring bill</h2>
+        <div class="formgrid">
+          <div class="field">
+            <label for="cName">Bill Name</label>
+            <input id="cName" placeholder="e.g. Rent, Netflix">
           </div>
-          <div class="actions" style="margin-top:10px">
-            <button id="addCalendarBill">Add Recurring Bill</button>
+          <div class="field">
+            <label for="cAmt">Monthly Amount ($)</label>
+            <input id="cAmt" type="number" min="0" step=".01" placeholder="0.00">
+          </div>
+          <div class="field">
+            <label for="cDay">Day of Month Due (1–31)</label>
+            <input id="cDay" type="number" min="1" max="31" placeholder="15">
           </div>
         </div>
+        <div class="actions" style="margin-top:14px">
+          <button id="addCalendarBill">Add Recurring Bill</button>
+        </div>
       </div>
+
+      <!-- 3. Upcoming Due Dates List -->
+      <div class="card">
+        <h2>Upcoming Due Dates</h2>
+        <div id="calendarList"></div>
+      </div>
+    </section>
 
       <!-- Visual Calendar View -->
       <div class="card">
