@@ -41,7 +41,7 @@
     .muted {color:var(--muted); font-size:13px}
     .formgrid {display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px}
     .field label {display:block; font-size:12px; font-weight:700; color:var(--muted); margin-bottom:4px}
-    .field input {width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:99px}
+    .field input {width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:9px}
     .actions {display:flex; gap:8px; margin-top:14px; flex-wrap:wrap}
   </style>
 </head>
@@ -100,7 +100,6 @@
           </div>
         </form>
       </div>
-      <p class="muted" id="debtHint"></p>
       <div id="debtList"></div>
     </section>
 
@@ -111,33 +110,23 @@
         <div id="bSum"></div>
         <div id="budgetChart" style="margin-top:18px"></div>
       </div>
-      <div class="card">
-        <h2>Monthly bills</h2>
-        <div id="bBills"></div>
-        <div class="formgrid" style="margin-top:10px">
-          <div class="field"><label for="bName">Bill name</label><input id="bName" placeholder="e.g. Rent"></div>
-          <div class="field"><label for="bAmt">Monthly amount ($)</label><input id="bAmt" type="number" inputmode="decimal" min="0" step=".01"></div>
-        </div>
-        <div class="actions"><button id="addBill">Add bill</button></div>
-      </div>
     </section>
-       <section id="calendar" class="hidden">
-      <!-- 1. Visual Calendar Grid at the Top -->
+
+    <section id="calendar" class="hidden">
+      <!-- 1. Top Visual Calendar Grid -->
       <div class="card">
         <div class="row" style="margin-bottom:12px">
           <div>
             <h2 style="margin:0" id="calendarMonthTitle">Monthly Schedule</h2>
-            <div class="muted" id="calendarMonthSub">Visual schedule of upcoming bills</div>
+            <div class="muted">Visual schedule of upcoming bills</div>
           </div>
           <button id="notifyBtn">Enable reminders</button>
         </div>
         
-        <!-- Day-of-week Header -->
-        <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; font-weight:700; text-align:center; font-size:12px; color:var(--muted); margin-bottom:8px;">
+        <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; font-weight:700; text-align:center; font-size:11px; color:var(--muted); margin-bottom:8px;">
           <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
         </div>
 
-        <!-- 31-Day Grid Container -->
         <div id="calendarGrid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px;"></div>
       </div>
 
@@ -170,36 +159,6 @@
       </div>
     </section>
 
-      <!-- Visual Calendar View -->
-      <div class="card">
-        <div class="row" style="margin-bottom:12px">
-          <h2 style="margin:0" id="calendarMonthTitle">Monthly Schedule</h2>
-          <span class="muted" id="calendarMonthSub"></span>
-        </div>
-        
-        <!-- Day-of-week header -->
-        <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; font-weight:700; text-align:center; font-size:12px; color:var(--muted); margin-bottom:8px;">
-          <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
-        </div>
-
-        <!-- 31-Day Grid Container -->
-        <div id="calendarGrid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px;"></div>
-      </div>
-
-      <!-- Itemized List View -->
-      <div class="card">
-        <h2>Upcoming Due Dates</h2>
-        <div id="calendarList"></div>
-      </div>
-    </section>
-
-
-  <div class="card">
-    <h2>Upcoming Due Dates</h2>
-    <div id="calendarList"></div>
-  </div>
-</section>
-
     <section id="sync" class="hidden">
       <div class="card">
         <h2>Sync across devices</h2>
@@ -218,7 +177,8 @@
 
     <footer>Estimates only, not lender statements. Monthly interest is approximated as balance × APR ÷ 12.</footer>
   </main>
-    <script>
+
+  <script>
     const $ = id => document.getElementById(id);
     const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n) || 0);
 
@@ -228,27 +188,17 @@
 
     let debts = [], budget = { pay: 0, bills: [] }, recurring = [], editingId = null;
 
-    // Load Data
     function loadAllData() {
       try { debts = JSON.parse(localStorage.getItem(KEY) || '[]'); if (!Array.isArray(debts)) debts = []; } catch { debts = []; }
       try { const b = JSON.parse(localStorage.getItem(BKEY) || 'null'); if (b && Array.isArray(b.bills)) budget = { pay: Number(b.pay) || 0, bills: b.bills }; } catch {}
       try { recurring = JSON.parse(localStorage.getItem(CKEY) || '[]'); if (!Array.isArray(recurring)) recurring = []; } catch { recurring = []; }
     }
 
-    // Save Functions
-    function save() {
-      localStorage.setItem(KEY, JSON.stringify(debts));
-      render();
-    }
-
-    function saveRecurring() {
-      localStorage.setItem(CKEY, JSON.stringify(recurring));
-      renderCalendar();
-    }
+    function save() { localStorage.setItem(KEY, JSON.stringify(debts)); render(); }
+    function saveRecurring() { localStorage.setItem(CKEY, JSON.stringify(recurring)); renderCalendar(); }
 
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-    // Render Debts View
     function render() {
       const bal = debts.reduce((s, d) => s + (Number(d.balance) || 0), 0);
       const totalDebtEl = $('totalDebt');
@@ -274,16 +224,15 @@
       }
     }
 
-    // Render Bills & Calendar View
-        function renderCalendar() {
+    function renderCalendar() {
       const calList = $('calendarList');
       const calGrid = $('calendarGrid');
       if (!calList || !calGrid) return;
 
       const today = new Date();
       const currentYear = today.getFullYear();
-      const currentMonthIndex = today.getMonth(); // 0-indexed (0 = Jan, 11 = Dec)
-      const currentMonthStr = today.toISOString().slice(0, 7); // "YYYY-MM"
+      const currentMonthIndex = today.getMonth();
+      const currentMonthStr = today.toISOString().slice(0, 7);
       const currentDayNumber = today.getDate();
 
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -291,32 +240,29 @@
       const monthTitleEl = $('calendarMonthTitle');
       if (monthTitleEl) monthTitleEl.textContent = `${monthNames[currentMonthIndex]} ${currentYear}`;
 
-      // 1. Render Visual Calendar Grid
+      // Render 31-Day Grid
       const daysInMonth = new Date(currentYear, currentMonthIndex + 1, 0).getDate();
-      const firstDayOfWeek = new Date(currentYear, currentMonthIndex, 1).getDay(); // Day of week (0=Sun)
+      const firstDayOfWeek = new Date(currentYear, currentMonthIndex, 1).getDay();
 
       let gridHTML = '';
-
-      // Blank slots before the 1st of the month
       for (let i = 0; i < firstDayOfWeek; i++) {
-        gridHTML += `<div style="background:#f8f9fa; border-radius:8px; min-height:64px; opacity:0.3;"></div>`;
+        gridHTML += `<div style="background:#f8f9fa; border-radius:8px; min-height:54px; opacity:0.3;"></div>`;
       }
 
-      // Render cells for each day of the month
       for (let day = 1; day <= daysInMonth; day++) {
         const dayBills = recurring.filter(b => Number(b.day) === day);
         const isToday = day === currentDayNumber;
 
         gridHTML += `
-          <div style="background:${isToday ? '#edf4ff' : '#fff'}; border:1px solid ${isToday ? 'var(--navy)' : '#e7e8ed'}; border-radius:8px; padding:6px; min-height:68px; display:flex; flex-direction:column; justify-content:space-between;">
-            <div style="font-weight:700; font-size:12px; color:${isToday ? 'var(--navy)' : 'var(--ink)'};">
-              ${day}${isToday ? ' <span style="font-size:10px; font-weight:normal; color:var(--navy);">(Today)</span>' : ''}
+          <div style="background:${isToday ? '#edf4ff' : '#fff'}; border:1px solid ${isToday ? 'var(--navy)' : '#e7e8ed'}; border-radius:8px; padding:4px; min-height:58px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div style="font-weight:700; font-size:11px; color:${isToday ? 'var(--navy)' : 'var(--ink)'};">
+              ${day}${isToday ? ' <span style="font-size:9px; color:var(--navy);">(Today)</span>' : ''}
             </div>
             <div>
               ${dayBills.map(b => {
                 const isPaid = b.lastPaidMonth === currentMonthStr;
                 return `
-                  <div style="background:${isPaid ? '#d9f5e6' : '#fae9e7'}; color:${isPaid ? '#12633f' : '#9a352d'}; font-size:10px; font-weight:700; padding:2px 4px; border-radius:4px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${esc(b.name)} - ${money(b.amount)}">
+                  <div style="background:${isPaid ? '#d9f5e6' : '#fae9e7'}; color:${isPaid ? '#12633f' : '#9a352d'}; font-size:9px; font-weight:700; padding:2px 3px; border-radius:3px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${esc(b.name)} - ${money(b.amount)}">
                     ${isPaid ? '✓ ' : ''}${esc(b.name)}
                   </div>
                 `;
@@ -328,7 +274,7 @@
 
       calGrid.innerHTML = gridHTML;
 
-      // 2. Render Itemized List View
+      // Render List
       if (!recurring.length) {
         calList.innerHTML = '<div class="muted">No recurring bills added yet. Add one above!</div>';
         return;
@@ -366,10 +312,10 @@
     }
 
     function toggleBillPaid(id) {
-      const currentMonth = new Date().toISOString().slice(0, 7);
+      const currentMonthStr = new Date().toISOString().slice(0, 7);
       recurring = recurring.map(b => {
         if (b.id === id) {
-          b.lastPaidMonth = (b.lastPaidMonth === currentMonth) ? '' : currentMonth;
+          b.lastPaidMonth = (b.lastPaidMonth === currentMonthStr) ? '' : currentMonthStr;
         }
         return b;
       });
@@ -413,16 +359,13 @@
       save();
     }
 
-     function setupNotifications() {
+    function setupNotifications() {
       const notifyBtn = $('notifyBtn');
       if (!notifyBtn) return;
 
-      // Update button text based on current permission status
-      if ('Notification' in window) {
-        if (Notification.permission === 'granted') {
-          notifyBtn.textContent = '✓ Reminders Enabled';
-          notifyBtn.classList.add('secondary');
-        }
+      if ('Notification' in window && Notification.permission === 'granted') {
+        notifyBtn.textContent = '✓ Reminders Enabled';
+        notifyBtn.classList.add('secondary');
       }
 
       notifyBtn.onclick = async () => {
@@ -432,56 +375,21 @@
         }
 
         const permission = await Notification.requestPermission();
-        
         if (permission === 'granted') {
           notifyBtn.textContent = '✓ Reminders Enabled';
           notifyBtn.classList.add('secondary');
-          
-          // Send a test confirmation notification
-          if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-            const reg = await navigator.serviceWorker.ready;
-            reg.showNotification('ClearPath Notifications Active', {
-              body: 'You will receive reminders when bills are due soon.',
-              icon: 'icon-192.png'
-            });
-          } else {
-            new Notification('ClearPath Notifications Active', {
-              body: 'You will receive reminders when bills are due soon.'
-            });
-          }
-          
-          checkUpcomingBillNotifications();
+          new Notification('ClearPath Notifications Active', { body: 'You will receive reminders when bills are due soon.' });
         } else {
-          alert('Notification permissions were blocked or denied.');
+          alert('Notification permission was denied.');
         }
       };
     }
 
-    function checkUpcomingBillNotifications() {
-      if (!('Notification' in window) || Notification.permission !== 'granted') return;
-
-      const today = new Date();
-      const currentDay = today.getDate();
-      const currentMonthStr = today.toISOString().slice(0, 7);
-
-      recurring.forEach(b => {
-        const daysLeft = b.day - currentDay;
-        // Notify for unpaid bills due within 3 days
-        if (daysLeft >= 0 && daysLeft <= 3 && b.lastPaidMonth !== currentMonthStr) {
-          const msg = `${b.name} (${money(b.amount)}) is due ${daysLeft === 0 ? 'today!' : 'in ' + daysLeft + ' day(s).'}`;
-          
-          if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.ready.then(reg => {
-              reg.showNotification(`Bill Reminder: ${b.name}`, { body: msg, icon: 'icon-192.png' });
-            });
-          } else {
-            new Notification(`Bill Reminder: ${b.name}`, { body: msg });
-          }
-        }
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.nav button').forEach(b => {
+        b.onclick = () => switchTab(b.dataset.tab);
       });
-    }
 
-      // Debt Form Handlers
       const addBtn = $('addDebtBtn');
       if (addBtn) {
         addBtn.onclick = () => {
@@ -493,9 +401,7 @@
       }
 
       const cancelBtn = $('cancelEdit');
-      if (cancelBtn) {
-        cancelBtn.onclick = () => $('debtForm').classList.add('hidden');
-      }
+      if (cancelBtn) cancelBtn.onclick = () => $('debtForm').classList.add('hidden');
 
       const form = $('debtEditor');
       if (form) {
@@ -524,7 +430,6 @@
         };
       }
 
-      // Calendar Recurring Bill Handler
       const addCalBtn = $('addCalendarBill');
       if (addCalBtn) {
         addCalBtn.onclick = () => {
