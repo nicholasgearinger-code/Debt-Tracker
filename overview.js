@@ -14,7 +14,13 @@
     '.dc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}' +
     '.dc b{font-size:19px;letter-spacing:-.03em}.dc span{font-size:11px;color:var(--muted)}' +
     '.lg .row{padding:6px 0;font-size:14px}.lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px}.lg small{color:var(--muted)}' +
-    '.need{padding:12px 0;border-top:1px solid var(--line)}.need:first-of-type{border-top:0}';
+    '.need{padding:12px 0;border-top:1px solid var(--line)}.need:first-of-type{border-top:0}' +
+    '@keyframes dr{from{stroke-dasharray:0 100}}@keyframes gw{from{width:0}}@keyframes up{from{opacity:0;transform:translateY(12px)}}@keyframes spin{from{transform:rotate(-90deg)}}' +
+    '#ov2 .tile,#ov2 .card{animation:up .55s cubic-bezier(.2,.8,.2,1) both}#ov2>:nth-child(2){animation-delay:.05s}#ov2>:nth-child(3){animation-delay:.12s}#ov2>:nth-child(4){animation-delay:.19s}#ov2>:nth-child(5){animation-delay:.26s}' +
+    '#ov2 .tile:nth-child(2){animation-delay:.06s}#ov2 .tile:nth-child(3){animation-delay:.12s}#ov2 .tile:nth-child(4){animation-delay:.18s}' +
+    '#ov2 .dn svg{filter:drop-shadow(0 6px 10px #19234f22);animation:spin 1.1s cubic-bezier(.2,.8,.2,1) both}#ov2 .dn circle:not(:first-child){animation:dr 1.2s cubic-bezier(.2,.8,.2,1) .15s both}' +
+    '#ov2 .chartfill,#ov2 .bar i{animation:gw 1s cubic-bezier(.2,.8,.2,1) .2s both}#ov2 .chartrow:nth-of-type(2) .chartfill{animation-delay:.3s}#ov2 .chartrow:nth-of-type(3) .chartfill{animation-delay:.4s}#ov2 .chartrow:nth-of-type(4) .chartfill{animation-delay:.5s}' +
+    '@media(prefers-reduced-motion:reduce){#ov2 *{animation:none!important}}';
   document.head.appendChild(st);
 
   const PAL = ['#19234f', '#00ad68', '#e9b949', '#4c6a96', '#7ee787', '#b83f4b', '#8a6fdf', '#e07a5f'];
@@ -102,10 +108,26 @@
     h += '</div>';
 
     el.innerHTML = h;
+    el.querySelectorAll('.tile strong,.dc b').forEach(countUp);
+  }
+
+  // Count numbers up from 0 on each draw
+  function countUp(node) {
+    const txt = node.textContent, to = parseFloat(txt.replace(/[^0-9.-]/g, ''));
+    if (!isFinite(to) || to === 0 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t0 = performance.now(), dur = 1000;
+    (function tick(now) {
+      const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      node.textContent = money(to * e);
+      if (k < 1) requestAnimationFrame(tick); else node.textContent = txt;
+    })(t0);
   }
 
   // Redraw whenever the existing code updates the budget or calendar (render() calls renderBudget()).
   const rb = renderBudget; renderBudget = function () { rb(); draw(); };
   const rc = renderCalendar; renderCalendar = function () { rc(); draw(); };
+  const tabBtn = document.querySelector('.nav button[data-tab="overview"]');
+  if (tabBtn) tabBtn.addEventListener('click', draw); // replay the animations when you return to Overview
+  console.log('ClearPath overview.js loaded');
   draw();
 })();
