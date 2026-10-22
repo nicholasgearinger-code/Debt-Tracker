@@ -413,28 +413,73 @@
       save();
     }
 
-    function setupNotifications() {
+     function setupNotifications() {
       const notifyBtn = $('notifyBtn');
       if (!notifyBtn) return;
 
+      // Update button text based on current permission status
+      if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+          notifyBtn.textContent = '✓ Reminders Enabled';
+          notifyBtn.classList.add('secondary');
+        }
+      }
+
       notifyBtn.onclick = async () => {
         if (!('Notification' in window)) {
-          alert('This browser does not support web notifications.');
+          alert('Web Notifications are not supported in this browser.');
           return;
         }
+
         const permission = await Notification.requestPermission();
+        
         if (permission === 'granted') {
-          alert('Notifications enabled! ClearPath will alert you when bills are due.');
+          notifyBtn.textContent = '✓ Reminders Enabled';
+          notifyBtn.classList.add('secondary');
+          
+          // Send a test confirmation notification
+          if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            const reg = await navigator.serviceWorker.ready;
+            reg.showNotification('ClearPath Notifications Active', {
+              body: 'You will receive reminders when bills are due soon.',
+              icon: 'icon-192.png'
+            });
+          } else {
+            new Notification('ClearPath Notifications Active', {
+              body: 'You will receive reminders when bills are due soon.'
+            });
+          }
+          
+          checkUpcomingBillNotifications();
         } else {
-          alert('Notification permission was denied.');
+          alert('Notification permissions were blocked or denied.');
         }
       };
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.nav button').forEach(b => {
-        b.onclick = () => switchTab(b.dataset.tab);
+    function checkUpcomingBillNotifications() {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+      const today = new Date();
+      const currentDay = today.getDate();
+      const currentMonthStr = today.toISOString().slice(0, 7);
+
+      recurring.forEach(b => {
+        const daysLeft = b.day - currentDay;
+        // Notify for unpaid bills due within 3 days
+        if (daysLeft >= 0 && daysLeft <= 3 && b.lastPaidMonth !== currentMonthStr) {
+          const msg = `${b.name} (${money(b.amount)}) is due ${daysLeft === 0 ? 'today!' : 'in ' + daysLeft + ' day(s).'}`;
+          
+          if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.ready.then(reg => {
+              reg.showNotification(`Bill Reminder: ${b.name}`, { body: msg, icon: 'icon-192.png' });
+            });
+          } else {
+            new Notification(`Bill Reminder: ${b.name}`, { body: msg });
+          }
+        }
       });
+    }
 
       // Debt Form Handlers
       const addBtn = $('addDebtBtn');
