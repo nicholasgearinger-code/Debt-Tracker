@@ -1,29 +1,50 @@
-/* ClearPath Overview: one animated segmented ring with two views (Monthly / Debts).
-   Loads after the main script; reads debts, budget and recurring, and redraws on every update. */
+/* ClearPath Overview: animated segmented ring chart with view toggling (Monthly / Debts).
+   Loads after index.html main script; reads debts, budget, and recurring bills. */
 (function () {
-  // Use safe DOM lookup in case $ isn't globally declared
-  const $ = id => document.getElementById(id);
-  const ov = $('overview');
-  if (!ov) return; // Guard clause in case overview container isn't in DOM yet
+  // Defensive element selector
+  const $ = id => (typeof window.$ === 'function' ? window.$(id) : document.getElementById(id));
+  const formatMoney = val => (typeof money === 'function' ? money(val) : '$' + Number(val || 0).toFixed(2));
+  const safeEsc = txt => (typeof esc === 'function' ? esc(txt) : String(txt || ''));
 
-  // Hidden copies of the old containers keep the original render() code from hitting missing elements.
+  const ov = $('overview');
+  if (!ov) return;
+
+  // Hidden copies of old containers preserve legacy render calls without DOM breaking
   ov.innerHTML = '<div id="ov2"></div><div class="hidden"><div id="interestBox"></div><div id="overviewList"></div></div>';
 
+  // Inject required CSS animations and layout styling
   const st = document.createElement('style');
   st.textContent =
-    '@keyframes pop{from{opacity:0;transform:scale(.55) rotate(-25deg)}}@keyframes fade{from{opacity:0}}@keyframes up{from{opacity:0;transform:translateY(10px)}}' +
-    '.tog{display:flex;gap:4px;background:#e7e9f0;padding:4px;border-radius:13px;margin-bottom:6px}.tog button{flex:1;background:none;color:var(--muted);padding:9px}.tog button.on{background:#fff;color:var(--ink);box-shadow:0 2px 8px #19234f14}' +
-    '.rwrap{position:relative;max-width:340px;margin:6px auto 10px}.rg{display:block;width:100%;overflow:visible}' +
+    '@keyframes pop{from{opacity:0;transform:scale(.55) rotate(-25deg)}}' +
+    '@keyframes fade{from{opacity:0}}' +
+    '@keyframes up{from{opacity:0;transform:translateY(10px)}}' +
+    '.tog{display:flex;gap:4px;background:#e7e9f0;padding:4px;border-radius:13px;margin-bottom:6px}' +
+    '.tog button{flex:1;background:none;color:var(--muted,#666);padding:9px;border:none;cursor:pointer}' +
+    '.tog button.on{background:#fff;color:var(--ink,#111);box-shadow:0 2px 8px #19234f14}' +
+    '.rwrap{position:relative;max-width:340px;margin:6px auto 10px}' +
+    '.rg{display:block;width:100%;overflow:visible}' +
     '.seg{cursor:pointer;transform-box:view-box;transform-origin:50% 50%;transition:transform .25s,filter .25s,opacity .25s;animation:pop .85s cubic-bezier(.2,.9,.3,1.15) backwards}' +
-    '.seg.on{transform:translate(var(--dx),var(--dy));filter:drop-shadow(0 6px 8px #0003)}.rg.dim .seg:not(.on){opacity:.4}' +
+    '.seg.on{transform:translate(var(--dx),var(--dy));filter:drop-shadow(0 6px 8px #0003)}' +
+    '.rg.dim .seg:not(.on){opacity:.4}' +
     '.pl{fill:#fff;font:800 14px -apple-system,sans-serif;text-anchor:middle;dominant-baseline:middle;pointer-events:none;animation:fade .6s .8s backwards}' +
     '.ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;padding:0 21%}' +
-    '.ctr small{font-size:12px;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ctr b{font-size:25px;letter-spacing:-.04em;line-height:1.2}.ctr em{font-style:normal;font-size:12px;color:var(--muted)}' +
-    '.lgd .row{padding:10px 8px;border-radius:12px;cursor:pointer;transition:background .2s;animation:up .5s backwards}.lgd .row.on{background:#f1f3f8}' +
-    '.dot{width:12px;height:12px;border-radius:4px;flex:none;margin-right:10px}.lgd .nm{display:flex;align-items:center;min-width:0}.lgd .nm div{min-width:0}.lgd .nm strong{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
-    '.lgd .nm span{font-size:12px}.lgd .am{text-align:right;font-size:14px;white-space:nowrap}.lgd .am small{display:block;color:var(--muted);font-size:12px}' +
-    '.det{margin-top:8px;padding:12px 14px;border-radius:14px;background:#f6f7fa;animation:up .3s}.det .row{padding:4px 0;font-size:13px}' +
-    '.wi{margin-top:12px;padding:14px;border-radius:14px;background:#f6f7fa}.wi input[type=range]{width:100%;accent-color:#00ad68;margin:10px 0 4px}.wi .res{font-size:14px}' +
+    '.ctr small{font-size:12px;color:var(--muted,#666);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    '.ctr b{font-size:25px;letter-spacing:-.04em;line-height:1.2}' +
+    '.ctr em{font-style:normal;font-size:12px;color:var(--muted,#666)}' +
+    '.lgd .row{padding:10px 8px;border-radius:12px;cursor:pointer;transition:background .2s;animation:up .5s backwards;display:flex;justify-content:space-between;align-items:center}' +
+    '.lgd .row.on{background:#f1f3f8}' +
+    '.dot{width:12px;height:12px;border-radius:4px;flex:none;margin-right:10px;display:inline-block}' +
+    '.lgd .nm{display:flex;align-items:center;min-width:0}' +
+    '.lgd .nm div{min-width:0}' +
+    '.lgd .nm strong{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    '.lgd .nm span{font-size:12px}' +
+    '.lgd .am{text-align:right;font-size:14px;white-space:nowrap}' +
+    '.lgd .am small{display:block;color:var(--muted,#666);font-size:12px}' +
+    '.det{margin-top:8px;padding:12px 14px;border-radius:14px;background:#f6f7fa;animation:up .3s}' +
+    '.det .row{padding:4px 0;font-size:13px;display:flex;justify-content:space-between}' +
+    '.wi{margin-top:12px;padding:14px;border-radius:14px;background:#f6f7fa}' +
+    '.wi input[type=range]{width:100%;accent-color:#00ad68;margin:10px 0 4px}' +
+    '.wi .res{font-size:14px}' +
     '@media(prefers-reduced-motion:reduce){#ov2 *{animation:none!important;transition:none!important}}';
   document.head.appendChild(st);
 
@@ -39,28 +60,36 @@
   }
 
   function build() {
-    const inc = (Number(typeof budget !== 'undefined' ? budget.pay : 0) || 0) * 26 / 12;
+    const bData = typeof budget !== 'undefined' ? budget : { pay: 0, bills: [] };
+    const rData = typeof recurring !== 'undefined' ? recurring : [];
+    const dData = typeof debts !== 'undefined' ? debts : [];
+
+    const inc = (Number(bData.pay) || 0) * 26 / 12;
     const map = new Map();
-    if (typeof budget !== 'undefined' && budget.bills) {
-      budget.bills.forEach(b => map.set(String(b.name).trim().toLowerCase(), { name: b.name, amt: Number(b.amt) || 0 }));
+
+    if (Array.isArray(bData.bills)) {
+      bData.bills.forEach(b => map.set(String(b.name).trim().toLowerCase(), { name: b.name, amt: Number(b.amt) || 0 }));
     }
-    if (typeof recurring !== 'undefined') {
-      recurring.forEach(b => { const k = String(b.name).trim().toLowerCase(); if (!map.has(k)) map.set(k, { name: b.name, amt: Number(b.amt) || 0 }); });
+    if (Array.isArray(rData)) {
+      rData.forEach(b => { const k = String(b.name).trim().toLowerCase(); if (!map.has(k)) map.set(k, { name: b.name, amt: Number(b.amt) || 0 }); });
     }
+
     const bills = [...map.values()].filter(b => b.amt > 0).sort((a, b) => b.amt - a.amt);
     const billT = bills.reduce((s, b) => s + b.amt, 0);
-    const debtP = typeof total === 'function' ? total('payment') : 0;
+    const debtP = typeof total === 'function' ? total('payment') : dData.reduce((s, x) => s + (Number(x.payment) || 0), 0);
     const left = inc - billT - debtP;
+
     const warm = [PAIRS[1], PAIRS[2], PAIRS[3], PAIRS[1], PAIRS[2]];
     const m = bills.slice(0, 5).map((b, i) => ({ n: b.name, v: b.amt, p: warm[i], kind: 'bill' }));
     if (bills.length > 5) m.push({ n: 'Other bills (' + (bills.length - 5) + ')', v: bills.slice(5).reduce((s, b) => s + b.amt, 0), p: PAIRS[7], kind: 'bill' });
     if (debtP > 0) m.push({ n: 'Debt payments', v: debtP, p: ['#4c6a96', '#19234f'], kind: 'debt' });
     if (left > 0) m.push({ n: 'Left over', v: left, p: PAIRS[0], kind: 'left' });
+
     const order = [4, 5, 6, 2, 1, 3, 0, 7];
-    const dList = typeof debts !== 'undefined' ? debts : [];
-    const d = [...dList].sort((a, b) => b.balance - a.balance).map((x, i) => {
-      const iv = typeof interest === 'function' ? interest(x) : 0, ok = x.payment > iv;
-      return { id: x.id, n: x.name, v: x.balance, p: PAIRS[order[i % 8]], apr: x.apr, ok, sub: ok ? x.apr + '% APR' : 'Pay at least ' + (typeof money === 'function' ? money(Math.ceil(iv * 100) / 100 + 0.01) : iv), short: ok ? 0 : iv - x.payment };
+    const d = [...dData].sort((a, b) => b.balance - a.balance).map((x, i) => {
+      const iv = typeof interest === 'function' ? interest(x) : (x.balance * (x.apr / 100) / 12);
+      const ok = x.payment > iv;
+      return { id: x.id, n: x.name, v: x.balance, p: PAIRS[order[i % 8]], apr: x.apr, ok, sub: ok ? x.apr + '% APR' : 'Pay at least ' + formatMoney(Math.ceil(iv * 100) / 100 + 0.01), short: ok ? 0 : iv - x.payment };
     });
     return { inc, billT, debtP, left, m, d };
   }
@@ -73,7 +102,7 @@
     const g = document.querySelector('#ov2 .rg'); if (g) g.classList.toggle('dim', sel >= 0);
     if (sel < 0) { setCenter(ctrDefault); const dt0 = $('detail'); if (dt0) dt0.innerHTML = ''; return; }
     const t = S.reduce((a, s) => a + s.v, 0), s = S[sel];
-    setCenter('<small>' + esc(s.n) + '</small><b>' + money(s.v) + '</b><em>' + Math.round(s.v / t * 100) + '% of ' + (view === 'month' ? 'monthly total' : 'total debt') + '</em>');
+    setCenter('<small>' + safeEsc(s.n) + '</small><b>' + formatMoney(s.v) + '</b><em>' + Math.round(s.v / t * 100) + '% of ' + (view === 'month' ? 'monthly total' : 'total debt') + '</em>');
     const dt = $('detail'); if (dt) dt.innerHTML = detailHtml(s);
   }
 
@@ -83,28 +112,30 @@
     const t0 = performance.now();
     (function tick(now) {
       const k = Math.min(1, (now - t0) / 1000), e = 1 - Math.pow(1 - k, 3);
-      node.textContent = money(to * e);
+      node.textContent = formatMoney(to * e);
       if (k < 1) requestAnimationFrame(tick); else node.textContent = txt;
     })(t0);
   }
 
   function detailHtml(s) {
     const rows = a => a.map(x => '<div class="row"><span class="muted">' + x[0] + '</span><strong>' + x[1] + '</strong></div>').join('');
+    const dData = typeof debts !== 'undefined' ? debts : [];
     if (view === 'debts') {
-      const d = (typeof debts !== 'undefined' ? debts : []).find(x => x.id === s.id); if (!d) return '';
-      const i = typeof interest === 'function' ? interest(d) : 0;
-      return '<div class="det">' + rows([['Balance', money(d.balance)], ['APR', d.apr + '%'], ['Your payment', money(d.payment) + '/mo'], ['Interest', money(i) + '/mo'], ['Goes to principal', d.payment > i ? money(d.payment - i) : 'nothing'], ['Paid off in', typeof fm === 'function' && typeof months === 'function' ? fm(months(d.balance, d.apr, d.payment)) : '']]) +
+      const d = dData.find(x => x.id === s.id); if (!d) return '';
+      const i = typeof interest === 'function' ? interest(d) : (d.balance * (d.apr / 100) / 12);
+      const payoffTime = (typeof fm === 'function' && typeof months === 'function') ? fm(months(d.balance, d.apr, d.payment)) : 'N/A';
+      return '<div class="det">' + rows([['Balance', formatMoney(d.balance)], ['APR', d.apr + '%'], ['Your payment', formatMoney(d.payment) + '/mo'], ['Interest', formatMoney(i) + '/mo'], ['Goes to principal', d.payment > i ? formatMoney(d.payment - i) : 'nothing'], ['Paid off in', payoffTime]]) +
         '<div class="actions"><button class="smallbtn" onclick="recordPayment(\'' + d.id + '\')">Record payment</button><button class="smallbtn secondary" onclick="switchTab(\'debts\');editDebt(\'' + d.id + '\')">Edit</button></div></div>';
     }
     const t = S.reduce((a, x) => a + x.v, 0);
-    return '<div class="det">' + rows([['Per month', money(s.v)], ['Per paycheck', money(s.v * 12 / 26)], ['Share of total', Math.round(s.v / t * 100) + '%']]) +
+    return '<div class="det">' + rows([['Per month', formatMoney(s.v)], ['Per paycheck', formatMoney(s.v * 12 / 26)], ['Share of total', Math.round(s.v / t * 100) + '%']]) +
       (s.kind === 'bill' ? '<div class="actions"><button class="smallbtn secondary" onclick="switchTab(\'budget\')">Edit bills</button></div>' : s.kind === 'debt' ? '<div class="actions"><button class="smallbtn secondary" onclick="switchTab(\'debts\')">Edit debts</button></div>' : '') + '</div>';
   }
 
   let extra = 0;
   function sim(ex) {
-    const dList = typeof debts !== 'undefined' ? debts : [];
-    const B = dList.map(d => ({ b: d.balance, r: d.apr / 1200, p: d.payment, apr: d.apr }));
+    const dData = typeof debts !== 'undefined' ? debts : [];
+    const B = dData.map(d => ({ b: d.balance, r: d.apr / 1200, p: d.payment, apr: d.apr }));
     const pool = B.reduce((s, x) => s + x.p, 0) + ex;
     let n = 0, intr = 0;
     while (B.some(x => x.b > 0.005) && n < 720) {
@@ -119,17 +150,18 @@
   }
   const ym = n => { const d = new Date(); d.setMonth(d.getMonth() + n); return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); };
   const dur = n => (n >= 12 ? Math.floor(n / 12) + 'y ' : '') + (n % 12) + 'm';
+
   function drawWhatIf() {
     const out = $('wires'); if (!out) return;
     const a = sim(extra), b = sim(0);
     let h;
     if (!a.done) h = '<span class="warning">Not paid off within 60 years at this rate. Try a larger extra amount.</span>';
     else {
-      h = 'Debt-free in <b>' + dur(a.n) + '</b> (' + ym(a.n) + ') · interest paid <b>' + money(a.intr) + '</b>';
-      if (extra > 0) h += b.done ? '<br><span class="good">Saves ' + money(b.intr - a.intr) + ' in interest and ' + dur(b.n - a.n) + ' sooner than with no extra.</span>' : '<br><span class="good">Without the extra, your current payments never clear the debt.</span>';
+      h = 'Debt-free in <b>' + dur(a.n) + '</b> (' + ym(a.n) + ') · interest paid <b>' + formatMoney(a.intr) + '</b>';
+      if (extra > 0) h += b.done ? '<br><span class="good">Saves ' + formatMoney(b.intr - a.intr) + ' in interest and ' + dur(b.n - a.n) + ' sooner than with no extra.</span>' : '<br><span class="good">Without the extra, your current payments never clear the debt.</span>';
     }
     out.innerHTML = h;
-    const lab = $('exl'); if (lab) lab.textContent = money(extra);
+    const lab = $('exl'); if (lab) lab.textContent = formatMoney(extra);
   }
 
   function draw() {
@@ -146,12 +178,13 @@
     }
 
     if (view === 'month') {
-      ctrDefault = '<small>Monthly income</small><b>' + money(M.inc) + '</b><em>' + (M.left >= 0 ? money(M.left) + ' left over' : '<span class="warning">' + money(-M.left) + ' over budget</span>') + '</em>';
+      ctrDefault = '<small>Monthly income</small><b>' + formatMoney(M.inc) + '</b><em>' + (M.left >= 0 ? formatMoney(M.left) + ' left over' : '<span class="warning">' + formatMoney(-M.left) + ' over budget</span>') + '</em>';
     } else {
-      const bal = typeof total === 'function' ? total('balance') : 0;
-      const dList = typeof debts !== 'undefined' ? debts : [];
-      const o = dList.reduce((s, x) => s + (typeof orig === 'function' ? orig(x) : 0), 0), pct = o ? Math.round(Math.max(0, o - bal) / o * 100) : 0;
-      ctrDefault = '<small>Total remaining</small><b>' + money(bal) + '</b><em>' + pct + '% paid off</em>';
+      const dData = typeof debts !== 'undefined' ? debts : [];
+      const bal = typeof total === 'function' ? total('balance') : dData.reduce((s, x) => s + (Number(x.balance) || 0), 0);
+      const o = dData.reduce((s, x) => s + (typeof orig === 'function' ? orig(x) : (Number(x.balance) || 0)), 0);
+      const pct = o ? Math.round(Math.max(0, o - bal) / o * 100) : 0;
+      ctrDefault = '<small>Total remaining</small><b>' + formatMoney(bal) + '</b><em>' + pct + '% paid off</em>';
     }
 
     let a = 0, defs = '', paths = '', labels = '';
@@ -168,52 +201,58 @@
 
     if (view === 'month') {
       h += M.left >= 0
-        ? '<div class="msg">After bills and debt payments you keep ' + money(M.left) + ' a month (' + (M.inc ? Math.round(M.left / M.inc * 100) : 0) + '% of income).</div>'
-        : '<div class="msg bad">Bills and debt payments are ' + money(-M.left) + ' more than your monthly income.</div>';
+        ? '<div class="msg">After bills and debt payments you keep ' + formatMoney(M.left) + ' a month (' + (M.inc ? Math.round(M.left / M.inc * 100) : 0) + '% of income).</div>'
+        : '<div class="msg bad">Bills and debt payments are ' + formatMoney(-M.left) + ' more than your monthly income.</div>';
     } else {
       const short = M.d.reduce((s, x) => s + x.short, 0), n = M.d.filter(x => !x.ok).length;
       h += short > 0
-        ? '<div class="msg bad">' + n + (n === 1 ? ' debt isn’t' : ' debts aren’t') + ' covering interest. You’re ' + money(short) + '/mo short, so the balance is growing.</div>'
+        ? '<div class="msg bad">' + n + (n === 1 ? ' debt isn’t' : ' debts aren’t') + ' covering interest. You’re ' + formatMoney(short) + '/mo short, so the balance is growing.</div>'
         : '<div class="msg">Every payment covers its interest, so every balance is going down.</div>';
     }
 
     h += '<div id="detail"></div>';
-    if (view === 'debts') h += '<div class="wi"><div class="row"><strong>What if I pay extra?</strong><strong id="exl">' + money(extra) + '</strong></div><input type="range" id="ex" min="0" max="1000" step="25" value="' + extra + '"><div class="muted">Extra per month, sent to your highest-APR debt. Freed-up payments roll to the next debt.</div><div class="res" id="wires" style="margin-top:8px"></div></div>';
+    if (view === 'debts') h += '<div class="wi"><div class="row"><strong>What if I pay extra?</strong><strong id="exl">' + formatMoney(extra) + '</strong></div><input type="range" id="ex" min="0" max="1000" step="25" value="' + extra + '"><div class="muted">Extra per month, sent to your highest-APR debt. Freed-up payments roll to the next debt.</div><div class="res" id="wires" style="margin-top:8px"></div></div>';
 
     h += '<div class="lgd" style="margin-top:8px">' + S.map((s, i) =>
-      '<div class="row" data-i="' + i + '" style="animation-delay:' + (0.3 + i * 0.06).toFixed(2) + 's"><div class="nm"><i class="dot" style="background:linear-gradient(135deg,' + s.p[0] + ',' + s.p[1] + ')"></i><div><strong>' + (typeof esc === 'function' ? esc(s.n) : s.n) + '</strong>' +
-      (view === 'debts' ? '<span class="' + (s.ok ? 'muted' : 'warning') + '">' + (typeof esc === 'function' ? esc(s.sub) : s.sub) + '</span>' : '') + '</div></div><div class="am"><b>' + money(s.v) + '</b><small>' + Math.round(s.v / t * 100) + '%</small></div></div>').join('') + '</div></div>';
+      '<div class="row" data-i="' + i + '" style="animation-delay:' + (0.3 + i * 0.06).toFixed(2) + 's"><div class="nm"><i class="dot" style="background:linear-gradient(135deg,' + s.p[0] + ',' + s.p[1] + ')"></i><div><strong>' + safeEsc(s.n) + '</strong>' +
+      (view === 'debts' ? '<span class="' + (s.ok ? 'muted' : 'warning') + '">' + safeEsc(s.sub) + '</span>' : '') + '</div></div><div class="am"><b>' + formatMoney(s.v) + '</b><small>' + Math.round(s.v / t * 100) + '%</small></div></div>').join('') + '</div></div>';
 
     el.innerHTML = h;
     drawWhatIf();
     const cb = el.querySelector('.ctr b'); if (cb) countUp(cb);
   }
 
-  $('ov2').addEventListener('click', e => {
-    const v = e.target.closest('[data-view]');
-    if (v) { view = v.dataset.view; return draw(); }
-    const i = e.target.closest('[data-i]');
-    if (i) setSel(+i.dataset.i);
-  });
+  const ov2Container = $('ov2');
+  if (ov2Container) {
+    ov2Container.addEventListener('click', e => {
+      const v = e.target.closest('[data-view]');
+      if (v) { view = v.dataset.view; return draw(); }
+      const i = e.target.closest('[data-i]');
+      if (i) setSel(+i.dataset.i);
+    });
 
-  $('ov2').addEventListener('input', e => { if (e.target.id === 'ex') { extra = +e.target.value; drawWhatIf(); } });
-  let sx = null;
-  $('ov2').addEventListener('touchstart', e => { sx = e.target.closest('.rwrap') ? e.touches[0].clientX : null; }, { passive: true });
-  $('ov2').addEventListener('touchend', e => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) > 60) { view = view === 'month' ? 'debts' : 'month'; draw(); } }, { passive: true });
-
-  // Safely hook function overrides if they exist globally
-  if (typeof renderBudget === 'function') {
-    const rb = renderBudget; 
-    renderBudget = function () { rb(); draw(); };
+    ov2Container.addEventListener('input', e => { if (e.target.id === 'ex') { extra = +e.target.value; drawWhatIf(); } });
+    let sx = null;
+    ov2Container.addEventListener('touchstart', e => { sx = e.target.closest('.rwrap') ? e.touches[0].clientX : null; }, { passive: true });
+    ov2Container.addEventListener('touchend', e => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) > 60) { view = view === 'month' ? 'debts' : 'month'; draw(); } }, { passive: true });
   }
-  if (typeof renderCalendar === 'function') {
-    const rc = renderCalendar; 
-    renderCalendar = function () { rc(); draw(); };
+
+  // Hook into data save/render triggers to update automatically
+  if (typeof window.render === 'function') {
+    const origRender = window.render;
+    window.render = function () { origRender(); draw(); };
+  }
+  if (typeof window.renderBudget === 'function') {
+    const origBudget = window.renderBudget;
+    window.renderBudget = function () { origBudget(); draw(); };
+  }
+  if (typeof window.renderCalendar === 'function') {
+    const origCal = window.renderCalendar;
+    window.renderCalendar = function () { origCal(); draw(); };
   }
 
   const tabBtn = document.querySelector('.nav button[data-tab="overview"]');
   if (tabBtn) tabBtn.addEventListener('click', draw);
 
-  console.log('ClearPath overview.js loaded');
   draw();
 })();
