@@ -107,13 +107,21 @@
       <div class="card">
         <h2>Bi-weekly paycheck</h2>
         <div class="field"><label for="bPay">Take-home pay per paycheck ($)</label><input id="bPay" type="number" inputmode="decimal" min="0" step=".01"></div>
-        <div id="bSum"></div>
+        <div id="bSum" style="margin-top:12px"></div>
         <div id="budgetChart" style="margin-top:18px"></div>
+      </div>
+      <div class="card">
+        <h2>Monthly bills</h2>
+        <div id="bBills"></div>
+        <div class="formgrid" style="margin-top:10px">
+          <div class="field"><label for="bName">Bill name</label><input id="bName" placeholder="e.g. Rent"></div>
+          <div class="field"><label for="bAmt">Monthly amount ($)</label><input id="bAmt" type="number" inputmode="decimal" min="0" step=".01"></div>
+        </div>
+        <div class="actions"><button id="addBill">Add bill</button></div>
       </div>
     </section>
 
     <section id="calendar" class="hidden">
-      <!-- 1. Top Visual Calendar Grid -->
       <div class="card">
         <div class="row" style="margin-bottom:12px">
           <div>
@@ -130,7 +138,6 @@
         <div id="calendarGrid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px;"></div>
       </div>
 
-      <!-- 2. Add Recurring Bill Form -->
       <div class="card">
         <h2>Add recurring bill</h2>
         <div class="formgrid">
@@ -152,7 +159,6 @@
         </div>
       </div>
 
-      <!-- 3. Upcoming Due Dates List -->
       <div class="card">
         <h2>Upcoming Due Dates</h2>
         <div id="calendarList"></div>
@@ -190,14 +196,23 @@
 
     function loadAllData() {
       try { debts = JSON.parse(localStorage.getItem(KEY) || '[]'); if (!Array.isArray(debts)) debts = []; } catch { debts = []; }
-      try { const b = JSON.parse(localStorage.getItem(BKEY) || 'null'); if (b && Array.isArray(b.bills)) budget = { pay: Number(b.pay) || 0, bills: b.bills }; } catch {}
+      try { 
+        const b = JSON.parse(localStorage.getItem(BKEY) || 'null'); 
+        if (b && typeof b === 'object') budget = { pay: Number(b.pay) || 0, bills: Array.isArray(b.bills) ? b.bills : [] }; 
+      } catch { budget = { pay: 0, bills: [] }; }
       try { recurring = JSON.parse(localStorage.getItem(CKEY) || '[]'); if (!Array.isArray(recurring)) recurring = []; } catch { recurring = []; }
     }
 
     function save() { localStorage.setItem(KEY, JSON.stringify(debts)); render(); }
+    function saveBudget() { localStorage.setItem(BKEY, JSON.stringify(budget)); renderBudget(); }
     function saveRecurring() { localStorage.setItem(CKEY, JSON.stringify(recurring)); renderCalendar(); }
 
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    function bar(parts, cls = '') {
+      const t = parts.reduce((a, p) => a + Math.max(0, p.v), 0) || 1;
+      return '<div class="bar ' + cls + '">' + parts.map(p => '<i style="width:' + Math.max(0, p.v) / t * 100 + '%;background:' + p.c + '"></i>').join('') + '</div>';
+    }
 
     function render() {
       const bal = debts.reduce((s, d) => s + (Number(d.balance) || 0), 0);
@@ -224,6 +239,54 @@
       }
     }
 
+    function renderBudget() {
+      const payInput = $('bPay');
+      if (payInput && document.activeElement !== payInput) payInput.value = budget.pay || '';
+
+      const monthlyPay = (budget.pay || 0) * 26 / 12;
+      const billsTotal = (budget.bills || []).reduce((s, b) => s + (Number(b.amount) || 0), 0);
+      const debtPayments = debts.reduce((s, d) => s + (Number(d.payment) || 0), 0);
+      const leftover = monthlyPay - billsTotal - debtPayments;
+
+      const bSum = $('bSum');
+      if (bSum) {
+        bSum.innerHTML = `
+          <div class="row" style="margin-bottom:6px"><span>Estimated monthly income (26 paychecks/yr)</span><b>${money(monthlyPay)}</b></div>
+          <div class="row" style="margin-bottom:6px"><span>Fixed bills total</span><b>${money(billsTotal)}</b></div>
+          <div class="row" style="margin-bottom:6px"><span>Debt payments total</span><b>${money(debtPayments)}</b></div>
+          <hr style="border:0; border-top:1px solid var(--line); margin:10px 0">
+          <div class="row"><span><strong>Leftover monthly cash</strong></span><b style="color:${leftover >= 0 ? 'var(--green)' : 'var(--red)'}">${money(leftover)}</b></div>
+        `;
+      }
+
+      const bChart = $('budgetChart');
+      if (bChart) {
+        bChart.innerHTML = monthlyPay > 0 ? bar([
+          { v: billsTotal, c: '#b83f4b' },
+          { v: debtPayments, c: '#e9b949' },
+          { v: Math.max(0, leftover), c: '#00ad68' }
+        ]) + `<div class="leg"><span>Bills <b>${money(billsTotal)}</b></span><span>Debt <b>${money(debtPayments)}</b></span><span>Leftover <b>${money(Math.max(0, leftover))}</b></span></div>` : '';
+      }
+
+      const bBills = $('bBills');
+      if (bBills) {
+        bBills.innerHTML = (budget.bills || []).length ? budget.bills.map((b, i) => `
+          <div class="row" style="padding:8px 0; border-bottom:1px solid var(--line)">
+            <div><strong>${esc(b.name)}</strong></div>
+            <div class="row" style="gap:8px">
+              <b>${money(b.amount)}</b>
+              <button class="smallbtn danger" onclick="removeBill(${i})">✕</button>
+            </div>
+          </div>
+        `).join('') : '<div class="muted">No monthly bills added yet.</div>';
+      }
+    }
+
+    function removeBill(i) {
+      budget.bills.splice(i, 1);
+      saveBudget();
+    }
+
     function renderCalendar() {
       const calList = $('calendarList');
       const calGrid = $('calendarGrid');
@@ -240,7 +303,6 @@
       const monthTitleEl = $('calendarMonthTitle');
       if (monthTitleEl) monthTitleEl.textContent = `${monthNames[currentMonthIndex]} ${currentYear}`;
 
-      // Render 31-Day Grid
       const daysInMonth = new Date(currentYear, currentMonthIndex + 1, 0).getDate();
       const firstDayOfWeek = new Date(currentYear, currentMonthIndex, 1).getDay();
 
@@ -274,7 +336,6 @@
 
       calGrid.innerHTML = gridHTML;
 
-      // Render List
       if (!recurring.length) {
         calList.innerHTML = '<div class="muted">No recurring bills added yet. Add one above!</div>';
         return;
@@ -335,6 +396,7 @@
       });
       loadAllData();
       render();
+      renderBudget();
       renderCalendar();
     }
 
@@ -370,7 +432,7 @@
 
       notifyBtn.onclick = async () => {
         if (!('Notification' in window)) {
-          alert('Web Notifications are not supported in this browser.');
+          alert('Web Notifications are not supported in this browser window.');
           return;
         }
 
@@ -390,6 +452,32 @@
         b.onclick = () => switchTab(b.dataset.tab);
       });
 
+      // Budget Form Handlers
+      const bPayInput = $('bPay');
+      if (bPayInput) {
+        bPayInput.oninput = () => {
+          budget.pay = parseFloat(bPayInput.value) || 0;
+          saveBudget();
+        };
+      }
+
+      const addBillBtn = $('addBill');
+      if (addBillBtn) {
+        addBillBtn.onclick = () => {
+          const name = $('bName').value.trim();
+          const amount = parseFloat($('bAmt').value) || 0;
+          if (!name || amount <= 0) {
+            alert('Please enter a bill name and valid amount.');
+            return;
+          }
+          budget.bills.push({ name, amount });
+          saveBudget();
+          $('bName').value = '';
+          $('bAmt').value = '';
+        };
+      }
+
+      // Debt Form Handlers
       const addBtn = $('addDebtBtn');
       if (addBtn) {
         addBtn.onclick = () => {
@@ -460,6 +548,7 @@
       setupNotifications();
       loadAllData();
       render();
+      renderBudget();
       renderCalendar();
     });
   </script>
