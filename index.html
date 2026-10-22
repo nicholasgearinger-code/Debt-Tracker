@@ -175,26 +175,37 @@
 
     <footer>Estimates only, not lender statements. Monthly interest is approximated as balance × APR ÷ 12.</footer>
   </main>
-
-  <script>
+    <script>
     const $ = id => document.getElementById(id);
     const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n) || 0);
 
     const KEY = 'clearpath-debts-v1';
     const BKEY = 'clearpath-budget-v1';
+    const CKEY = 'clearpath-recurring-bills-v1';
 
-    let debts = [], budget = { pay: 0, bills: [] }, editingId = null;
+    let debts = [], budget = { pay: 0, bills: [] }, recurring = [], editingId = null;
 
+    // Load Data
     function loadAllData() {
       try { debts = JSON.parse(localStorage.getItem(KEY) || '[]'); if (!Array.isArray(debts)) debts = []; } catch { debts = []; }
       try { const b = JSON.parse(localStorage.getItem(BKEY) || 'null'); if (b && Array.isArray(b.bills)) budget = { pay: Number(b.pay) || 0, bills: b.bills }; } catch {}
+      try { recurring = JSON.parse(localStorage.getItem(CKEY) || '[]'); if (!Array.isArray(recurring)) recurring = []; } catch { recurring = []; }
     }
 
+    // Save Functions
     function save() {
       localStorage.setItem(KEY, JSON.stringify(debts));
       render();
     }
 
+    function saveRecurring() {
+      localStorage.setItem(CKEY, JSON.stringify(recurring));
+      renderCalendar();
+    }
+
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    // Render Debts View
     function render() {
       const bal = debts.reduce((s, d) => s + (Number(d.balance) || 0), 0);
       const totalDebtEl = $('totalDebt');
@@ -220,7 +231,65 @@
       }
     }
 
-    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    // Render Bills & Calendar View
+    function renderCalendar() {
+      const calList = $('calendarList');
+      if (!calList) return;
+
+      const today = new Date();
+      const currentMonth = today.toISOString().slice(0, 7);
+
+      if (!recurring.length) {
+        calList.innerHTML = '<div class="muted">No recurring bills added yet. Add one above!</div>';
+        return;
+      }
+
+      const sorted = [...recurring].sort((a, b) => a.day - b.day);
+
+      calList.innerHTML = sorted.map(b => {
+        const isPaid = b.lastPaidMonth === currentMonth;
+        return `
+          <div class="card" style="margin-bottom:10px; padding:12px 16px;">
+            <div class="row">
+              <div>
+                <strong>${esc(b.name)}</strong>
+                <div class="muted">Due on the ${b.day}${getOrdinalSuffix(b.day)} · ${money(b.amount)}</div>
+              </div>
+              <div class="actions" style="margin:0">
+                <button class="smallbtn ${isPaid ? 'secondary' : ''}" onclick="toggleBillPaid('${b.id}')">
+                  ${isPaid ? '✓ Paid' : 'Mark Paid'}
+                </button>
+                <button class="smallbtn danger" onclick="removeRecurringBill('${b.id}')">Delete</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function getOrdinalSuffix(i) {
+      const j = i % 10, k = i % 100;
+      if (j === 1 && k !== 11) return "st";
+      if (j === 2 && k !== 12) return "nd";
+      if (j === 3 && k !== 13) return "rd";
+      return "th";
+    }
+
+    function toggleBillPaid(id) {
+      const currentMonth = new Date().toISOString().slice(0, 7);
+      recurring = recurring.map(b => {
+        if (b.id === id) {
+          b.lastPaidMonth = (b.lastPaidMonth === currentMonth) ? '' : currentMonth;
+        }
+        return b;
+      });
+      saveRecurring();
+    }
+
+    function removeRecurringBill(id) {
+      recurring = recurring.filter(b => b.id !== id);
+      saveRecurring();
+    }
 
     function switchTab(tab) {
       document.querySelectorAll('main section').forEach(s => s.classList.toggle('hidden', s.id !== tab));
@@ -230,6 +299,7 @@
       });
       loadAllData();
       render();
+      renderCalendar();
     }
 
     function editDebt(id) {
@@ -253,11 +323,30 @@
       save();
     }
 
+    function setupNotifications() {
+      const notifyBtn = $('notifyBtn');
+      if (!notifyBtn) return;
+
+      notifyBtn.onclick = async () => {
+        if (!('Notification' in window)) {
+          alert('This browser does not support web notifications.');
+          return;
+        }
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          alert('Notifications enabled! ClearPath will alert you when bills are due.');
+        } else {
+          alert('Notification permission was denied.');
+        }
+      };
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.nav button').forEach(b => {
         b.onclick = () => switchTab(b.dataset.tab);
       });
 
+      // Debt Form Handlers
       const addBtn = $('addDebtBtn');
       if (addBtn) {
         addBtn.onclick = () => {
@@ -300,8 +389,38 @@
         };
       }
 
+      // Calendar Recurring Bill Handler
+      const addCalBtn = $('addCalendarBill');
+      if (addCalBtn) {
+        addCalBtn.onclick = () => {
+          const name = $('cName').value.trim();
+          const amount = parseFloat($('cAmt').value) || 0;
+          const day = parseInt($('cDay').value, 10) || 1;
+
+          if (!name) {
+            alert('Please enter a bill name.');
+            return;
+          }
+
+          recurring.push({
+            id: String(Date.now()),
+            name,
+            amount,
+            day: Math.min(31, Math.max(1, day)),
+            lastPaidMonth: ''
+          });
+
+          saveRecurring();
+          $('cName').value = '';
+          $('cAmt').value = '';
+          $('cDay').value = '';
+        };
+      }
+
+      setupNotifications();
       loadAllData();
       render();
+      renderCalendar();
     });
   </script>
   <script src="overview.js"></script>
