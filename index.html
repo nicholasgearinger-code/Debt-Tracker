@@ -41,7 +41,7 @@
     .muted {color:var(--muted); font-size:13px}
     .formgrid {display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px}
     .field label {display:block; font-size:12px; font-weight:700; color:var(--muted); margin-bottom:4px}
-    .field input {width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:9px}
+    .field input {width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:99px}
     .actions {display:flex; gap:8px; margin-top:14px; flex-wrap:wrap}
   </style>
 </head>
@@ -159,18 +159,44 @@
     const KEY = 'clearpath-debts-v1';
     const BKEY = 'clearpath-budget-v1';
 
-    let debts = [], budget = { pay: 0, bills: [] };
+    let debts = [], budget = { pay: 0, bills: [] }, editingId = null;
 
     function loadAllData() {
       try { debts = JSON.parse(localStorage.getItem(KEY) || '[]'); if (!Array.isArray(debts)) debts = []; } catch { debts = []; }
       try { const b = JSON.parse(localStorage.getItem(BKEY) || 'null'); if (b && Array.isArray(b.bills)) budget = { pay: Number(b.pay) || 0, bills: b.bills }; } catch {}
     }
 
+    function save() {
+      localStorage.setItem(KEY, JSON.stringify(debts));
+      render();
+    }
+
     function render() {
       const bal = debts.reduce((s, d) => s + (Number(d.balance) || 0), 0);
       const totalDebtEl = $('totalDebt');
       if (totalDebtEl) totalDebtEl.textContent = money(bal);
+
+      const debtList = $('debtList');
+      if (debtList) {
+        debtList.innerHTML = debts.length ? debts.map(d => `
+          <article class="card">
+            <div class="row">
+              <div>
+                <h3 style="margin:0">${esc(d.name)}</h3>
+                <div class="muted">${d.apr}% APR · Usual pay ${money(d.payment)}/mo</div>
+              </div>
+              <div class="balance">${money(d.balance)}</div>
+            </div>
+            <div class="actions" style="margin-top:12px">
+              <button class="smallbtn secondary" onclick="editDebt('${d.id}')">Edit</button>
+              <button class="smallbtn danger" onclick="removeDebt('${d.id}')">Delete</button>
+            </div>
+          </article>
+        `).join('') : '<div class="card empty">No debts added yet. Tap "+ Add debt" above.</div>';
+      }
     }
+
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
     function switchTab(tab) {
       document.querySelectorAll('main section').forEach(s => s.classList.toggle('hidden', s.id !== tab));
@@ -182,10 +208,74 @@
       render();
     }
 
+    function editDebt(id) {
+      const d = debts.find(x => x.id === id);
+      if (!d) return;
+      editingId = id;
+      $('formTitle').textContent = 'Edit debt';
+      $('name').value = d.name || '';
+      $('balance').value = d.balance || '';
+      $('start').value = d.startBalance || '';
+      $('apr').value = d.apr || '';
+      $('payment').value = d.payment || '';
+      $('minimum').value = d.minimum || '';
+      $('due').value = d.due || '';
+      $('debtForm').classList.remove('hidden');
+    }
+
+    function removeDebt(id) {
+      if (!confirm('Are you sure you want to delete this debt?')) return;
+      debts = debts.filter(d => d.id !== id);
+      save();
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.nav button').forEach(b => {
         b.onclick = () => switchTab(b.dataset.tab);
       });
+
+      const addBtn = $('addDebtBtn');
+      if (addBtn) {
+        addBtn.onclick = () => {
+          editingId = null;
+          $('formTitle').textContent = 'Add a debt';
+          $('debtEditor').reset();
+          $('debtForm').classList.toggle('hidden');
+        };
+      }
+
+      const cancelBtn = $('cancelEdit');
+      if (cancelBtn) {
+        cancelBtn.onclick = () => $('debtForm').classList.add('hidden');
+      }
+
+      const form = $('debtEditor');
+      if (form) {
+        form.onsubmit = e => {
+          e.preventDefault();
+          const item = {
+            id: editingId || String(Date.now()),
+            name: $('name').value.trim(),
+            balance: parseFloat($('balance').value) || 0,
+            startBalance: parseFloat($('start').value) || parseFloat($('balance').value) || 0,
+            apr: parseFloat($('apr').value) || 0,
+            payment: parseFloat($('payment').value) || 0,
+            minimum: parseFloat($('minimum').value) || 0,
+            due: $('due').value || ''
+          };
+
+          if (editingId) {
+            debts = debts.map(d => d.id === editingId ? item : d);
+          } else {
+            debts.push(item);
+          }
+
+          save();
+          $('debtForm').classList.add('hidden');
+          form.reset();
+        };
+      }
+
       loadAllData();
       render();
     });
