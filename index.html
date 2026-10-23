@@ -197,6 +197,113 @@
     const CKEY = 'clearpath-recurring-bills-v1';
 
     let debts = [], budget = { pay: 0, bills: [] }, recurring = [], editingId = null;
+    // Replace with your actual Client ID from Step 1
+const GOOGLE_CLIENT_ID = 'YOUR_CLIENT_ID.apps.googleusercontent.com';
+const FILE_NAME = 'clearpath_user_data.json';
+
+let tokenClient;
+let accessToken = null;
+
+// Initialize Google OAuth Token Client
+window.onload = () => {
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: 'https://www.googleapis.com/auth/drive.appdata',
+    callback: async (response) => {
+      if (response.access_token) {
+        accessToken = response.access_token;
+        updateSyncStatus('Syncing with Google Drive...');
+        
+        // Perform initial sync on sign-in
+        await syncDataWithDrive();
+      }
+    },
+  });
+};
+
+// Triggered when user clicks "Sign in with Google to Sync"
+function handleGoogleAuth() {
+  tokenClient.requestAccessToken();
+}
+
+// Update UI button status
+function updateSyncStatus(msg) {
+  const statusElem = document.getElementById('sync-status');
+  if (statusElem) statusElem.innerText = msg;
+}
+
+// Primary 2-Way Sync Engine
+async function syncDataWithDrive() {
+  try {
+    const remoteData = await downloadFromDrive();
+
+    if (remoteData) {
+      // Data exists in Google Drive -> Update local app state
+      localStorage.setItem('clearpath_data', JSON.stringify(remoteData));
+      updateSyncStatus('Synced from Cloud ✓');
+      
+      // OPTIONAL: Call your app's UI render function here
+      // renderDashboard();
+    } else {
+      // No cloud backup found -> Upload current local app data
+      const localData = JSON.parse(localStorage.getItem('clearpath_data') || '{}');
+      await uploadToDrive(localData);
+      updateSyncStatus('Backup Created on Cloud ✓');
+    }
+  } catch (err) {
+    console.error('Sync failed:', err);
+    updateSyncStatus('Sync failed. Please try again.');
+  }
+}
+
+// Download file from hidden appDataFolder
+async function downloadFromDrive() {
+  // Search for clearpath_user_data.json in appDataFolder
+  const query = encodeURIComponent("name = '" + FILE_NAME + "' and 'appDataFolder' in parents");
+  const searchRes = await fetch(`https://www.googleapis.com/drive/v3/files?q=${query}`, {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
+  const searchData = await searchRes.json();
+
+  if (searchData.files && searchData.files.length > 0) {
+    const fileId = searchData.files[0].id;
+    
+    // Fetch file contents
+    const fileRes = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    return await fileRes.json();
+  }
+  
+  return null; // File doesn't exist yet
+}
+
+// Upload file to hidden appDataFolder
+async function uploadToDrive(data) {
+  const metadata = {
+    name: FILE_NAME,
+    mimeType: 'application/json',
+    parents: ['appDataFolder']
+  };
+
+  const form = new FormData();
+  form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+  form.append('file', new Blob([JSON.stringify(data)], { type: 'application/json' }));
+
+  await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}` },
+    body: form
+  });
+}
+
+// Auto-save helper: Call this whenever the user updates debts, budgets, or bills
+async function autoSaveToCloud() {
+  if (!accessToken) return; // Silent return if not logged in
+  const localData = JSON.parse(localStorage.getItem('clearpath_data') || '{}');
+  await uploadToDrive(localData);
+  updateSyncStatus('Saved to Cloud ✓');
+}
 
     function loadAllData() {
       try { debts = JSON.parse(localStorage.getItem(KEY) || '[]'); if (!Array.isArray(debts)) debts = []; } catch { debts = []; }
