@@ -125,6 +125,72 @@
       display: block;
     }
 
+    /* Animated CSS Pie Charts */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .chart-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .chart-card h4 {
+      font-size: 1rem;
+      color: #334155;
+      text-align: center;
+    }
+
+    .pie-chart-wrapper {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      transition: background 0.5s ease-in-out;
+      animation: popIn 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.3) rotate(-90deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .chart-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .legend-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+
+    .legend-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
     /* Data Table Layout */
     .data-table {
       width: 100%;
@@ -240,7 +306,7 @@
       margin-top: 2px;
     }
 
-    /* Form & Due Dates Layout */
+    /* Forms & Action Styling */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -371,10 +437,10 @@
 
       <div class="controls-bar">
         <div class="nav-tabs">
-          <button class="tab-btn" data-tab="overview">Overview</button>
+          <button class="tab-btn active" data-tab="overview">Overview</button>
           <button class="tab-btn" data-tab="debts">Debts</button>
           <button class="tab-btn" data-tab="budget">Budget</button>
-          <button class="tab-btn active" data-tab="bills">Bills & reminders</button>
+          <button class="tab-btn" data-tab="bills">Bills & reminders</button>
         </div>
 
         <div class="currency-selector">
@@ -392,27 +458,52 @@
 
       <div>
         <div style="font-size: 0.75rem; text-transform: uppercase; opacity: 0.7;">Total Balance</div>
-        <div class="total-debt" id="totalRemainingDisplay">$19,893.00</div>
+        <div class="total-debt" id="totalRemainingDisplay">$20,010.00</div>
       </div>
     </header>
 
-    <!-- Overview Tab View -->
-    <div id="overview-tab" class="tab-content">
+    <!-- Overview Tab View (Default Active Tab) -->
+    <div id="overview-tab" class="tab-content active">
       <section class="card">
         <h3>Financial Summary</h3>
-        <p style="margin-top: 8px; color: #64748b;">Overview of active accounts and total liabilities.</p>
+        <p style="margin-top: 4px; color: #64748b;">Live breakdown of debt obligations and income allocation.</p>
+
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
           <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
-            <span style="font-size: 0.85rem; color: #64748b;">Total Debt Balance</span>
-            <h2 style="color: #0f172a; margin-top: 4px;" id="overviewTotalDisplay">$19,893.00</h2>
+            <span style="font-size: 0.85rem; color: #64748b;">Total Balance</span>
+            <h2 style="color: #0f172a; margin-top: 4px;" id="overviewTotalDisplay">$20,010.00</h2>
           </div>
           <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
-            <span style="font-size: 0.85rem; color: #64748b;">Monthly Recurring Obligations</span>
-            <h2 style="color: #2563eb; margin-top: 4px;" id="overviewMonthlyDisplay">$1,005.00</h2>
+            <span style="font-size: 0.85rem; color: #64748b;">Monthly Bills & Payments</span>
+            <h2 style="color: #2563eb; margin-top: 4px;" id="overviewMonthlyDisplay">$1,122.00</h2>
           </div>
           <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
-            <span style="font-size: 0.85rem; color: #64748b;">Active Debts/Bills</span>
+            <span style="font-size: 0.85rem; color: #64748b;">Active Accounts</span>
             <h2 style="color: #16a34a; margin-top: 4px;" id="overviewCountDisplay">11 Accounts</h2>
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-top: 16px;">
+          <div class="form-group">
+            <label for="monthlyIncomeInput">Monthly Take-Home Income</label>
+            <input type="number" id="monthlyIncomeInput" value="3500" step="50" />
+          </div>
+        </div>
+
+        <!-- Animated Pie Charts -->
+        <div class="charts-grid">
+          <!-- Chart 1: Debt Share Breakdown -->
+          <div class="chart-card">
+            <h4>Debt & Bills Distribution</h4>
+            <div class="pie-chart-wrapper" id="debtShareChart"></div>
+            <div class="chart-legend" id="debtShareLegend"></div>
+          </div>
+
+          <!-- Chart 2: Income vs. Expenses -->
+          <div class="chart-card">
+            <h4>Income vs. Debt & Bills</h4>
+            <div class="pie-chart-wrapper" id="incomeVsExpensesChart"></div>
+            <div class="chart-legend" id="incomeVsExpensesLegend"></div>
           </div>
         </div>
       </section>
@@ -430,7 +521,7 @@
             <thead>
               <tr>
                 <th>Account / Bill</th>
-                <th>Monthly Payment / Balance</th>
+                <th>Monthly Amount</th>
                 <th>Due Day</th>
                 <th>Actions</th>
               </tr>
@@ -447,12 +538,12 @@
     <div id="budget-tab" class="tab-content">
       <section class="card">
         <h3>Monthly Budget Plan</h3>
-        <p style="margin-top: 8px; color: #64748b;">Allocations for recurring bills and minimum debt obligations.</p>
+        <p style="margin-top: 8px; color: #64748b;">Fixed obligations compared against overall earnings.</p>
       </section>
     </div>
 
-    <!-- Bills & Reminders Tab View (Active by Default) -->
-    <div id="bills-tab" class="tab-content active">
+    <!-- Bills & Reminders Tab View -->
+    <div id="bills-tab" class="tab-content">
       <!-- Calendar View -->
       <section class="card">
         <div class="calendar-header">
@@ -468,7 +559,7 @@
         </div>
       </section>
 
-      <!-- Add / Edit Debt Form -->
+      <!-- Form -->
       <section class="card">
         <h3 id="formTitle">Add Debt / Recurring Bill</h3>
         <form id="addBillForm">
@@ -507,6 +598,9 @@
   <script>
     let selectedCurrency = 'USD';
     let activeDate = new Date(2026, 9, 1); // October 2026
+    let monthlyIncome = 3500;
+
+    const chartColors = ['#2563eb', '#38bdf8', '#f59e0b', '#ef4444', '#10b981', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f97316', '#64748b'];
 
     let bills = [
       { id: 1, name: 'Rent', amount: 188.00, day: 1 },
@@ -543,20 +637,20 @@
       const year = activeDate.getFullYear();
       const month = activeDate.getMonth();
 
-      // Calculate Totals
       const totalMonthly = bills.reduce((sum, b) => sum + b.amount, 0);
-      const totalDebt = 18888.00 + totalMonthly; // Total balance scaling with bills
+      const totalDebt = 18888.00 + totalMonthly;
 
       document.getElementById('totalRemainingDisplay').textContent = formatCurrency(totalDebt);
       document.getElementById('overviewTotalDisplay').textContent = formatCurrency(totalDebt);
       document.getElementById('overviewMonthlyDisplay').textContent = formatCurrency(totalMonthly);
       document.getElementById('overviewCountDisplay').textContent = `${bills.length} Accounts`;
 
-      // Month Display Headers
       const monthNames = ["January", "February", "March", "April", "May", "June", 
                           "July", "August", "September", "October", "November", "December"];
       document.getElementById('monthYearDisplay').textContent = `${monthNames[month]} ${year}`;
       document.getElementById('dueDatesHeader').textContent = `Upcoming Due Dates — ${monthNames[month]} ${year}`;
+
+      renderCharts(totalMonthly);
 
       // Calendar Grid
       const grid = document.getElementById('calendarGrid');
@@ -645,6 +739,66 @@
       });
     }
 
+    function renderCharts(totalMonthly) {
+      // 1. Debt Share Conic Gradient & Legend
+      const debtChart = document.getElementById('debtShareChart');
+      const debtLegend = document.getElementById('debtShareLegend');
+      debtLegend.innerHTML = '';
+
+      let gradientStops = [];
+      let currentDeg = 0;
+
+      bills.forEach((bill, idx) => {
+        const color = chartColors[idx % chartColors.length];
+        const pct = totalMonthly > 0 ? (bill.amount / totalMonthly) : 0;
+        const degSpan = pct * 360;
+        const nextDeg = currentDeg + degSpan;
+
+        gradientStops.push(`${color} ${currentDeg}deg ${nextDeg}deg`);
+        currentDeg = nextDeg;
+
+        debtLegend.innerHTML += `
+          <div class="legend-item">
+            <div class="legend-left">
+              <div class="legend-color" style="background:${color};"></div>
+              <span>${bill.name}</span>
+            </div>
+            <strong>${(pct * 100).toFixed(1)}%</strong>
+          </div>
+        `;
+      });
+
+      debtChart.style.background = `conic-gradient(${gradientStops.join(', ')})`;
+
+      // 2. Income vs Expenses Chart
+      const incChart = document.getElementById('incomeVsExpensesChart');
+      const incLegend = document.getElementById('incomeVsExpensesLegend');
+      incLegend.innerHTML = '';
+
+      const debtPct = monthlyIncome > 0 ? Math.min(totalMonthly / monthlyIncome, 1) : 0;
+      const remainingPct = 1 - debtPct;
+      const debtDeg = debtPct * 360;
+
+      incChart.style.background = `conic-gradient(#ef4444 0deg ${debtDeg}deg, #22c55e ${debtDeg}deg 360deg)`;
+
+      incLegend.innerHTML = `
+        <div class="legend-item">
+          <div class="legend-left">
+            <div class="legend-color" style="background:#ef4444;"></div>
+            <span>Debts & Bills</span>
+          </div>
+          <strong>${formatCurrency(totalMonthly)} (${(debtPct * 100).toFixed(1)}%)</strong>
+        </div>
+        <div class="legend-item">
+          <div class="legend-left">
+            <div class="legend-color" style="background:#22c55e;"></div>
+            <span>Remaining Income</span>
+          </div>
+          <strong>${formatCurrency(Math.max(monthlyIncome - totalMonthly, 0))} (${(remainingPct * 100).toFixed(1)}%)</strong>
+        </div>
+      `;
+    }
+
     function ordinalSuffix(d) {
       if (d > 3 && d < 21) return d + 'th';
       switch (d % 10) {
@@ -655,7 +809,6 @@
       }
     }
 
-    // Edit Debt Functionality
     function editBill(id) {
       const bill = bills.find(b => b.id === id);
       if (!bill) return;
@@ -697,6 +850,11 @@
       });
     });
 
+    document.getElementById('monthlyIncomeInput').addEventListener('input', (e) => {
+      monthlyIncome = parseFloat(e.target.value) || 0;
+      renderApp();
+    });
+
     document.getElementById('prevMonthBtn').addEventListener('click', () => {
       activeDate.setMonth(activeDate.getMonth() - 1);
       renderApp();
@@ -734,7 +892,7 @@
       }
     });
 
-    // Initial Load
+    // Initial Load Execution
     renderApp();
   </script>
 </body>
