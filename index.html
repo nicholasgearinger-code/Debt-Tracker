@@ -22,7 +22,6 @@
       overflow-x: hidden;
     }
 
-    /* Outer Wrapper - Scaled to Viewport */
     .app-container {
       width: 100%;
       max-width: 1000px;
@@ -91,7 +90,6 @@
       font-weight: 600;
     }
 
-    /* Currency Select Box */
     .currency-selector {
       display: flex;
       align-items: center;
@@ -119,61 +117,12 @@
       margin-bottom: 20px;
     }
 
-    /* Tab Content Visibility Utility */
     .tab-content {
       display: none;
     }
 
     .tab-content.active {
       display: block;
-    }
-
-    /* Animated CSS Pie Chart */
-    .chart-container {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 30px;
-      margin-top: 16px;
-    }
-
-    .pie-chart {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: conic-gradient(
-        #2563eb 0deg 140deg,
-        #38bdf8 140deg 240deg,
-        #f59e0b 240deg 310deg,
-        #ef4444 310deg 360deg
-      );
-      transition: transform 0.5s ease-out;
-      animation: spinIn 1s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-    }
-
-    @keyframes spinIn {
-      0% { transform: scale(0.3) rotate(-90deg); opacity: 0; }
-      100% { transform: scale(1) rotate(0deg); opacity: 1; }
-    }
-
-    .chart-legend {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
-    }
-
-    .legend-color {
-      width: 14px;
-      height: 14px;
-      border-radius: 3px;
     }
 
     /* Data Table Layout */
@@ -331,6 +280,18 @@
       align-self: start;
     }
 
+    .btn-cancel {
+      background: #64748b;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 12px;
+      display: none;
+    }
+
     .due-list {
       display: flex;
       flex-direction: column;
@@ -365,6 +326,21 @@
       color: #64748b;
     }
 
+    .action-btn-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-edit {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
     .btn-delete {
       background: #ef4444;
       color: white;
@@ -375,7 +351,6 @@
       cursor: pointer;
     }
 
-    /* Mobile Responsive Adaptation */
     @media (max-width: 600px) {
       body { padding: 8px; }
       .day-cell { min-height: 50px; }
@@ -416,39 +391,48 @@
       </div>
 
       <div>
-        <div style="font-size: 0.75rem; text-transform: uppercase; opacity: 0.7;">Total Remaining</div>
+        <div style="font-size: 0.75rem; text-transform: uppercase; opacity: 0.7;">Total Balance</div>
         <div class="total-debt" id="totalRemainingDisplay">$19,893.00</div>
       </div>
     </header>
 
-    <!-- Overview Tab View (With Animated Pie Chart) -->
+    <!-- Overview Tab View -->
     <div id="overview-tab" class="tab-content">
       <section class="card">
-        <h3>Debt Distribution Breakdown</h3>
-        <div class="chart-container">
-          <div class="pie-chart"></div>
-          <div class="chart-legend">
-            <div class="legend-item"><div class="legend-color" style="background: #2563eb;"></div> Loans & Mortgages (38%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #38bdf8;"></div> Credit Cards (28%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #f59e0b;"></div> Auto Loan (20%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div> Medical & Other (14%)</div>
+        <h3>Financial Summary</h3>
+        <p style="margin-top: 8px; color: #64748b;">Overview of active accounts and total liabilities.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
+          <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <span style="font-size: 0.85rem; color: #64748b;">Total Debt Balance</span>
+            <h2 style="color: #0f172a; margin-top: 4px;" id="overviewTotalDisplay">$19,893.00</h2>
+          </div>
+          <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <span style="font-size: 0.85rem; color: #64748b;">Monthly Recurring Obligations</span>
+            <h2 style="color: #2563eb; margin-top: 4px;" id="overviewMonthlyDisplay">$1,005.00</h2>
+          </div>
+          <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <span style="font-size: 0.85rem; color: #64748b;">Active Debts/Bills</span>
+            <h2 style="color: #16a34a; margin-top: 4px;" id="overviewCountDisplay">11 Accounts</h2>
           </div>
         </div>
       </section>
     </div>
 
-    <!-- Debts Tab View (With Comprehensive Table) -->
+    <!-- Debts Tab View -->
     <div id="debts-tab" class="tab-content">
       <section class="card">
-        <h3>Debts Breakdown</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <h3>Debts & Bills List</h3>
+          <button class="btn-submit" style="margin-top:0;" onclick="switchTab('bills')">+ Add / Edit Debts</button>
+        </div>
         <div style="overflow-x: auto;">
           <table class="data-table">
             <thead>
               <tr>
-                <th>Account</th>
-                <th>Monthly Minimum</th>
-                <th>Due Date</th>
-                <th>Category</th>
+                <th>Account / Bill</th>
+                <th>Monthly Payment / Balance</th>
+                <th>Due Day</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="debtsTableBody">
@@ -463,14 +447,7 @@
     <div id="budget-tab" class="tab-content">
       <section class="card">
         <h3>Monthly Budget Plan</h3>
-        <div class="chart-container">
-          <div class="pie-chart" style="background: conic-gradient(#16a34a 0deg 200deg, #2563eb 200deg 310deg, #f59e0b 310deg 360deg);"></div>
-          <div class="chart-legend">
-            <div class="legend-item"><div class="legend-color" style="background: #16a34a;"></div> Essential Bills (55%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #2563eb;"></div> Debt Payoff (30%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #f59e0b;"></div> Discretionary (15%)</div>
-          </div>
-        </div>
+        <p style="margin-top: 8px; color: #64748b;">Allocations for recurring bills and minimum debt obligations.</p>
       </section>
     </div>
 
@@ -491,17 +468,18 @@
         </div>
       </section>
 
-      <!-- Bill Input Form -->
+      <!-- Add / Edit Debt Form -->
       <section class="card">
-        <h3>Add recurring bill</h3>
+        <h3 id="formTitle">Add Debt / Recurring Bill</h3>
         <form id="addBillForm">
+          <input type="hidden" id="editingId" value="" />
           <div class="form-grid">
             <div class="form-group">
-              <label for="billName">Bill Name</label>
-              <input type="text" id="billName" placeholder="e.g., Internet" required />
+              <label for="billName">Debt or Bill Name</label>
+              <input type="text" id="billName" placeholder="e.g., Credit Card" required />
             </div>
             <div class="form-group">
-              <label for="billAmount">Monthly Amount</label>
+              <label for="billAmount">Monthly Amount / Balance</label>
               <input type="number" id="billAmount" step="0.01" placeholder="0.00" required />
             </div>
             <div class="form-group">
@@ -509,7 +487,10 @@
               <input type="number" id="billDay" min="1" max="31" placeholder="15" required />
             </div>
           </div>
-          <button type="submit" class="btn-submit">Add Recurring Bill</button>
+          <div style="display: flex; gap: 8px;">
+            <button type="submit" class="btn-submit" id="submitBtn">Add Debt</button>
+            <button type="button" class="btn-cancel" id="cancelEditBtn" onclick="cancelEdit()">Cancel Edit</button>
+          </div>
         </form>
       </section>
 
@@ -524,26 +505,23 @@
   </div>
 
   <script>
-    // State Data
-    const baseTotalDebt = 19893.00;
     let selectedCurrency = 'USD';
     let activeDate = new Date(2026, 9, 1); // October 2026
 
     let bills = [
-      { id: 1, name: 'Rent', amount: 188.00, day: 1, category: 'Housing' },
-      { id: 2, name: 'Upstart', amount: 27.00, day: 5, category: 'Personal Loan' },
-      { id: 3, name: 'CareCredit', amount: 75.00, day: 9, category: 'Medical' },
-      { id: 4, name: 'Priceline', amount: 68.00, day: 11, category: 'Credit Card' },
-      { id: 5, name: 'Agoda', amount: 122.00, day: 12, category: 'Credit Card' },
-      { id: 6, name: 'Car Insurance', amount: 100.00, day: 13, category: 'Auto' },
-      { id: 7, name: 'CreditOne', amount: 30.00, day: 14, category: 'Credit Card' },
-      { id: 8, name: 'Discover', amount: 210.00, day: 15, category: 'Credit Card' },
-      { id: 9, name: 'MVB Credit', amount: 87.00, day: 16, category: 'Credit Card' },
-      { id: 10, name: 'Sofi', amount: 190.00, day: 20, category: 'Personal Loan' },
-      { id: 11, name: 'Wifi', amount: 25.00, day: 22, category: 'Utilities' }
+      { id: 1, name: 'Rent', amount: 188.00, day: 1 },
+      { id: 2, name: 'Upstart', amount: 27.00, day: 5 },
+      { id: 3, name: 'CareCredit', amount: 75.00, day: 9 },
+      { id: 4, name: 'Priceline', amount: 68.00, day: 11 },
+      { id: 5, name: 'Agoda', amount: 122.00, day: 12 },
+      { id: 6, name: 'Car Insurance', amount: 100.00, day: 13 },
+      { id: 7, name: 'CreditOne', amount: 30.00, day: 14 },
+      { id: 8, name: 'Discover', amount: 210.00, day: 15 },
+      { id: 9, name: 'MVB Credit', amount: 87.00, day: 16 },
+      { id: 10, name: 'Sofi', amount: 190.00, day: 20 },
+      { id: 11, name: 'Wifi', amount: 25.00, day: 22 }
     ];
 
-    // Helper: Currency Formatter
     function formatCurrency(val) {
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -552,21 +530,35 @@
       }).format(val);
     }
 
-    // Render Main Application Data
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-tab') === tabName);
+      });
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.toggle('active', content.id === `${tabName}-tab`);
+      });
+    }
+
     function renderApp() {
       const year = activeDate.getFullYear();
       const month = activeDate.getMonth();
 
-      // 1. Header Total
-      document.getElementById('totalRemainingDisplay').textContent = formatCurrency(baseTotalDebt);
+      // Calculate Totals
+      const totalMonthly = bills.reduce((sum, b) => sum + b.amount, 0);
+      const totalDebt = 18888.00 + totalMonthly; // Total balance scaling with bills
 
-      // 2. Month Headers
+      document.getElementById('totalRemainingDisplay').textContent = formatCurrency(totalDebt);
+      document.getElementById('overviewTotalDisplay').textContent = formatCurrency(totalDebt);
+      document.getElementById('overviewMonthlyDisplay').textContent = formatCurrency(totalMonthly);
+      document.getElementById('overviewCountDisplay').textContent = `${bills.length} Accounts`;
+
+      // Month Display Headers
       const monthNames = ["January", "February", "March", "April", "May", "June", 
                           "July", "August", "September", "October", "November", "December"];
       document.getElementById('monthYearDisplay').textContent = `${monthNames[month]} ${year}`;
       document.getElementById('dueDatesHeader').textContent = `Upcoming Due Dates — ${monthNames[month]} ${year}`;
 
-      // 3. Calendar Grid
+      // Calendar Grid
       const grid = document.getElementById('calendarGrid');
       grid.innerHTML = '';
 
@@ -612,7 +604,7 @@
         grid.appendChild(cell);
       }
 
-      // 4. Render Due Dates List
+      // Render Due Dates List
       const dueList = document.getElementById('dueList');
       dueList.innerHTML = '';
 
@@ -625,12 +617,15 @@
             <span class="due-name">${bill.name}</span>
             <span class="due-meta">Due on the ${ordinalSuffix(bill.day)} · ${formatCurrency(bill.amount)}</span>
           </div>
-          <button class="btn-delete" onclick="deleteBill(${bill.id})">Delete</button>
+          <div class="action-btn-group">
+            <button class="btn-edit" onclick="editBill(${bill.id})">Edit</button>
+            <button class="btn-delete" onclick="deleteBill(${bill.id})">Delete</button>
+          </div>
         `;
         dueList.appendChild(item);
       });
 
-      // 5. Render Debts Breakdown Table
+      // Render Debts Table
       const debtsTableBody = document.getElementById('debtsTableBody');
       debtsTableBody.innerHTML = '';
       sortedBills.forEach(bill => {
@@ -639,7 +634,12 @@
           <td><strong>${bill.name}</strong></td>
           <td>${formatCurrency(bill.amount)}</td>
           <td>${ordinalSuffix(bill.day)} of the month</td>
-          <td>${bill.category || 'General'}</td>
+          <td>
+            <div class="action-btn-group">
+              <button class="btn-edit" onclick="editBill(${bill.id})">Edit</button>
+              <button class="btn-delete" onclick="deleteBill(${bill.id})">Delete</button>
+            </div>
+          </td>
         `;
         debtsTableBody.appendChild(row);
       });
@@ -655,31 +655,48 @@
       }
     }
 
+    // Edit Debt Functionality
+    function editBill(id) {
+      const bill = bills.find(b => b.id === id);
+      if (!bill) return;
+
+      switchTab('bills');
+
+      document.getElementById('editingId').value = bill.id;
+      document.getElementById('billName').value = bill.name;
+      document.getElementById('billAmount').value = bill.amount;
+      document.getElementById('billDay').value = bill.day;
+
+      document.getElementById('formTitle').textContent = 'Edit Debt / Bill';
+      document.getElementById('submitBtn').textContent = 'Update Debt';
+      document.getElementById('cancelEditBtn').style.display = 'inline-block';
+
+      document.getElementById('addBillForm').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+      document.getElementById('editingId').value = '';
+      document.getElementById('addBillForm').reset();
+      document.getElementById('formTitle').textContent = 'Add Debt / Recurring Bill';
+      document.getElementById('submitBtn').textContent = 'Add Debt';
+      document.getElementById('cancelEditBtn').style.display = 'none';
+    }
+
     function deleteBill(id) {
       bills = bills.filter(b => b.id !== id);
+      if (document.getElementById('editingId').value == id) {
+        cancelEdit();
+      }
       renderApp();
     }
 
-    // Tab Switching Logic
+    // Event Listeners
     document.querySelectorAll('.tab-btn').forEach(button => {
       button.addEventListener('click', () => {
-        const targetTab = button.getAttribute('data-tab');
-
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-
-        document.querySelectorAll('.tab-content').forEach(content => {
-          content.classList.remove('active');
-        });
-
-        const selectedContent = document.getElementById(`${targetTab}-tab`);
-        if (selectedContent) {
-          selectedContent.classList.add('active');
-        }
+        switchTab(button.getAttribute('data-tab'));
       });
     });
 
-    // Month Navigation Listeners
     document.getElementById('prevMonthBtn').addEventListener('click', () => {
       activeDate.setMonth(activeDate.getMonth() - 1);
       renderApp();
@@ -690,22 +707,29 @@
       renderApp();
     });
 
-    // Currency Switcher
     document.getElementById('currencySelect').addEventListener('change', (e) => {
       selectedCurrency = e.target.value;
       renderApp();
     });
 
-    // Add Bill Form Submission
     document.getElementById('addBillForm').addEventListener('submit', (e) => {
       e.preventDefault();
+      const editingId = document.getElementById('editingId').value;
       const name = document.getElementById('billName').value;
       const amount = parseFloat(document.getElementById('billAmount').value);
       const day = parseInt(document.getElementById('billDay').value, 10);
 
       if (name && !isNaN(amount) && !isNaN(day)) {
-        bills.push({ id: Date.now(), name, amount, day, category: 'Custom' });
-        document.getElementById('addBillForm').reset();
+        if (editingId) {
+          const index = bills.findIndex(b => b.id == editingId);
+          if (index !== -1) {
+            bills[index] = { id: Number(editingId), name, amount, day };
+          }
+          cancelEdit();
+        } else {
+          bills.push({ id: Date.now(), name, amount, day });
+          document.getElementById('addBillForm').reset();
+        }
         renderApp();
       }
     });
