@@ -420,8 +420,19 @@
     <!-- Budget Tab -->
     <div id="tab-budget" class="tab-content">
         <div class="card">
+            <h2 class="card-title" style="margin-bottom: 6px;">Income vs. Bills Overview</h2>
+            <p class="card-subtitle">Animated comparison between monthly income and recurring expenses.</p>
+
+            <div class="chart-container">
+                <canvas id="budgetChart"></canvas>
+            </div>
+
+            <div class="custom-legend" id="budgetLegend"></div>
+        </div>
+
+        <div class="card">
             <div class="card-header-flex">
-                <h2 class="card-title">Monthly Budget</h2>
+                <h2 class="card-title">Monthly Budget Items</h2>
                 <button class="btn-add" onclick="openModal('budget')">+ Add Item</button>
             </div>
             <p class="card-subtitle">Income vs. Fixed Expenses tracking.</p>
@@ -470,11 +481,11 @@
 
         <div class="form-group">
             <label>Title</label>
-            <input type="text" id="modalInputTitle" placeholder="e.g. Discover Card">
+            <input type="text" id="modalInputTitle" placeholder="e.g. Salary or Rent">
         </div>
         <div class="form-group">
             <label>Subtext / Details</label>
-            <input type="text" id="modalInputSub" placeholder="e.g. Credit Card / APR: 21%">
+            <input type="text" id="modalInputSub" placeholder="e.g. Primary Income / Fixed Expense">
         </div>
         <div class="form-group">
             <label>Amount ($)</label>
@@ -517,8 +528,11 @@
         { title: 'Upstart Monthly Payment', sub: 'Due 16th of month', amount: 210 }
     ];
 
-    let selectedIndex = null;
+    let debtSelectedIndex = null;
+    let budgetSelectedIndex = null;
+
     let debtChart = null;
+    let budgetChart = null;
 
     function switchTab(tabId, btnElement) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -540,7 +554,8 @@
         renderBudget();
         renderBills();
         updateMetrics();
-        renderChart();
+        renderDebtChart();
+        renderBudgetChart();
     }
 
     function updateMetrics() {
@@ -609,14 +624,13 @@
         });
     }
 
-    function renderChart() {
+    /* --- Debt Chart --- */
+    function renderDebtChart() {
         const labels = debts.map(d => d.title);
         const dataValues = debts.map(d => d.amount);
         const colors = debts.map(d => d.color || '#38bdf8');
 
-        if (debtChart) {
-            debtChart.destroy();
-        }
+        if (debtChart) debtChart.destroy();
 
         const ctx = document.getElementById('debtChart').getContext('2d');
         debtChart = new Chart(ctx, {
@@ -634,55 +648,132 @@
                 responsive: true,
                 maintainAspectRatio: true,
                 cutout: '60%',
+                animation: { animateScale: true, animateRotate: true },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
-                                return ` $${context.raw.toLocaleString()}`;
-                            }
+                            label: function(context) { return ` $${context.raw.toLocaleString()}`; }
                         }
                     }
                 },
                 onClick: (event, elements) => {
                     if (elements.length > 0) {
                         const clickedIndex = elements[0].index;
-                        selectedIndex = (selectedIndex === clickedIndex) ? null : clickedIndex;
+                        debtSelectedIndex = (debtSelectedIndex === clickedIndex) ? null : clickedIndex;
                     } else {
-                        selectedIndex = null;
+                        debtSelectedIndex = null;
                     }
-                    updateChartFocus();
+                    updateDebtChartFocus();
                 }
             }
         });
 
-        renderLegend(labels, colors);
-        updateChartFocus();
+        renderLegend('chartLegend', labels, colors, (i) => {
+            debtSelectedIndex = (debtSelectedIndex === i) ? null : i;
+            updateDebtChartFocus();
+        });
+        updateDebtChartFocus();
     }
 
-    function updateChartFocus() {
+    function updateDebtChartFocus() {
         if (!debtChart) return;
         const colors = debts.map(d => d.color || '#38bdf8');
         const updatedColors = colors.map((color, index) => {
-            if (selectedIndex === null) return hexToRGBA(color, 1.0);
-            return index === selectedIndex ? hexToRGBA(color, 1.0) : hexToRGBA(color, 0.2);
+            if (debtSelectedIndex === null) return hexToRGBA(color, 1.0);
+            return index === debtSelectedIndex ? hexToRGBA(color, 1.0) : hexToRGBA(color, 0.2);
         });
 
         debtChart.data.datasets[0].backgroundColor = updatedColors;
         debtChart.update();
 
-        const legendItems = document.querySelectorAll('.legend-item');
+        const legendItems = document.querySelectorAll('#chartLegend .legend-item');
         legendItems.forEach((item, index) => {
-            if (selectedIndex === null || index === selectedIndex) {
-                item.classList.remove('dimmed');
-            } else {
-                item.classList.add('dimmed');
-            }
+            if (debtSelectedIndex === null || index === debtSelectedIndex) item.classList.remove('dimmed');
+            else item.classList.add('dimmed');
         });
     }
 
-    function renderLegend(labels, colors) {
-        const legendContainer = document.getElementById('chartLegend');
+    /* --- Budget Chart --- */
+    function renderBudgetChart() {
+        let totalIncome = 0;
+        let totalExpenses = 0;
+
+        budget.forEach(item => {
+            if (item.amount >= 0) totalIncome += item.amount;
+            else totalExpenses += Math.abs(item.amount);
+        });
+
+        const labels = ['Monthly Income', 'Monthly Bills & Expenses'];
+        const dataValues = [totalIncome, totalExpenses];
+        const colors = ['#10b981', '#ef4444'];
+
+        if (budgetChart) budgetChart.destroy();
+
+        const ctx = document.getElementById('budgetChart').getContext('2d');
+        budgetChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: dataValues,
+                    backgroundColor: colors.map(c => hexToRGBA(c, 1.0)),
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                cutout: '60%',
+                animation: { animateScale: true, animateRotate: true },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) { return ` $${context.raw.toLocaleString()}`; }
+                        }
+                    }
+                },
+                onClick: (event, elements) => {
+                    if (elements.length > 0) {
+                        const clickedIndex = elements[0].index;
+                        budgetSelectedIndex = (budgetSelectedIndex === clickedIndex) ? null : clickedIndex;
+                    } else {
+                        budgetSelectedIndex = null;
+                    }
+                    updateBudgetChartFocus();
+                }
+            }
+        });
+
+        renderLegend('budgetLegend', labels, colors, (i) => {
+            budgetSelectedIndex = (budgetSelectedIndex === i) ? null : i;
+            updateBudgetChartFocus();
+        });
+        updateBudgetChartFocus();
+    }
+
+    function updateBudgetChartFocus() {
+        if (!budgetChart) return;
+        const colors = ['#10b981', '#ef4444'];
+        const updatedColors = colors.map((color, index) => {
+            if (budgetSelectedIndex === null) return hexToRGBA(color, 1.0);
+            return index === budgetSelectedIndex ? hexToRGBA(color, 1.0) : hexToRGBA(color, 0.2);
+        });
+
+        budgetChart.data.datasets[0].backgroundColor = updatedColors;
+        budgetChart.update();
+
+        const legendItems = document.querySelectorAll('#budgetLegend .legend-item');
+        legendItems.forEach((item, index) => {
+            if (budgetSelectedIndex === null || index === budgetSelectedIndex) item.classList.remove('dimmed');
+            else item.classList.add('dimmed');
+        });
+    }
+
+    function renderLegend(containerId, labels, colors, onClickCallback) {
+        const legendContainer = document.getElementById(containerId);
         legendContainer.innerHTML = '';
         labels.forEach((label, i) => {
             const item = document.createElement('div');
@@ -691,10 +782,7 @@
                 <div class="legend-color" style="background-color: ${colors[i]}"></div>
                 <span>${label}</span>
             `;
-            item.addEventListener('click', () => {
-                selectedIndex = (selectedIndex === i) ? null : i;
-                updateChartFocus();
-            });
+            item.addEventListener('click', () => onClickCallback(i));
             legendContainer.appendChild(item);
         });
     }
@@ -765,6 +853,8 @@
             else bills.push(newItem);
         }
 
+        debtSelectedIndex = null;
+        budgetSelectedIndex = null;
         closeModal();
         renderUI();
     }
@@ -779,7 +869,8 @@
         if (category === 'budget') budget.splice(index, 1);
         if (category === 'bills') bills.splice(index, 1);
 
-        selectedIndex = null;
+        debtSelectedIndex = null;
+        budgetSelectedIndex = null;
         closeModal();
         renderUI();
     }
