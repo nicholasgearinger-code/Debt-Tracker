@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClearPath — Debt Tracker</title>
+  <!-- Chart.js CDN for Interactive & Animated Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     /* Global Reset & Responsive Box Model */
     *, *::before, *::after {
@@ -125,12 +127,12 @@
       display: block;
     }
 
-    /* Animated CSS Pie Charts */
+    /* Top Charts Grid */
     .charts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
-      margin-top: 20px;
+      margin-bottom: 20px;
     }
 
     .chart-card {
@@ -141,7 +143,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
+      min-height: 320px;
     }
 
     .chart-card h4 {
@@ -150,45 +153,11 @@
       text-align: center;
     }
 
-    .pie-chart-wrapper {
+    .chart-box {
       position: relative;
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: #e2e8f0;
-      transition: background 0.5s ease-in-out;
-      animation: popIn 0.8s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-    }
-
-    @keyframes popIn {
-      0% { transform: scale(0.3) rotate(-90deg); opacity: 0; }
-      100% { transform: scale(1) rotate(0deg); opacity: 1; }
-    }
-
-    .chart-legend {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
       width: 100%;
-    }
-
-    .legend-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
-    }
-
-    .legend-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .legend-color {
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
+      max-width: 260px;
+      height: 260px;
     }
 
     /* Data Table Layout */
@@ -253,7 +222,7 @@
       text-align: center;
     }
 
-    /* Fully Responsive Grid System */
+    /* Calendar Grid */
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -306,7 +275,7 @@
       margin-top: 2px;
     }
 
-    /* Forms & Action Styling */
+    /* Form Layouts */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -462,13 +431,31 @@
       </div>
     </header>
 
-    <!-- Overview Tab View (Default Active Tab) -->
+    <!-- Overview Tab View (Loads First) -->
     <div id="overview-tab" class="tab-content active">
       <section class="card">
-        <h3>Financial Summary</h3>
-        <p style="margin-top: 4px; color: #64748b;">Live breakdown of debt obligations and income allocation.</p>
+        <h3>Overview</h3>
+        <p style="margin-top: 4px; color: #64748b;">Live interactive breakdown of debt distribution and monthly cash flow.</p>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
+        <!-- Top Interactive Charts Section -->
+        <div class="charts-grid" style="margin-top: 16px;">
+          <div class="chart-card">
+            <h4>Debt & Bills Distribution</h4>
+            <div class="chart-box">
+              <canvas id="debtShareChartCanvas"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h4>Income vs. Debt & Bills</h4>
+            <div class="chart-box">
+              <canvas id="incomeVsExpensesChartCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metric Summaries -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
           <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
             <span style="font-size: 0.85rem; color: #64748b;">Total Balance</span>
             <h2 style="color: #0f172a; margin-top: 4px;" id="overviewTotalDisplay">$20,010.00</h2>
@@ -487,23 +474,6 @@
           <div class="form-group">
             <label for="monthlyIncomeInput">Monthly Take-Home Income</label>
             <input type="number" id="monthlyIncomeInput" value="3500" step="50" />
-          </div>
-        </div>
-
-        <!-- Animated Pie Charts -->
-        <div class="charts-grid">
-          <!-- Chart 1: Debt Share Breakdown -->
-          <div class="chart-card">
-            <h4>Debt & Bills Distribution</h4>
-            <div class="pie-chart-wrapper" id="debtShareChart"></div>
-            <div class="chart-legend" id="debtShareLegend"></div>
-          </div>
-
-          <!-- Chart 2: Income vs. Expenses -->
-          <div class="chart-card">
-            <h4>Income vs. Debt & Bills</h4>
-            <div class="pie-chart-wrapper" id="incomeVsExpensesChart"></div>
-            <div class="chart-legend" id="incomeVsExpensesLegend"></div>
           </div>
         </div>
       </section>
@@ -597,8 +567,11 @@
 
   <script>
     let selectedCurrency = 'USD';
-    let activeDate = new Date(2026, 9, 1); // October 2026
+    let activeDate = new Date(2026, 9, 1);
     let monthlyIncome = 3500;
+
+    let debtShareChartInstance = null;
+    let incomeVsExpensesChartInstance = null;
 
     const chartColors = ['#2563eb', '#38bdf8', '#f59e0b', '#ef4444', '#10b981', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f97316', '#64748b'];
 
@@ -650,7 +623,7 @@
       document.getElementById('monthYearDisplay').textContent = `${monthNames[month]} ${year}`;
       document.getElementById('dueDatesHeader').textContent = `Upcoming Due Dates — ${monthNames[month]} ${year}`;
 
-      renderCharts(totalMonthly);
+      renderInteractiveCharts(totalMonthly);
 
       // Calendar Grid
       const grid = document.getElementById('calendarGrid');
@@ -739,64 +712,86 @@
       });
     }
 
-    function renderCharts(totalMonthly) {
-      // 1. Debt Share Conic Gradient & Legend
-      const debtChart = document.getElementById('debtShareChart');
-      const debtLegend = document.getElementById('debtShareLegend');
-      debtLegend.innerHTML = '';
+    function renderInteractiveCharts(totalMonthly) {
+      // 1. Debt Share Chart
+      const debtLabels = bills.map(b => b.name);
+      const debtData = bills.map(b => b.amount);
+      const debtColors = bills.map((_, i) => chartColors[i % chartColors.length]);
 
-      let gradientStops = [];
-      let currentDeg = 0;
+      const ctxDebt = document.getElementById('debtShareChartCanvas').getContext('2d');
+      if (debtShareChartInstance) {
+        debtShareChartInstance.destroy();
+      }
 
-      bills.forEach((bill, idx) => {
-        const color = chartColors[idx % chartColors.length];
-        const pct = totalMonthly > 0 ? (bill.amount / totalMonthly) : 0;
-        const degSpan = pct * 360;
-        const nextDeg = currentDeg + degSpan;
-
-        gradientStops.push(`${color} ${currentDeg}deg ${nextDeg}deg`);
-        currentDeg = nextDeg;
-
-        debtLegend.innerHTML += `
-          <div class="legend-item">
-            <div class="legend-left">
-              <div class="legend-color" style="background:${color};"></div>
-              <span>${bill.name}</span>
-            </div>
-            <strong>${(pct * 100).toFixed(1)}%</strong>
-          </div>
-        `;
+      debtShareChartInstance = new Chart(ctxDebt, {
+        type: 'doughnut',
+        data: {
+          labels: debtLabels,
+          datasets: [{
+            data: debtData,
+            backgroundColor: debtColors,
+            hoverOffset: 8,
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { animateScale: true, animateRotate: true, duration: 800 },
+          plugins: {
+            legend: { display: true, position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw || 0;
+                  const pct = totalMonthly > 0 ? ((val / totalMonthly) * 100).toFixed(1) : 0;
+                  return ` ${context.label}: ${formatCurrency(val)} (${pct}%)`;
+                }
+              }
+            }
+          }
+        }
       });
 
-      debtChart.style.background = `conic-gradient(${gradientStops.join(', ')})`;
+      // 2. Income vs. Expenses Chart
+      const remainingInc = Math.max(monthlyIncome - totalMonthly, 0);
+      const ctxInc = document.getElementById('incomeVsExpensesChartCanvas').getContext('2d');
 
-      // 2. Income vs Expenses Chart
-      const incChart = document.getElementById('incomeVsExpensesChart');
-      const incLegend = document.getElementById('incomeVsExpensesLegend');
-      incLegend.innerHTML = '';
+      if (incomeVsExpensesChartInstance) {
+        incomeVsExpensesChartInstance.destroy();
+      }
 
-      const debtPct = monthlyIncome > 0 ? Math.min(totalMonthly / monthlyIncome, 1) : 0;
-      const remainingPct = 1 - debtPct;
-      const debtDeg = debtPct * 360;
-
-      incChart.style.background = `conic-gradient(#ef4444 0deg ${debtDeg}deg, #22c55e ${debtDeg}deg 360deg)`;
-
-      incLegend.innerHTML = `
-        <div class="legend-item">
-          <div class="legend-left">
-            <div class="legend-color" style="background:#ef4444;"></div>
-            <span>Debts & Bills</span>
-          </div>
-          <strong>${formatCurrency(totalMonthly)} (${(debtPct * 100).toFixed(1)}%)</strong>
-        </div>
-        <div class="legend-item">
-          <div class="legend-left">
-            <div class="legend-color" style="background:#22c55e;"></div>
-            <span>Remaining Income</span>
-          </div>
-          <strong>${formatCurrency(Math.max(monthlyIncome - totalMonthly, 0))} (${(remainingPct * 100).toFixed(1)}%)</strong>
-        </div>
-      `;
+      incomeVsExpensesChartInstance = new Chart(ctxInc, {
+        type: 'pie',
+        data: {
+          labels: ['Debts & Bills', 'Remaining Income'],
+          datasets: [{
+            data: [totalMonthly, remainingInc],
+            backgroundColor: ['#ef4444', '#22c55e'],
+            hoverOffset: 8,
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { animateScale: true, animateRotate: true, duration: 800 },
+          plugins: {
+            legend: { display: true, position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw || 0;
+                  const pct = monthlyIncome > 0 ? ((val / monthlyIncome) * 100).toFixed(1) : 0;
+                  return ` ${context.label}: ${formatCurrency(val)} (${pct}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
     }
 
     function ordinalSuffix(d) {
