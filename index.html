@@ -70,7 +70,7 @@
       flex-wrap: wrap;
     }
 
-    .nav-tabs button {
+    .tab-btn {
       background: #334155;
       color: #f8fafc;
       border: none;
@@ -78,9 +78,14 @@
       border-radius: 6px;
       cursor: pointer;
       font-size: 0.9rem;
+      transition: background 0.2s;
     }
 
-    .nav-tabs button.active {
+    .tab-btn:hover {
+      background: #475569;
+    }
+
+    .tab-btn.active {
       background: #22c55e;
       color: #0f172a;
       font-weight: 600;
@@ -111,6 +116,16 @@
       padding: 20px;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
       width: 100%;
+      margin-bottom: 20px;
+    }
+
+    /* Tab Content Visibility Utility */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
     }
 
     /* Calendar Header & Arrows */
@@ -313,10 +328,10 @@
 
       <div class="controls-bar">
         <div class="nav-tabs">
-          <button>Overview</button>
-          <button>Debts</button>
-          <button>Budget</button>
-          <button class="active">Bills & reminders</button>
+          <button class="tab-btn" data-tab="overview">Overview</button>
+          <button class="tab-btn" data-tab="debts">Debts</button>
+          <button class="tab-btn" data-tab="budget">Budget</button>
+          <button class="tab-btn active" data-tab="bills">Bills & reminders</button>
         </div>
 
         <div class="currency-selector">
@@ -338,50 +353,77 @@
       </div>
     </header>
 
-    <!-- Calendar View with Navigation -->
-    <section class="card">
-      <div class="calendar-header">
-        <div class="calendar-nav">
-          <button id="prevMonthBtn" aria-label="Previous Month">&lt;</button>
-          <div class="month-title" id="monthYearDisplay">October 2026</div>
-          <button id="nextMonthBtn" aria-label="Next Month">&gt;</button>
+    <!-- Overview Tab View -->
+    <div id="overview-tab" class="tab-content">
+      <section class="card">
+        <h3>Overview</h3>
+        <p style="margin-top: 8px; color: #64748b;">Financial summary analytics and high-level progress tracking.</p>
+      </section>
+    </div>
+
+    <!-- Debts Tab View -->
+    <div id="debts-tab" class="tab-content">
+      <section class="card">
+        <h3>Debts Breakdown</h3>
+        <p style="margin-top: 8px; color: #64748b;">Detailed list of open loan balances, interest rates, and payoff targets.</p>
+      </section>
+    </div>
+
+    <!-- Budget Tab View -->
+    <div id="budget-tab" class="tab-content">
+      <section class="card">
+        <h3>Monthly Budget</h3>
+        <p style="margin-top: 8px; color: #64748b;">Income vs. spending breakdown and savings target allocations.</p>
+      </section>
+    </div>
+
+    <!-- Bills & Reminders Tab View (Active by default) -->
+    <div id="bills-tab" class="tab-content active">
+      <!-- Calendar View with Navigation -->
+      <section class="card">
+        <div class="calendar-header">
+          <div class="calendar-nav">
+            <button id="prevMonthBtn" aria-label="Previous Month">&lt;</button>
+            <div class="month-title" id="monthYearDisplay">October 2026</div>
+            <button id="nextMonthBtn" aria-label="Next Month">&gt;</button>
+          </div>
         </div>
-      </div>
 
-      <div class="calendar-grid" id="calendarGrid">
-        <!-- Rendered dynamically via JavaScript -->
-      </div>
-    </section>
-
-    <!-- Recurring Bill Input Form -->
-    <section class="card">
-      <h3>Add recurring bill</h3>
-      <form id="addBillForm">
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="billName">Bill Name</label>
-            <input type="text" id="billName" placeholder="e.g., Internet" required />
-          </div>
-          <div class="form-group">
-            <label for="billAmount">Monthly Amount</label>
-            <input type="number" id="billAmount" step="0.01" placeholder="0.00" required />
-          </div>
-          <div class="form-group">
-            <label for="billDay">Day of Month Due (1–31)</label>
-            <input type="number" id="billDay" min="1" max="31" placeholder="15" required />
-          </div>
+        <div class="calendar-grid" id="calendarGrid">
+          <!-- Rendered dynamically via JavaScript -->
         </div>
-        <button type="submit" class="btn-submit">Add Recurring Bill</button>
-      </form>
-    </section>
+      </section>
 
-    <!-- Dynamic Due Dates List -->
-    <section class="card">
-      <h3 id="dueDatesHeader">Upcoming Due Dates</h3>
-      <div class="due-list" id="dueList">
-        <!-- Rendered dynamically -->
-      </div>
-    </section>
+      <!-- Recurring Bill Input Form -->
+      <section class="card">
+        <h3>Add recurring bill</h3>
+        <form id="addBillForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="billName">Bill Name</label>
+              <input type="text" id="billName" placeholder="e.g., Internet" required />
+            </div>
+            <div class="form-group">
+              <label for="billAmount">Monthly Amount</label>
+              <input type="number" id="billAmount" step="0.01" placeholder="0.00" required />
+            </div>
+            <div class="form-group">
+              <label for="billDay">Day of Month Due (1–31)</label>
+              <input type="number" id="billDay" min="1" max="31" placeholder="15" required />
+            </div>
+          </div>
+          <button type="submit" class="btn-submit">Add Recurring Bill</button>
+        </form>
+      </section>
+
+      <!-- Dynamic Due Dates List -->
+      <section class="card">
+        <h3 id="dueDatesHeader">Upcoming Due Dates</h3>
+        <div class="due-list" id="dueList">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+    </div>
   </div>
 
   <script>
@@ -514,7 +556,28 @@
       renderApp();
     }
 
-    // Event Listeners
+    // Tab Switching Logic
+    document.querySelectorAll('.tab-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const targetTab = button.getAttribute('data-tab');
+
+        // 1. Toggle active button highlighting
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // 2. Toggle active tab content visibility
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.remove('active');
+        });
+
+        const selectedContent = document.getElementById(`${targetTab}-tab`);
+        if (selectedContent) {
+          selectedContent.classList.add('active');
+        }
+      });
+    });
+
+    // Calendar Navigation Listeners
     document.getElementById('prevMonthBtn').addEventListener('click', () => {
       activeDate.setMonth(activeDate.getMonth() - 1);
       renderApp();
@@ -525,11 +588,13 @@
       renderApp();
     });
 
+    // Currency Switcher Listener
     document.getElementById('currencySelect').addEventListener('change', (e) => {
       selectedCurrency = e.target.value;
       renderApp();
     });
 
+    // Bill Addition Form Listener
     document.getElementById('addBillForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const name = document.getElementById('billName').value;
