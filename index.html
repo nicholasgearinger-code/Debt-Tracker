@@ -128,6 +128,75 @@
       display: block;
     }
 
+    /* Animated CSS Pie Chart */
+    .chart-container {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 16px;
+    }
+
+    .pie-chart {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: conic-gradient(
+        #2563eb 0deg 140deg,
+        #38bdf8 140deg 240deg,
+        #f59e0b 240deg 310deg,
+        #ef4444 310deg 360deg
+      );
+      transition: transform 0.5s ease-out;
+      animation: spinIn 1s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+    }
+
+    @keyframes spinIn {
+      0% { transform: scale(0.3) rotate(-90deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .chart-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .legend-color {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+    }
+
+    /* Data Table Layout */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      text-align: left;
+    }
+
+    .data-table th, .data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .data-table th {
+      background: #f8fafc;
+      color: #64748b;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
     /* Calendar Header & Arrows */
     .calendar-header {
       display: flex;
@@ -194,7 +263,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      min-width: 0; /* Prevents overflow */
+      min-width: 0;
     }
 
     .day-cell.other-month {
@@ -222,7 +291,7 @@
       margin-top: 2px;
     }
 
-    /* Bill Creation Form */
+    /* Form & Due Dates Layout */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -262,7 +331,6 @@
       align-self: start;
     }
 
-    /* Due Dates List */
     .due-list {
       display: flex;
       flex-direction: column;
@@ -307,7 +375,7 @@
       cursor: pointer;
     }
 
-    /* Mobile Adaptations */
+    /* Mobile Responsive Adaptation */
     @media (max-width: 600px) {
       body { padding: 8px; }
       .day-cell { min-height: 50px; }
@@ -319,7 +387,7 @@
 <body>
 
   <div class="app-container">
-    <!-- Navigation & Header -->
+    <!-- Header & Navigation Bar -->
     <header>
       <div>
         <div class="brand-title">CLEARPATH FINANCIAL</div>
@@ -353,33 +421,62 @@
       </div>
     </header>
 
-    <!-- Overview Tab View -->
+    <!-- Overview Tab View (With Animated Pie Chart) -->
     <div id="overview-tab" class="tab-content">
       <section class="card">
-        <h3>Overview</h3>
-        <p style="margin-top: 8px; color: #64748b;">Financial summary analytics and high-level progress tracking.</p>
+        <h3>Debt Distribution Breakdown</h3>
+        <div class="chart-container">
+          <div class="pie-chart"></div>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-color" style="background: #2563eb;"></div> Loans & Mortgages (38%)</div>
+            <div class="legend-item"><div class="legend-color" style="background: #38bdf8;"></div> Credit Cards (28%)</div>
+            <div class="legend-item"><div class="legend-color" style="background: #f59e0b;"></div> Auto Loan (20%)</div>
+            <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div> Medical & Other (14%)</div>
+          </div>
+        </div>
       </section>
     </div>
 
-    <!-- Debts Tab View -->
+    <!-- Debts Tab View (With Comprehensive Table) -->
     <div id="debts-tab" class="tab-content">
       <section class="card">
         <h3>Debts Breakdown</h3>
-        <p style="margin-top: 8px; color: #64748b;">Detailed list of open loan balances, interest rates, and payoff targets.</p>
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Account</th>
+                <th>Monthly Minimum</th>
+                <th>Due Date</th>
+                <th>Category</th>
+              </tr>
+            </thead>
+            <tbody id="debtsTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
       </section>
     </div>
 
     <!-- Budget Tab View -->
     <div id="budget-tab" class="tab-content">
       <section class="card">
-        <h3>Monthly Budget</h3>
-        <p style="margin-top: 8px; color: #64748b;">Income vs. spending breakdown and savings target allocations.</p>
+        <h3>Monthly Budget Plan</h3>
+        <div class="chart-container">
+          <div class="pie-chart" style="background: conic-gradient(#16a34a 0deg 200deg, #2563eb 200deg 310deg, #f59e0b 310deg 360deg);"></div>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-color" style="background: #16a34a;"></div> Essential Bills (55%)</div>
+            <div class="legend-item"><div class="legend-color" style="background: #2563eb;"></div> Debt Payoff (30%)</div>
+            <div class="legend-item"><div class="legend-color" style="background: #f59e0b;"></div> Discretionary (15%)</div>
+          </div>
+        </div>
       </section>
     </div>
 
-    <!-- Bills & Reminders Tab View (Active by default) -->
+    <!-- Bills & Reminders Tab View (Active by Default) -->
     <div id="bills-tab" class="tab-content active">
-      <!-- Calendar View with Navigation -->
+      <!-- Calendar View -->
       <section class="card">
         <div class="calendar-header">
           <div class="calendar-nav">
@@ -390,11 +487,11 @@
         </div>
 
         <div class="calendar-grid" id="calendarGrid">
-          <!-- Rendered dynamically via JavaScript -->
+          <!-- Rendered dynamically -->
         </div>
       </section>
 
-      <!-- Recurring Bill Input Form -->
+      <!-- Bill Input Form -->
       <section class="card">
         <h3>Add recurring bill</h3>
         <form id="addBillForm">
@@ -427,23 +524,23 @@
   </div>
 
   <script>
-    // Initial State Data
+    // State Data
     const baseTotalDebt = 19893.00;
     let selectedCurrency = 'USD';
     let activeDate = new Date(2026, 9, 1); // October 2026
 
     let bills = [
-      { id: 1, name: 'Rent', amount: 188.00, day: 1 },
-      { id: 2, name: 'Upstart', amount: 27.00, day: 5 },
-      { id: 3, name: 'CareCredit', amount: 75.00, day: 9 },
-      { id: 4, name: 'Priceline', amount: 68.00, day: 11 },
-      { id: 5, name: 'Agoda', amount: 122.00, day: 12 },
-      { id: 6, name: 'Car Insurance', amount: 100.00, day: 13 },
-      { id: 7, name: 'CreditOne', amount: 30.00, day: 14 },
-      { id: 8, name: 'Discover', amount: 210.00, day: 15 },
-      { id: 9, name: 'MVB Credit', amount: 87.00, day: 16 },
-      { id: 10, name: 'Sofi', amount: 190.00, day: 20 },
-      { id: 11, name: 'Wifi', amount: 25.00, day: 22 }
+      { id: 1, name: 'Rent', amount: 188.00, day: 1, category: 'Housing' },
+      { id: 2, name: 'Upstart', amount: 27.00, day: 5, category: 'Personal Loan' },
+      { id: 3, name: 'CareCredit', amount: 75.00, day: 9, category: 'Medical' },
+      { id: 4, name: 'Priceline', amount: 68.00, day: 11, category: 'Credit Card' },
+      { id: 5, name: 'Agoda', amount: 122.00, day: 12, category: 'Credit Card' },
+      { id: 6, name: 'Car Insurance', amount: 100.00, day: 13, category: 'Auto' },
+      { id: 7, name: 'CreditOne', amount: 30.00, day: 14, category: 'Credit Card' },
+      { id: 8, name: 'Discover', amount: 210.00, day: 15, category: 'Credit Card' },
+      { id: 9, name: 'MVB Credit', amount: 87.00, day: 16, category: 'Credit Card' },
+      { id: 10, name: 'Sofi', amount: 190.00, day: 20, category: 'Personal Loan' },
+      { id: 11, name: 'Wifi', amount: 25.00, day: 22, category: 'Utilities' }
     ];
 
     // Helper: Currency Formatter
@@ -455,25 +552,24 @@
       }).format(val);
     }
 
-    // Render Function
+    // Render Main Application Data
     function renderApp() {
       const year = activeDate.getFullYear();
       const month = activeDate.getMonth();
 
-      // 1. Update Header Total
+      // 1. Header Total
       document.getElementById('totalRemainingDisplay').textContent = formatCurrency(baseTotalDebt);
 
-      // 2. Update Month Display Header
+      // 2. Month Headers
       const monthNames = ["January", "February", "March", "April", "May", "June", 
                           "July", "August", "September", "October", "November", "December"];
       document.getElementById('monthYearDisplay').textContent = `${monthNames[month]} ${year}`;
       document.getElementById('dueDatesHeader').textContent = `Upcoming Due Dates — ${monthNames[month]} ${year}`;
 
-      // 3. Render Calendar Grid
+      // 3. Calendar Grid
       const grid = document.getElementById('calendarGrid');
       grid.innerHTML = '';
 
-      // Day Name Headers
       const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
       days.forEach(d => {
         const div = document.createElement('div');
@@ -482,12 +578,10 @@
         grid.appendChild(div);
       });
 
-      // Calculate Grid Offsets
       const firstDayIdx = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       const prevMonthDays = new Date(year, month, 0).getDate();
 
-      // Render Leading Days (Previous Month)
       for (let i = firstDayIdx - 1; i >= 0; i--) {
         const cell = document.createElement('div');
         cell.className = 'day-cell other-month';
@@ -495,13 +589,11 @@
         grid.appendChild(cell);
       }
 
-      // Render Current Month Days
       for (let day = 1; day <= daysInMonth; day++) {
         const cell = document.createElement('div');
         cell.className = 'day-cell';
         let cellHtml = `<span class="day-number">${day}</span>`;
 
-        // Check for bills due on this day
         const dueBills = bills.filter(b => b.day === day);
         dueBills.forEach(b => {
           cellHtml += `<div class="bill-tag" title="${b.name}: ${formatCurrency(b.amount)}">${b.name}</div>`;
@@ -511,7 +603,6 @@
         grid.appendChild(cell);
       }
 
-      // Render Trailing Days (Next Month)
       const totalCells = firstDayIdx + daysInMonth;
       const trailingDays = (7 - (totalCells % 7)) % 7;
       for (let i = 1; i <= trailingDays; i++) {
@@ -538,6 +629,20 @@
         `;
         dueList.appendChild(item);
       });
+
+      // 5. Render Debts Breakdown Table
+      const debtsTableBody = document.getElementById('debtsTableBody');
+      debtsTableBody.innerHTML = '';
+      sortedBills.forEach(bill => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong>${bill.name}</strong></td>
+          <td>${formatCurrency(bill.amount)}</td>
+          <td>${ordinalSuffix(bill.day)} of the month</td>
+          <td>${bill.category || 'General'}</td>
+        `;
+        debtsTableBody.appendChild(row);
+      });
     }
 
     function ordinalSuffix(d) {
@@ -550,7 +655,6 @@
       }
     }
 
-    // Global Action Handlers
     function deleteBill(id) {
       bills = bills.filter(b => b.id !== id);
       renderApp();
@@ -561,11 +665,9 @@
       button.addEventListener('click', () => {
         const targetTab = button.getAttribute('data-tab');
 
-        // 1. Toggle active button highlighting
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
 
-        // 2. Toggle active tab content visibility
         document.querySelectorAll('.tab-content').forEach(content => {
           content.classList.remove('active');
         });
@@ -577,7 +679,7 @@
       });
     });
 
-    // Calendar Navigation Listeners
+    // Month Navigation Listeners
     document.getElementById('prevMonthBtn').addEventListener('click', () => {
       activeDate.setMonth(activeDate.getMonth() - 1);
       renderApp();
@@ -588,13 +690,13 @@
       renderApp();
     });
 
-    // Currency Switcher Listener
+    // Currency Switcher
     document.getElementById('currencySelect').addEventListener('change', (e) => {
       selectedCurrency = e.target.value;
       renderApp();
     });
 
-    // Bill Addition Form Listener
+    // Add Bill Form Submission
     document.getElementById('addBillForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const name = document.getElementById('billName').value;
@@ -602,13 +704,13 @@
       const day = parseInt(document.getElementById('billDay').value, 10);
 
       if (name && !isNaN(amount) && !isNaN(day)) {
-        bills.push({ id: Date.now(), name, amount, day });
+        bills.push({ id: Date.now(), name, amount, day, category: 'Custom' });
         document.getElementById('addBillForm').reset();
         renderApp();
       }
     });
 
-    // Initial Load Execution
+    // Initial Load
     renderApp();
   </script>
 </body>
