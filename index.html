@@ -15,6 +15,7 @@
             --border-color: #243356;
             --accent-green: #10b981;
             --accent-red: #ef4444;
+            --accent-amber: #f59e0b;
         }
 
         * {
@@ -67,12 +68,17 @@
             font-weight: 600;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: #2d3f66;
         }
 
         .btn.active {
             background-color: var(--accent-green);
             color: #ffffff;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
         }
 
         .tab-content {
@@ -85,11 +91,19 @@
             display: flex;
         }
 
+        /* Improved Card Hover & Glow */
         .card {
             background-color: var(--card-bg);
             border-radius: 16px;
             padding: 20px;
             border: 1px solid var(--border-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: #334673;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
         }
 
         .card-header-flex {
@@ -135,11 +149,34 @@
             line-height: 1.3;
         }
 
+        /* Chart Center Overlay */
         .chart-container {
             position: relative;
             width: 100%;
             max-width: 320px;
             margin: 0 auto 20px auto;
+        }
+
+        .chart-center-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .chart-center-text .amount {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .chart-center-text .subtext {
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .custom-legend {
@@ -179,17 +216,31 @@
 
         .list-item {
             display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 14px;
+            background: #111a2e;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.2s ease;
+        }
+
+        .list-item:hover {
+            border-color: #2d3f66;
+        }
+
+        .item-top-row {
+            display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            background: #111a2e;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
         }
 
         .item-info .title {
             font-weight: 600;
             font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .item-info .sub {
@@ -207,6 +258,48 @@
         .item-amount {
             font-weight: 700;
             font-size: 1rem;
+        }
+
+        /* APR Badge */
+        .badge-apr {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Progress Bar Styling */
+        .progress-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--text-sub);
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background-color: #1e2d4a;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #10b981);
+            border-radius: 3px;
+            transition: width 0.4s ease;
         }
 
         .btn-add {
@@ -259,19 +352,27 @@
             border-radius: 8px;
             border: 1px solid var(--border-color);
             position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cal-day:hover {
+            border-color: var(--accent-blue);
+            background: #172542;
         }
 
         .cal-day.has-event::after {
             content: '';
-            width: 4px;
-            height: 4px;
+            width: 5px;
+            height: 5px;
             background-color: var(--accent-blue);
             border-radius: 50%;
             position: absolute;
             bottom: 4px;
+            box-shadow: 0 0 6px var(--accent-blue);
         }
 
-        /* Modal Popup Styling */
+        /* Modal Overlay Styling */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -279,7 +380,8 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -300,6 +402,7 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
         }
 
         .modal h3 {
@@ -399,6 +502,10 @@
 
             <div class="chart-container">
                 <canvas id="debtChart"></canvas>
+                <div class="chart-center-text">
+                    <div class="amount" id="debt-chart-center-val">$0</div>
+                    <div class="subtext">Total Debt</div>
+                </div>
             </div>
 
             <div class="custom-legend" id="chartLegend"></div>
@@ -425,6 +532,10 @@
 
             <div class="chart-container">
                 <canvas id="budgetChart"></canvas>
+                <div class="chart-center-text">
+                    <div class="amount" id="budget-chart-center-val">$0</div>
+                    <div class="subtext">Net Income</div>
+                </div>
             </div>
 
             <div class="custom-legend" id="budgetLegend"></div>
@@ -447,24 +558,40 @@
                 <h2 class="card-title">Bills & Reminders</h2>
                 <button class="btn-add" onclick="openModal('bills')">+ Add Bill</button>
             </div>
-            <p class="card-subtitle">Upcoming payments and scheduled calendar reminders.</p>
+            <p class="card-subtitle">Tap dates with blue dots to inspect scheduled reminders.</p>
 
             <div class="calendar-grid" style="margin-bottom: 20px;">
-                <div class="cal-day-header">S</div>
-                <div class="cal-day-header">M</div>
-                <div class="cal-day-header">T</div>
-                <div class="cal-day-header">W</div>
-                <div class="cal-day-header">T</div>
-                <div class="cal-day-header">F</div>
-                <div class="cal-day-header">S</div>
+                <div class="cal-day-header">S</div><div class="cal-day-header">M</div><div class="cal-day-header">T</div>
+                <div class="cal-day-header">W</div><div class="cal-day-header">T</div><div class="cal-day-header">F</div><div class="cal-day-header">S</div>
 
-                <div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div>
-                <div class="cal-day has-event">4</div><div class="cal-day">5</div><div class="cal-day">6</div><div class="cal-day">7</div>
-                <div class="cal-day">8</div><div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div>
-                <div class="cal-day has-event">12</div><div class="cal-day">13</div><div class="cal-day">14</div><div class="cal-day">15</div>
-                <div class="cal-day has-event">16</div><div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day">19</div>
-                <div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day">22</div><div class="cal-day">23</div>
-                <div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div>
+                <div class="cal-day" onclick="openCalendarDay(1)">1</div>
+                <div class="cal-day" onclick="openCalendarDay(2)">2</div>
+                <div class="cal-day" onclick="openCalendarDay(3)">3</div>
+                <div class="cal-day has-event" onclick="openCalendarDay(4)">4</div>
+                <div class="cal-day" onclick="openCalendarDay(5)">5</div>
+                <div class="cal-day" onclick="openCalendarDay(6)">6</div>
+                <div class="cal-day" onclick="openCalendarDay(7)">7</div>
+                <div class="cal-day" onclick="openCalendarDay(8)">8</div>
+                <div class="cal-day" onclick="openCalendarDay(9)">9</div>
+                <div class="cal-day" onclick="openCalendarDay(10)">10</div>
+                <div class="cal-day" onclick="openCalendarDay(11)">11</div>
+                <div class="cal-day has-event" onclick="openCalendarDay(12)">12</div>
+                <div class="cal-day" onclick="openCalendarDay(13)">13</div>
+                <div class="cal-day" onclick="openCalendarDay(14)">14</div>
+                <div class="cal-day" onclick="openCalendarDay(15)">15</div>
+                <div class="cal-day has-event" onclick="openCalendarDay(16)">16</div>
+                <div class="cal-day" onclick="openCalendarDay(17)">17</div>
+                <div class="cal-day" onclick="openCalendarDay(18)">18</div>
+                <div class="cal-day" onclick="openCalendarDay(19)">19</div>
+                <div class="cal-day" onclick="openCalendarDay(20)">20</div>
+                <div class="cal-day" onclick="openCalendarDay(21)">21</div>
+                <div class="cal-day" onclick="openCalendarDay(22)">22</div>
+                <div class="cal-day" onclick="openCalendarDay(23)">23</div>
+                <div class="cal-day" onclick="openCalendarDay(24)">24</div>
+                <div class="cal-day" onclick="openCalendarDay(25)">25</div>
+                <div class="cal-day" onclick="openCalendarDay(26)">26</div>
+                <div class="cal-day" onclick="openCalendarDay(27)">27</div>
+                <div class="cal-day" onclick="openCalendarDay(28)">28</div>
             </div>
 
             <div class="item-list" id="bills-list"></div>
@@ -472,7 +599,7 @@
     </div>
 </div>
 
-<!-- Modal Dialog -->
+<!-- Modal Dialog (Edit/Add) -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
         <h3 id="modalTitle">Edit Item</h3>
@@ -488,8 +615,12 @@
             <input type="text" id="modalInputSub" placeholder="e.g. Primary Income / Fixed Expense">
         </div>
         <div class="form-group">
-            <label>Amount ($)</label>
+            <label>Current Balance / Amount ($)</label>
             <input type="number" id="modalInputAmount" step="0.01" placeholder="0.00">
+        </div>
+        <div class="form-group" id="originalLimitGroup">
+            <label>Original Loan Amount / Credit Limit ($)</label>
+            <input type="number" id="modalInputOriginal" step="0.01" placeholder="e.g. 10000">
         </div>
         <div class="form-group" id="colorGroup">
             <label>Chart Segment Color</label>
@@ -504,29 +635,51 @@
     </div>
 </div>
 
+<!-- Calendar Popup Modal -->
+<div class="modal-overlay" id="calendarModalOverlay">
+    <div class="modal">
+        <h3 id="calModalTitle">Day Reminders</h3>
+        <div id="calModalContent" style="font-size: 0.9rem; color: var(--text-sub);"></div>
+        <div class="modal-actions" style="justify-content: flex-end;">
+            <button class="btn-cancel" onclick="closeCalendarModal()">Close</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Initial Data State
-    let debts = [
-        { title: 'CareCredit', sub: 'Medical / APR: 26.99%', amount: 4500, color: '#38bdf8' },
-        { title: 'Upstart Loan', sub: 'Personal Loan / APR: 12.5%', amount: 6200, color: '#22c55e' },
-        { title: 'Car Insurance', sub: 'Monthly Premium', amount: 310, color: '#f59e0b' },
-        { title: 'Agoda Card', sub: 'Credit Card / APR: 24.2%', amount: 2800, color: '#ef4444' },
-        { title: 'Discover Card', sub: 'Credit Card / APR: 21.0%', amount: 3200, color: '#a855f7' },
-        { title: 'Sofi Personal', sub: 'Personal Loan / APR: 9.8%', amount: 3000, color: '#ec4899' }
+    // Initial Data Defaults
+    const defaultDebts = [
+        { title: 'CareCredit', sub: 'Medical / APR: 26.99%', amount: 4500, original: 6000, color: '#38bdf8' },
+        { title: 'Upstart Loan', sub: 'Personal Loan / APR: 12.5%', amount: 6200, original: 10000, color: '#22c55e' },
+        { title: 'Car Insurance', sub: 'Monthly Premium', amount: 310, original: 310, color: '#f59e0b' },
+        { title: 'Agoda Card', sub: 'Credit Card / APR: 24.2%', amount: 2800, original: 5000, color: '#ef4444' },
+        { title: 'Discover Card', sub: 'Credit Card / APR: 21.0%', amount: 3200, original: 5000, color: '#a855f7' },
+        { title: 'Sofi Personal', sub: 'Personal Loan / APR: 9.8%', amount: 3000, original: 8000, color: '#ec4899' }
     ];
 
-    let budget = [
-        { title: 'Monthly Take-Home Income', sub: 'Primary Salary', amount: 4200, isIncome: true },
-        { title: 'Rent / Housing', sub: 'Fixed Expense', amount: -1400, isIncome: false },
-        { title: 'Car Insurance', sub: 'Fixed Expense', amount: -310, isIncome: false },
-        { title: 'Minimum Debt Payments', sub: 'Across active accounts', amount: -650, isIncome: false }
+    const defaultBudget = [
+        { title: 'Monthly Take-Home Income', sub: 'Primary Salary', amount: 4200 },
+        { title: 'Rent / Housing', sub: 'Fixed Expense', amount: -1400 },
+        { title: 'Car Insurance', sub: 'Fixed Expense', amount: -310 },
+        { title: 'Minimum Debt Payments', sub: 'Across active accounts', amount: -650 }
     ];
 
-    let bills = [
-        { title: 'Car Insurance Payment', sub: 'Due 4th of month', amount: 310 },
-        { title: 'Discover Minimum Payment', sub: 'Due 12th of month', amount: 120 },
-        { title: 'Upstart Monthly Payment', sub: 'Due 16th of month', amount: 210 }
+    const defaultBills = [
+        { title: 'Car Insurance Payment', sub: 'Due 4th of month', amount: 310, day: 4, paid: false },
+        { title: 'Discover Minimum Payment', sub: 'Due 12th of month', amount: 120, day: 12, paid: false },
+        { title: 'Upstart Monthly Payment', sub: 'Due 16th of month', amount: 210, day: 16, paid: false }
     ];
+
+    // Local Storage Loading with Fallback
+    let debts = JSON.parse(localStorage.getItem('clearpath_debts')) || defaultDebts;
+    let budget = JSON.parse(localStorage.getItem('clearpath_budget')) || defaultBudget;
+    let bills = JSON.parse(localStorage.getItem('clearpath_bills')) || defaultBills;
+
+    function saveToStorage() {
+        localStorage.setItem('clearpath_debts', JSON.stringify(debts));
+        localStorage.setItem('clearpath_budget', JSON.stringify(budget));
+        localStorage.setItem('clearpath_bills', JSON.stringify(bills));
+    }
 
     let debtSelectedIndex = null;
     let budgetSelectedIndex = null;
@@ -556,6 +709,7 @@
         updateMetrics();
         renderDebtChart();
         renderBudgetChart();
+        saveToStorage();
     }
 
     function updateMetrics() {
@@ -568,15 +722,33 @@
         const container = document.getElementById('debt-list');
         container.innerHTML = '';
         debts.forEach((item, index) => {
+            const hasHighApr = item.sub && item.sub.includes('APR:') && parseFloat(item.sub.split('APR:')[1]) >= 20;
+            const orig = item.original || item.amount;
+            const paidRatio = orig > 0 ? Math.max(0, Math.min(100, Math.round(((orig - item.amount) / orig) * 100))) : 0;
+
             container.innerHTML += `
                 <div class="list-item">
-                    <div class="item-info">
-                        <div class="title">${item.title}</div>
-                        <div class="sub">${item.sub}</div>
+                    <div class="item-top-row">
+                        <div class="item-info">
+                            <div class="title">
+                                ${item.title}
+                                ${hasHighApr ? '<span class="badge-apr">High APR</span>' : ''}
+                            </div>
+                            <div class="sub">${item.sub}</div>
+                        </div>
+                        <div class="item-right">
+                            <div class="item-amount">$${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                            <button class="btn-action" onclick="openModal('debts', ${index})">Edit</button>
+                        </div>
                     </div>
-                    <div class="item-right">
-                        <div class="item-amount">$${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
-                        <button class="btn-action" onclick="openModal('debts', ${index})">Edit</button>
+                    <div class="progress-container">
+                        <div class="progress-labels">
+                            <span>Paid Off: ${paidRatio}%</span>
+                            <span>Limit/Orig: $${orig.toLocaleString()}</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: ${paidRatio}%;"></div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -592,13 +764,15 @@
             const prefix = isPos ? '+$' : '-$';
             container.innerHTML += `
                 <div class="list-item">
-                    <div class="item-info">
-                        <div class="title">${item.title}</div>
-                        <div class="sub">${item.sub}</div>
-                    </div>
-                    <div class="item-right">
-                        <div class="item-amount" style="${colorStyle}">${prefix}${Math.abs(item.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
-                        <button class="btn-action" onclick="openModal('budget', ${index})">Edit</button>
+                    <div class="item-top-row">
+                        <div class="item-info">
+                            <div class="title">${item.title}</div>
+                            <div class="sub">${item.sub}</div>
+                        </div>
+                        <div class="item-right">
+                            <div class="item-amount" style="${colorStyle}">${prefix}${Math.abs(item.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                            <button class="btn-action" onclick="openModal('budget', ${index})">Edit</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -611,13 +785,15 @@
         bills.forEach((item, index) => {
             container.innerHTML += `
                 <div class="list-item">
-                    <div class="item-info">
-                        <div class="title">${item.title}</div>
-                        <div class="sub">${item.sub}</div>
-                    </div>
-                    <div class="item-right">
-                        <div class="item-amount">$${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
-                        <button class="btn-action" onclick="openModal('bills', ${index})">Edit</button>
+                    <div class="item-top-row">
+                        <div class="item-info">
+                            <div class="title">${item.title}</div>
+                            <div class="sub">${item.sub}</div>
+                        </div>
+                        <div class="item-right">
+                            <div class="item-amount">$${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                            <button class="btn-action" onclick="openModal('bills', ${index})">Edit</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -629,6 +805,9 @@
         const labels = debts.map(d => d.title);
         const dataValues = debts.map(d => d.amount);
         const colors = debts.map(d => d.color || '#38bdf8');
+        const totalDebt = dataValues.reduce((a, b) => a + b, 0);
+
+        document.getElementById('debt-chart-center-val').innerText = `$${Math.round(totalDebt).toLocaleString()}`;
 
         if (debtChart) debtChart.destroy();
 
@@ -647,7 +826,7 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                cutout: '60%',
+                cutout: '72%',
                 animation: { animateScale: true, animateRotate: true },
                 plugins: {
                     legend: { display: false },
@@ -704,6 +883,9 @@
             else totalExpenses += Math.abs(item.amount);
         });
 
+        const netIncome = totalIncome - totalExpenses;
+        document.getElementById('budget-chart-center-val').innerText = `$${Math.round(netIncome).toLocaleString()}`;
+
         const labels = ['Monthly Income', 'Monthly Bills & Expenses'];
         const dataValues = [totalIncome, totalExpenses];
         const colors = ['#10b981', '#ef4444'];
@@ -725,7 +907,7 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                cutout: '60%',
+                cutout: '72%',
                 animation: { animateScale: true, animateRotate: true },
                 plugins: {
                     legend: { display: false },
@@ -787,14 +969,56 @@
         });
     }
 
-    // Modal Operations
+    /* --- Calendar Popups --- */
+    function openCalendarDay(dayNum) {
+        const dayBills = bills.filter(b => b.day === dayNum);
+        document.getElementById('calModalTitle').innerText = `Scheduled Payments — Day ${dayNum}`;
+        const content = document.getElementById('calModalContent');
+
+        if (dayBills.length === 0) {
+            content.innerHTML = '<p style="padding: 10px 0;">No bills or reminders due on this day.</p>';
+        } else {
+            content.innerHTML = dayBills.map((b, idx) => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color);">
+                    <div>
+                        <div style="color: #fff; font-weight: 600;">${b.title}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-sub);">${b.sub}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="color: var(--accent-blue); font-weight: 700;">$${b.amount}</div>
+                        <label style="font-size: 0.75rem; cursor: pointer;">
+                            <input type="checkbox" ${b.paid ? 'checked' : ''} onchange="toggleBillPaid(${dayNum}, ${idx})"> Mark Paid
+                        </label>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('calendarModalOverlay').classList.add('active');
+    }
+
+    function toggleBillPaid(dayNum, idx) {
+        const matchingBills = bills.filter(b => b.day === dayNum);
+        if (matchingBills[idx]) {
+            matchingBills[idx].paid = !matchingBills[idx].paid;
+            saveToStorage();
+        }
+    }
+
+    function closeCalendarModal() {
+        document.getElementById('calendarModalOverlay').classList.remove('active');
+    }
+
+    /* --- Modal Operations (Add/Edit) --- */
     function openModal(category, index = null) {
         document.getElementById('modalCategory').value = category;
         document.getElementById('modalIndex').value = index !== null ? index : '';
         const colorGroup = document.getElementById('colorGroup');
+        const originalLimitGroup = document.getElementById('originalLimitGroup');
         const deleteBtn = document.getElementById('btnDelete');
 
         colorGroup.style.display = category === 'debts' ? 'flex' : 'none';
+        originalLimitGroup.style.display = category === 'debts' ? 'flex' : 'none';
 
         if (index !== null) {
             document.getElementById('modalTitle').innerText = 'Edit Item';
@@ -808,6 +1032,7 @@
             document.getElementById('modalInputSub').value = item.sub;
             document.getElementById('modalInputAmount').value = item.amount;
             if (category === 'debts') {
+                document.getElementById('modalInputOriginal').value = item.original || item.amount;
                 document.getElementById('modalInputColor').value = item.color || '#38bdf8';
             }
         } else {
@@ -816,6 +1041,7 @@
             document.getElementById('modalInputTitle').value = '';
             document.getElementById('modalInputSub').value = '';
             document.getElementById('modalInputAmount').value = '';
+            document.getElementById('modalInputOriginal').value = '';
             document.getElementById('modalInputColor').value = '#38bdf8';
         }
 
@@ -832,6 +1058,7 @@
         const title = document.getElementById('modalInputTitle').value.trim();
         const sub = document.getElementById('modalInputSub').value.trim();
         const amount = parseFloat(document.getElementById('modalInputAmount').value) || 0;
+        const original = parseFloat(document.getElementById('modalInputOriginal').value) || amount;
         const color = document.getElementById('modalInputColor').value;
 
         if (!title) return alert('Please enter a title');
@@ -840,7 +1067,7 @@
         const index = isEdit ? parseInt(indexStr) : null;
 
         if (category === 'debts') {
-            const newItem = { title, sub, amount, color };
+            const newItem = { title, sub, amount, original, color };
             if (isEdit) debts[index] = newItem;
             else debts.push(newItem);
         } else if (category === 'budget') {
@@ -848,7 +1075,7 @@
             if (isEdit) budget[index] = newItem;
             else budget.push(newItem);
         } else if (category === 'bills') {
-            const newItem = { title, sub, amount };
+            const newItem = { title, sub, amount, day: 15, paid: false };
             if (isEdit) bills[index] = newItem;
             else bills.push(newItem);
         }
