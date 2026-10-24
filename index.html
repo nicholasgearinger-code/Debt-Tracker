@@ -13,6 +13,8 @@
             --text-sub: #94a3b8;
             --accent-blue: #38bdf8;
             --border-color: #243356;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
         }
 
         * {
@@ -69,7 +71,7 @@
         }
 
         .btn.active {
-            background-color: #10b981;
+            background-color: var(--accent-green);
             color: #ffffff;
         }
 
@@ -161,6 +163,76 @@
         .dimmed {
             opacity: 0.25;
         }
+
+        /* List Items Styling */
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #111a2e;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .item-info .title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .item-info .sub {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        .item-amount {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        /* Calendar Grid */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .cal-day-header {
+            color: var(--text-sub);
+            font-weight: 600;
+            padding-bottom: 6px;
+        }
+
+        .cal-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #111a2e;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .cal-day.has-event::after {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background-color: var(--accent-blue);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 4px;
+        }
     </style>
 </head>
 <body>
@@ -208,6 +280,43 @@
         <div class="card">
             <h2 class="card-title">Debts Breakdown</h2>
             <p class="card-subtitle">Detailed overview of active loans and credit cards.</p>
+            <div class="item-list">
+                <div class="list-item">
+                    <div class="item-info">
+                        <div class="title">CareCredit</div>
+                        <div class="sub">Medical / APR: 26.99%</div>
+                    </div>
+                    <div class="item-amount">$4,500.00</div>
+                </div>
+                <div class="list-item">
+                    <div class="item-info">
+                        <div class="title">Upstart Loan</div>
+                        <div class="sub">Personal Loan / APR: 12.5%</div>
+                    </div>
+                    <div class="item-amount">$6,200.00</div>
+                </div>
+                <div class="list-item">
+                    <div class="item-info">
+                        <div class="title">Agoda Card</div>
+                        <div class="sub">Credit Card / APR: 24.2%</div>
+                    </div>
+                    <div class="item-amount">$2,800.00</div>
+                </div>
+                <div class="list-item">
+                    <div class="item-info">
+                        <div class="title">Discover Card</div>
+                        <div class="sub">Credit Card / APR: 21.0%</div>
+                    </div>
+                    <div class="item-amount">$3,200.00</div>
+                </div>
+                <div class="list-item">
+                    <div class="item-info">
+                        <div class="title">Sofi Personal</div>
+                        <div class="sub">Personal Loan / APR: 9.8%</div>
+                    </div>
+                    <div class="item-amount">$3,000.00</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -215,7 +324,37 @@
     <div id="tab-budget" class="tab-content">
         <div class="card">
             <h2 class="card-title">Monthly Budget</h2>
-            <p class="card-subtitle">Income vs. Expenses tracking.</p>
+            <p class="card-subtitle">Income vs. Fixed Expenses tracking.</p>
+            <div class="item-list">
+                <div class="list-item">
+                    <div class="item-info">
+                        <div class="title">Monthly Take-Home Income</div>
+                        <div class="sub">Primary Salary</div>
+                    </div>
+                    <div class="item-amount" style="color: var(--accent-green)">+$4,200.00</div>
+                </div>
+                <div class="list-item">
+                    <div class="item-info">
+                        <div class="title">Rent / Housing</div>
+                        <div class="sub">Fixed Expense</div>
+                    </div>
+                    <div class="item-amount" style="color: var(--accent-red)">-$1,400.00</div>
+                </div>
+                <div class="list-item">
+                    <div class="item-info">
+                        <div class="title">Car Insurance</div>
+                        <div class="sub">Fixed Expense</div>
+                    </div>
+                    <div class="item-amount" style="color: var(--accent-red)">-$310.00</div>
+                </div>
+                <div class="list-item">
+                    <div class="item-info">
+                        <div class="title">Minimum Debt Payments</div>
+                        <div class="sub">Across 5 accounts</div>
+                    </div>
+                    <div class="item-amount" style="color: var(--accent-red)">-$650.00</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -223,13 +362,75 @@
     <div id="tab-bills" class="tab-content">
         <div class="card">
             <h2 class="card-title">Bills & Reminders</h2>
-            <p class="card-subtitle">Upcoming payments and scheduled reminders.</p>
+            <p class="card-subtitle">Upcoming payments and scheduled calendar reminders.</p>
+            
+            <div class="calendar-grid" style="margin-bottom: 20px;">
+                <div class="cal-day-header">S</div>
+                <div class="cal-day-header">M</div>
+                <div class="cal-day-header">T</div>
+                <div class="cal-day-header">W</div>
+                <div class="cal-day-header">T</div>
+                <div class="cal-day-header">F</div>
+                <div class="cal-day-header">S</div>
+
+                <div class="cal-day">1</div>
+                <div class="cal-day">2</div>
+                <div class="cal-day">3</div>
+                <div class="cal-day has-event">4</div>
+                <div class="cal-day">5</div>
+                <div class="cal-day">6</div>
+                <div class="cal-day">7</div>
+                <div class="cal-day">8</div>
+                <div class="cal-day">9</div>
+                <div class="cal-day">10</div>
+                <div class="cal-day">11</div>
+                <div class="cal-day has-event">12</div>
+                <div class="cal-day">13</div>
+                <div class="cal-day">14</div>
+                <div class="cal-day">15</div>
+                <div class="cal-day has-event">16</div>
+                <div class="cal-day">17</div>
+                <div class="cal-day">18</div>
+                <div class="cal-day">19</div>
+                <div class="cal-day">20</div>
+                <div class="cal-day">21</div>
+                <div class="cal-day">22</div>
+                <div class="cal-day">23</div>
+                <div class="cal-day">24</div>
+                <div class="cal-day">25</div>
+                <div class="cal-day">26</div>
+                <div class="cal-day">27</div>
+                <div class="cal-day">28</div>
+            </div>
+
+            <div class="item-list">
+                <div class="list-item">
+                    <div class="item-info">
+                        <div class="title">Car Insurance Payment</div>
+                        <div class="sub">Due 4th of month</div>
+                    </div>
+                    <div class="item-amount">$310.00</div>
+                </div>
+                <div class="list-item">
+                    <div class="item-info">
+                        <div class="title">Discover Minimum Payment</div>
+                        <div class="sub">Due 12th of month</div>
+                    </div>
+                    <div class="item-amount">$120.00</div>
+                </div>
+                <div class="list-item">
+                    <div class="item-info">
+                        <div class="title">Upstart Monthly Payment</div>
+                        <div class="sub">Due 16th of month</div>
+                    </div>
+                    <div class="item-amount">$210.00</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Tab switching logic
     function switchTab(tabId, btnElement) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.nav-buttons .btn').forEach(btn => btn.classList.remove('active'));
