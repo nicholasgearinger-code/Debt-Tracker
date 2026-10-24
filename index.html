@@ -91,7 +91,6 @@
             display: flex;
         }
 
-        /* Improved Card Hover & Glow */
         .card {
             background-color: var(--card-bg);
             border-radius: 16px;
@@ -149,34 +148,12 @@
             line-height: 1.3;
         }
 
-        /* Chart Center Overlay */
+        /* Chart Area Container */
         .chart-container {
             position: relative;
             width: 100%;
-            max-width: 320px;
+            max-width: 360px;
             margin: 0 auto 20px auto;
-        }
-
-        .chart-center-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            pointer-events: none;
-        }
-
-        .chart-center-text .amount {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--text-main);
-        }
-
-        .chart-center-text .subtext {
-            font-size: 0.7rem;
-            color: var(--text-sub);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .custom-legend {
@@ -272,7 +249,7 @@
             text-transform: uppercase;
         }
 
-        /* Progress Bar Styling */
+        /* Payoff Progress Bar Styling */
         .progress-container {
             display: flex;
             flex-direction: column;
@@ -283,22 +260,22 @@
         .progress-labels {
             display: flex;
             justify-content: space-between;
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             color: var(--text-sub);
         }
 
         .progress-bar-bg {
             width: 100%;
-            height: 6px;
+            height: 7px;
             background-color: #1e2d4a;
-            border-radius: 3px;
+            border-radius: 4px;
             overflow: hidden;
         }
 
         .progress-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, #38bdf8, #10b981);
-            border-radius: 3px;
+            border-radius: 4px;
             transition: width 0.4s ease;
         }
 
@@ -498,14 +475,10 @@
 
         <div class="card">
             <h2 class="card-title" style="margin-bottom: 6px;">Debt & Bills Distribution</h2>
-            <p class="card-subtitle">Tap any segment to isolate and inspect detailed proportions.</p>
+            <p class="card-subtitle">Tap any segment to isolate proportions or inspect slice values.</p>
 
             <div class="chart-container">
                 <canvas id="debtChart"></canvas>
-                <div class="chart-center-text">
-                    <div class="amount" id="debt-chart-center-val">$0</div>
-                    <div class="subtext">Total Debt</div>
-                </div>
             </div>
 
             <div class="custom-legend" id="chartLegend"></div>
@@ -519,7 +492,7 @@
                 <h2 class="card-title">Debts Breakdown</h2>
                 <button class="btn-add" onclick="openModal('debts')">+ Add Debt</button>
             </div>
-            <p class="card-subtitle">Detailed overview of active loans and credit cards.</p>
+            <p class="card-subtitle">Detailed overview of active loans and payoff progress.</p>
             <div class="item-list" id="debt-list"></div>
         </div>
     </div>
@@ -532,10 +505,6 @@
 
             <div class="chart-container">
                 <canvas id="budgetChart"></canvas>
-                <div class="chart-center-text">
-                    <div class="amount" id="budget-chart-center-val">$0</div>
-                    <div class="subtext">Net Income</div>
-                </div>
             </div>
 
             <div class="custom-legend" id="budgetLegend"></div>
@@ -564,34 +533,20 @@
                 <div class="cal-day-header">S</div><div class="cal-day-header">M</div><div class="cal-day-header">T</div>
                 <div class="cal-day-header">W</div><div class="cal-day-header">T</div><div class="cal-day-header">F</div><div class="cal-day-header">S</div>
 
-                <div class="cal-day" onclick="openCalendarDay(1)">1</div>
-                <div class="cal-day" onclick="openCalendarDay(2)">2</div>
-                <div class="cal-day" onclick="openCalendarDay(3)">3</div>
-                <div class="cal-day has-event" onclick="openCalendarDay(4)">4</div>
-                <div class="cal-day" onclick="openCalendarDay(5)">5</div>
-                <div class="cal-day" onclick="openCalendarDay(6)">6</div>
-                <div class="cal-day" onclick="openCalendarDay(7)">7</div>
-                <div class="cal-day" onclick="openCalendarDay(8)">8</div>
-                <div class="cal-day" onclick="openCalendarDay(9)">9</div>
-                <div class="cal-day" onclick="openCalendarDay(10)">10</div>
-                <div class="cal-day" onclick="openCalendarDay(11)">11</div>
-                <div class="cal-day has-event" onclick="openCalendarDay(12)">12</div>
-                <div class="cal-day" onclick="openCalendarDay(13)">13</div>
-                <div class="cal-day" onclick="openCalendarDay(14)">14</div>
-                <div class="cal-day" onclick="openCalendarDay(15)">15</div>
-                <div class="cal-day has-event" onclick="openCalendarDay(16)">16</div>
-                <div class="cal-day" onclick="openCalendarDay(17)">17</div>
-                <div class="cal-day" onclick="openCalendarDay(18)">18</div>
-                <div class="cal-day" onclick="openCalendarDay(19)">19</div>
-                <div class="cal-day" onclick="openCalendarDay(20)">20</div>
-                <div class="cal-day" onclick="openCalendarDay(21)">21</div>
-                <div class="cal-day" onclick="openCalendarDay(22)">22</div>
-                <div class="cal-day" onclick="openCalendarDay(23)">23</div>
-                <div class="cal-day" onclick="openCalendarDay(24)">24</div>
-                <div class="cal-day" onclick="openCalendarDay(25)">25</div>
-                <div class="cal-day" onclick="openCalendarDay(26)">26</div>
-                <div class="cal-day" onclick="openCalendarDay(27)">27</div>
-                <div class="cal-day" onclick="openCalendarDay(28)">28</div>
+                <div class="cal-day" onclick="openCalendarDay(1)">1</div><div class="cal-day" onclick="openCalendarDay(2)">2</div>
+                <div class="cal-day" onclick="openCalendarDay(3)">3</div><div class="cal-day has-event" onclick="openCalendarDay(4)">4</div>
+                <div class="cal-day" onclick="openCalendarDay(5)">5</div><div class="cal-day" onclick="openCalendarDay(6)">6</div>
+                <div class="cal-day" onclick="openCalendarDay(7)">7</div><div class="cal-day" onclick="openCalendarDay(8)">8</div>
+                <div class="cal-day" onclick="openCalendarDay(9)">9</div><div class="cal-day" onclick="openCalendarDay(10)">10</div>
+                <div class="cal-day" onclick="openCalendarDay(11)">11</div><div class="cal-day has-event" onclick="openCalendarDay(12)">12</div>
+                <div class="cal-day" onclick="openCalendarDay(13)">13</div><div class="cal-day" onclick="openCalendarDay(14)">14</div>
+                <div class="cal-day" onclick="openCalendarDay(15)">15</div><div class="cal-day has-event" onclick="openCalendarDay(16)">16</div>
+                <div class="cal-day" onclick="openCalendarDay(17)">17</div><div class="cal-day" onclick="openCalendarDay(18)">18</div>
+                <div class="cal-day" onclick="openCalendarDay(19)">19</div><div class="cal-day" onclick="openCalendarDay(20)">20</div>
+                <div class="cal-day" onclick="openCalendarDay(21)">21</div><div class="cal-day" onclick="openCalendarDay(22)">22</div>
+                <div class="cal-day" onclick="openCalendarDay(23)">23</div><div class="cal-day" onclick="openCalendarDay(24)">24</div>
+                <div class="cal-day" onclick="openCalendarDay(25)">25</div><div class="cal-day" onclick="openCalendarDay(26)">26</div>
+                <div class="cal-day" onclick="openCalendarDay(27)">27</div><div class="cal-day" onclick="openCalendarDay(28)">28</div>
             </div>
 
             <div class="item-list" id="bills-list"></div>
@@ -608,11 +563,11 @@
 
         <div class="form-group">
             <label>Title</label>
-            <input type="text" id="modalInputTitle" placeholder="e.g. Salary or Rent">
+            <input type="text" id="modalInputTitle" placeholder="e.g. Discover Card or Rent">
         </div>
         <div class="form-group">
             <label>Subtext / Details</label>
-            <input type="text" id="modalInputSub" placeholder="e.g. Primary Income / Fixed Expense">
+            <input type="text" id="modalInputSub" placeholder="e.g. Credit Card / APR: 21%">
         </div>
         <div class="form-group">
             <label>Current Balance / Amount ($)</label>
@@ -670,7 +625,7 @@
         { title: 'Upstart Monthly Payment', sub: 'Due 16th of month', amount: 210, day: 16, paid: false }
     ];
 
-    // Local Storage Loading with Fallback
+    // Local Storage Loading
     let debts = JSON.parse(localStorage.getItem('clearpath_debts')) || defaultDebts;
     let budget = JSON.parse(localStorage.getItem('clearpath_budget')) || defaultBudget;
     let bills = JSON.parse(localStorage.getItem('clearpath_bills')) || defaultBills;
@@ -686,6 +641,110 @@
 
     let debtChart = null;
     let budgetChart = null;
+
+    /* --- CHART.JS CUSTOM PLUGINS --- */
+
+    // Center Stats Plugin
+    const centerStatsPlugin = {
+        id: 'centerStats',
+        beforeDraw(chart) {
+            if (!chart.config.options.plugins.centerStats) return;
+            const { ctx, chartArea: { top, bottom, left, right } } = chart;
+            const opts = chart.config.options.plugins.centerStats;
+
+            ctx.save();
+            const centerX = (left + right) / 2;
+            const centerY = (top + bottom) / 2;
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Amount Text
+            ctx.font = '800 1.25rem -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(opts.amountText || '$0', centerX, centerY - 6);
+
+            // Label Subtext
+            ctx.font = '600 0.65rem -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText((opts.labelText || '').toUpperCase(), centerX, centerY + 14);
+
+            ctx.restore();
+        }
+    };
+
+    // Inner Labels + Auto Callout Lines for Small Segments
+    const smartLabelsPlugin = {
+        id: 'smartLabels',
+        afterDraw(chart) {
+            const { ctx, chartArea: { top, bottom, left, right } } = chart;
+            const meta = chart.getDatasetMeta(0);
+            const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+
+            if (!meta || !meta.data.length || total === 0) return;
+
+            const centerX = (left + right) / 2;
+            const centerY = (top + bottom) / 2;
+
+            meta.data.forEach((element, i) => {
+                const value = chart.data.datasets[0].data[i];
+                const percentage = (value / total) * 100;
+                const { startAngle, endAngle, outerRadius, innerRadius } = element;
+
+                const midAngle = startAngle + (endAngle - startAngle) / 2;
+                const sliceAngle = endAngle - startAngle;
+
+                ctx.save();
+
+                // If segment > 10% of total ring, render directly INSIDE slice
+                if (sliceAngle > 0.45 && percentage > 8) {
+                    const radius = innerRadius + (outerRadius - innerRadius) / 2;
+                    const x = centerX + Math.cos(midAngle) * radius;
+                    const y = centerY + Math.sin(midAngle) * radius;
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '700 0.72rem -apple-system, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(`$${Math.round(value).toLocaleString()}`, x, y);
+                } 
+                // If segment is TOO SMALL, draw callout line to outside label
+                else if (value > 0) {
+                    const lineStartRadius = outerRadius + 2;
+                    const lineEndRadius = outerRadius + 16;
+
+                    const xStart = centerX + Math.cos(midAngle) * lineStartRadius;
+                    const yStart = centerY + Math.sin(midAngle) * lineStartRadius;
+
+                    const xEnd = centerX + Math.cos(midAngle) * lineEndRadius;
+                    const yEnd = centerY + Math.sin(midAngle) * lineEndRadius;
+
+                    const isRight = Math.cos(midAngle) >= 0;
+                    const xLabel = xEnd + (isRight ? 12 : -12);
+
+                    // Draw pointing line
+                    ctx.beginPath();
+                    ctx.moveTo(xStart, yStart);
+                    ctx.lineTo(xEnd, yEnd);
+                    ctx.lineTo(xLabel, yEnd);
+                    ctx.strokeStyle = 'rgba(148, 163, 184, 0.5)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    // Render floating text
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '600 0.65rem -apple-system, sans-serif';
+                    ctx.textAlign = isRight ? 'left' : 'right';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(`$${Math.round(value).toLocaleString()}`, xLabel + (isRight ? 4 : -4), yEnd);
+                }
+
+                ctx.restore();
+            });
+        }
+    };
+
+    Chart.register(centerStatsPlugin, smartLabelsPlugin);
 
     function switchTab(tabId, btnElement) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -807,8 +866,6 @@
         const colors = debts.map(d => d.color || '#38bdf8');
         const totalDebt = dataValues.reduce((a, b) => a + b, 0);
 
-        document.getElementById('debt-chart-center-val').innerText = `$${Math.round(totalDebt).toLocaleString()}`;
-
         if (debtChart) debtChart.destroy();
 
         const ctx = document.getElementById('debtChart').getContext('2d');
@@ -826,10 +883,15 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                cutout: '72%',
+                layout: { padding: 24 },
+                cutout: '70%',
                 animation: { animateScale: true, animateRotate: true },
                 plugins: {
                     legend: { display: false },
+                    centerStats: {
+                        amountText: `$${Math.round(totalDebt).toLocaleString()}`,
+                        labelText: 'Total Debt'
+                    },
                     tooltip: {
                         callbacks: {
                             label: function(context) { return ` $${context.raw.toLocaleString()}`; }
@@ -884,8 +946,6 @@
         });
 
         const netIncome = totalIncome - totalExpenses;
-        document.getElementById('budget-chart-center-val').innerText = `$${Math.round(netIncome).toLocaleString()}`;
-
         const labels = ['Monthly Income', 'Monthly Bills & Expenses'];
         const dataValues = [totalIncome, totalExpenses];
         const colors = ['#10b981', '#ef4444'];
@@ -907,10 +967,15 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                cutout: '72%',
+                layout: { padding: 24 },
+                cutout: '70%',
                 animation: { animateScale: true, animateRotate: true },
                 plugins: {
                     legend: { display: false },
+                    centerStats: {
+                        amountText: `$${Math.round(netIncome).toLocaleString()}`,
+                        labelText: 'Net Surplus'
+                    },
                     tooltip: {
                         callbacks: {
                             label: function(context) { return ` $${context.raw.toLocaleString()}`; }
