@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClearPath — Debt Tracker</title>
+  <title>ClearPath — Debt & Finance Tracker</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -16,6 +16,7 @@
       --accent-green: #22c55e;
       --accent-red: #ef4444;
       --accent-amber: #f59e0b;
+      --accent-purple: #a855f7;
       --radius: 12px;
     }
 
@@ -34,15 +35,15 @@
     .tab-content { display: none; max-width: 1200px; margin: 0 auto; }
     .tab-content.active { display: block; }
 
-    /* Dashboard Layout */
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 24px; }
+    /* Layouts */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 24px; }
     .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 24px; position: relative; }
     .card h3 { font-size: 1.25rem; margin-bottom: 8px; font-weight: 600; }
     .card p.subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
 
     .chart-container { position: relative; height: 320px; width: 100%; }
 
-    /* Debts Tab Styles */
+    /* Table Styles */
     .table-container { overflow-x: auto; margin-top: 16px; }
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th, td { padding: 14px; border-bottom: 1px solid var(--card-border); font-size: 0.95rem; }
@@ -61,16 +62,34 @@
     .strategy-btn { flex: 1; padding: 12px; background: #0f172a; border: 1px solid var(--card-border); border-radius: var(--radius); color: var(--text-muted); cursor: pointer; text-align: center; }
     .strategy-btn.selected { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
 
+    /* Calendar UI */
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+    .cal-day-header { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; padding-bottom: 6px; }
+    .cal-cell { background: #0f172a; border: 1px solid var(--card-border); min-height: 70px; border-radius: 8px; padding: 6px; text-align: left; font-size: 0.8rem; cursor: pointer; transition: border-color 0.2s ease; }
+    .cal-cell:hover { border-color: var(--accent-blue); }
+    .cal-cell.other-month { opacity: 0.3; }
+    .cal-cell.today { border-color: var(--accent-green); }
+    .cal-number { font-weight: 600; margin-bottom: 4px; display: block; }
+    .cal-event { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); padding: 2px 4px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; whitespace: nowrap; }
+    .cal-event.paid { background: rgba(34, 197, 94, 0.2); color: var(--accent-green); }
+
+    /* Progress Bar */
+    .progress-bar-bg { background: #0f172a; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 8px; margin-bottom: 16px; }
+    .progress-bar-fill { height: 100%; border-radius: 5px; transition: width 0.3s ease; }
+
     /* Modal */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 100; }
     .modal-overlay.open { display: flex; }
     .modal { background: var(--card-bg); padding: 24px; border-radius: var(--radius); width: 100%; max-width: 400px; border: 1px solid var(--card-border); }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
-    .form-group input { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--card-border); border-radius: 6px; color: var(--text-main); }
+    .form-group input, .form-group select { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--card-border); border-radius: 6px; color: var(--text-main); }
 
     @media (max-width: 600px) {
       .grid-2 { grid-template-columns: 1fr; }
+      .cal-cell { min-height: 50px; padding: 2px; }
+      .cal-event { font-size: 0.6rem; }
     }
   </style>
 </head>
@@ -82,10 +101,10 @@
       <p style="color: var(--text-muted); font-size: 0.9rem;">Debt & Budget Dashboard</p>
     </div>
     <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
-      <button class="tab-btn" onclick="switchTab('debts')">Debts</button>
-      <button class="tab-btn" onclick="switchTab('budget')">Budget</button>
-      <button class="tab-btn" onclick="switchTab('bills')">Bills & Reminders</button>
+      <button class="tab-btn active" onclick="switchTab('overview', event)">Overview</button>
+      <button class="tab-btn" onclick="switchTab('debts', event)">Debts</button>
+      <button class="tab-btn" onclick="switchTab('budget', event)">Budget</button>
+      <button class="tab-btn" onclick="switchTab('bills', event)">Bills & Reminders</button>
     </div>
     <div class="metrics-bar">
       <div>
@@ -94,7 +113,7 @@
       </div>
       <div>
         <div class="metric-title" style="text-align: right;">Active Accounts</div>
-        <div class="metric-value" style="text-align: right; color: var(--text-main);">6</div>
+        <div class="metric-value" style="text-align: right; color: var(--text-main);" id="activeAccountsDisplay">6</div>
       </div>
     </div>
   </header>
@@ -170,18 +189,92 @@
     </div>
   </section>
 
-  <!-- BUDGET & BILLS TAB PLACEHOLDERS -->
+  <!-- BUDGET TAB -->
   <section id="budget" class="tab-content">
-    <div class="card">
-      <h3>Budget Planning</h3>
-      <p class="subtitle">Monthly income allocation and budget tracking.</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Budget Allocation (50/30/20 Framework)</h3>
+        <p class="subtitle">Track income distribution across Needs, Wants, and Savings/Debt.</p>
+        
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+            <span>Essential Needs (50% target)</span>
+            <span style="color: var(--accent-blue); font-weight: 600;">$2,250 / $2,250</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: 100%; background: var(--accent-blue);"></div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+            <span>Wants & Personal (30% target)</span>
+            <span style="color: var(--accent-purple); font-weight: 600;">$900 / $1,350</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: 66%; background: var(--accent-purple);"></div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+            <span>Savings & Extra Debt Repayment (20% target)</span>
+            <span style="color: var(--accent-green); font-weight: 600;">$855 / $900</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: 95%; background: var(--accent-green);"></div>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--card-border);">
+          <div class="form-group">
+            <label>Monthly Take-Home Income ($)</label>
+            <input type="number" id="monthlyIncomeInput" value="4500" onchange="updateBudgetCalculations()">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Category Breakdown</h3>
+        <p class="subtitle">Visual representation of planned vs actual expenses.</p>
+        <div class="chart-container">
+          <canvas id="budgetChart"></canvas>
+        </div>
+      </div>
     </div>
   </section>
 
+  <!-- BILLS & REMINDERS TAB -->
   <section id="bills" class="tab-content">
-    <div class="card">
-      <h3>Bills & Reminders</h3>
-      <p class="subtitle">Upcoming payment schedules and automated alerts.</p>
+    <div class="grid-2">
+      <div class="card">
+        <div class="calendar-header">
+          <h3 id="calMonthYear">October 2026</h3>
+          <div>
+            <button class="btn btn-secondary" style="padding: 4px 10px;" onclick="changeMonth(-1)">&lt;</button>
+            <button class="btn btn-secondary" style="padding: 4px 10px;" onclick="changeMonth(1)">&gt;</button>
+          </div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid">
+          <!-- Calendar populated dynamically -->
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Upcoming Bills Timeline</h3>
+        <p class="subtitle">Filtered reminders and scheduled payments.</p>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Bill / Debt</th>
+                <th>Due Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="billsTimelineBody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -205,6 +298,10 @@
         <label>Current Balance ($)</label>
         <input type="number" id="newAccBalance" placeholder="1200">
       </div>
+      <div class="form-group">
+        <label>Due Day of Month</label>
+        <input type="number" id="newAccDue" placeholder="15">
+      </div>
       <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px;">
         <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
         <button class="btn" onclick="saveDebtAccount()">Save Account</button>
@@ -213,23 +310,24 @@
   </div>
 
   <script>
-    // Sample Initial Debts Data
+    // Sample Data
     let debtsData = [
-      { id: 1, name: 'CareCredit', apr: 26.99, min: 150, balance: 4500, due: '15th', status: 'Upcoming' },
-      { id: 2, name: 'Upstart Loan', apr: 14.2, min: 210, balance: 6200, due: '18th', status: 'Upcoming' },
-      { id: 3, name: 'Car Insurance', apr: 0, min: 120, balance: 120, due: '20th', status: 'Paid' },
-      { id: 4, name: 'Agoda Card', apr: 22.4, min: 85, balance: 2100, due: '22nd', status: 'Upcoming' },
-      { id: 5, name: 'Discover Card', apr: 19.99, min: 110, balance: 3400, due: '28th', status: 'Upcoming' },
-      { id: 6, name: 'Sofi Personal', apr: 11.5, min: 180, balance: 3690, due: '1st', status: 'Upcoming' }
+      { id: 1, name: 'CareCredit', apr: 26.99, min: 150, balance: 4500, dueDay: 15, status: 'Upcoming' },
+      { id: 2, name: 'Upstart Loan', apr: 14.2, min: 210, balance: 6200, dueDay: 18, status: 'Upcoming' },
+      { id: 3, name: 'Car Insurance', apr: 0, min: 120, balance: 120, dueDay: 20, status: 'Paid' },
+      { id: 4, name: 'Agoda Card', apr: 22.4, min: 85, balance: 2100, dueDay: 22, status: 'Upcoming' },
+      { id: 5, name: 'Discover Card', apr: 19.99, min: 110, balance: 3400, dueDay: 28, status: 'Upcoming' },
+      { id: 6, name: 'Sofi Personal', apr: 11.5, min: 180, balance: 3690, dueDay: 1, status: 'Upcoming' }
     ];
 
-    let distChart, cashflowChart;
+    let currentCalDate = new Date();
+    let distChart, cashflowChart, budgetChart;
 
-    function switchTab(tabId) {
+    function switchTab(tabId, evt) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       
-      event.target.classList.add('active');
+      if (evt && evt.target) evt.target.classList.add('active');
       document.getElementById(tabId).classList.add('active');
     }
 
@@ -244,7 +342,7 @@
           <td>${item.apr}%</td>
           <td>$${item.min.toFixed(2)}</td>
           <td>$${item.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-          <td>${item.due}</td>
+          <td>${item.dueDay}th</td>
           <td><span class="badge ${item.status === 'Paid' ? 'badge-paid' : 'badge-upcoming'}">${item.status}</span></td>
           <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="logPayment(${item.id})">Log Payment</button></td>
         `;
@@ -252,11 +350,14 @@
       });
 
       updateTotalBalance();
+      renderBillsTimeline();
+      renderCalendar();
     }
 
     function updateTotalBalance() {
       const total = debtsData.reduce((acc, curr) => acc + curr.balance, 0);
       document.getElementById('totalBalanceDisplay').innerText = '$' + total.toLocaleString('en-US', {minimumFractionDigits: 2});
+      document.getElementById('activeAccountsDisplay').innerText = debtsData.filter(d => d.balance > 0).length;
     }
 
     function logPayment(id) {
@@ -292,12 +393,95 @@
       const apr = parseFloat(document.getElementById('newAccApr').value) || 0;
       const min = parseFloat(document.getElementById('newAccMin').value) || 0;
       const balance = parseFloat(document.getElementById('newAccBalance').value) || 0;
+      const dueDay = parseInt(document.getElementById('newAccDue').value) || 1;
 
       if (name && balance > 0) {
-        debtsData.push({ id: Date.now(), name, apr, min, balance, due: '1st', status: 'Upcoming' });
+        debtsData.push({ id: Date.now(), name, apr, min, balance, dueDay, status: 'Upcoming' });
         renderDebtsTable();
         updateCharts();
         closeModal();
+      }
+    }
+
+    /* Calendar & Bills System */
+    function renderCalendar() {
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '';
+
+      const month = currentCalDate.getMonth();
+      const year = currentCalDate.getFullYear();
+
+      document.getElementById('calMonthYear').innerText = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+
+      // Headers
+      ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+        const h = document.createElement('div');
+        h.className = 'cal-day-header';
+        h.innerText = day;
+        grid.appendChild(h);
+      });
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      // Empty lead cells
+      for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'cal-cell other-month';
+        grid.appendChild(emptyCell);
+      }
+
+      // Day cells
+      const today = new Date();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-cell';
+        if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+          cell.classList.add('today');
+        }
+
+        cell.innerHTML = `<span class="cal-number">${day}</span>`;
+
+        // Check for debts due on this day
+        const dueItems = debtsData.filter(d => d.dueDay === day);
+        dueItems.forEach(item => {
+          const ev = document.createElement('div');
+          ev.className = `cal-event ${item.status === 'Paid' ? 'paid' : ''}`;
+          ev.innerText = `${item.name} ($${item.min})`;
+          cell.appendChild(ev);
+        });
+
+        grid.appendChild(cell);
+      }
+    }
+
+    function changeMonth(delta) {
+      currentCalDate.setMonth(currentCalDate.getMonth() + delta);
+      renderCalendar();
+    }
+
+    function renderBillsTimeline() {
+      const tbody = document.getElementById('billsTimelineBody');
+      tbody.innerHTML = '';
+
+      const sorted = [...debtsData].sort((a, b) => a.dueDay - b.dueDay);
+      sorted.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${item.name}</strong></td>
+          <td>Day ${item.dueDay} of month</td>
+          <td>$${item.min.toFixed(2)}</td>
+          <td><span class="badge ${item.status === 'Paid' ? 'badge-paid' : 'badge-upcoming'}">${item.status}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateBudgetCalculations() {
+      const inc = parseFloat(document.getElementById('monthlyIncomeInput').value) || 0;
+      if (budgetChart) {
+        budgetChart.data.datasets[0].data = [inc * 0.5, inc * 0.3, inc * 0.2];
+        budgetChart.update();
       }
     }
 
@@ -305,6 +489,7 @@
     function initCharts() {
       const ctxDist = document.getElementById('distributionChart').getContext('2d');
       const ctxCash = document.getElementById('cashflowChart').getContext('2d');
+      const ctxBudget = document.getElementById('budgetChart').getContext('2d');
 
       distChart = new Chart(ctxDist, {
         type: 'doughnut',
@@ -321,28 +506,15 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          animation: {
-            animateScale: true,
-            animateRotate: true,
-            duration: 1200,
-            easing: 'easeOutQuart'
-          },
-          plugins: {
-            legend: { position: 'bottom', labels: { color: '#94a3b8' } }
-          },
+          animation: { animateScale: true, animateRotate: true, duration: 1200, easing: 'easeOutQuart' },
+          plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } },
           onClick: (e, elements) => {
             if (elements.length > 0) {
               const index = elements[0].index;
               const dataset = distChart.data.datasets[0];
-              
-              // Toggle isolation scale / explosion
-              const offsets = dataset.data.map((_, i) => i === index ? 18 : 0);
-              const opacities = dataset.data.map((_, i) => i === index ? 1 : 0.25);
-              
-              dataset.offset = offsets;
+              dataset.offset = dataset.data.map((_, i) => i === index ? 18 : 0);
               distChart.update();
             } else {
-              // Reset
               distChart.data.datasets[0].offset = 0;
               distChart.update();
             }
@@ -370,6 +542,24 @@
             y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
             x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
           }
+        }
+      });
+
+      budgetChart = new Chart(ctxBudget, {
+        type: 'pie',
+        data: {
+          labels: ['Needs (Housing, Bills, Food)', 'Wants (Entertainment, Dining)', 'Savings & Debt Payoff'],
+          datasets: [{
+            data: [2250, 1350, 900],
+            backgroundColor: ['#38bdf8', '#a855f7', '#22c55e'],
+            borderWidth: 2,
+            borderColor: '#1e293b'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } }
         }
       });
     }
