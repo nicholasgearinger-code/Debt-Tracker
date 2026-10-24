@@ -1,668 +1,550 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#101c30">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClearPath — Debt Tracker</title>
-  <link rel="manifest" href="manifest.json">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
-    :root {--navy:#19234f; --ink:#19234f; --muted:#68718a; --green:#00ad68; --mint:#7ee787; --bg:#f4f5f7; --line:#e3e5eb; --red:#b83f4b; --amber:#e9b949}
-    * {box-sizing:border-box}
-    body {margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif}
-    button, input {font:inherit}
-    button {border:0; border-radius:11px; padding:11px 15px; background:var(--navy); color:#fff; font-weight:700; cursor:pointer}
-    button:hover {opacity:.9}
-    button.secondary {background:#e7e9f0; color:var(--ink)}
-    button.danger {background:#fae9e7; color:#9a352d}
-    .wrap {max-width:1040px; margin:auto; padding:max(18px, env(safe-area-inset-top)) 18px 46px}
-    .hero {background:var(--navy); color:#fff; padding:28px 28px 34px; border-radius:0 0 24px 24px; margin:-18px -18px 20px; position:relative; overflow:hidden}
-    .hero:after {content:""; position:absolute; top:0; left:0; right:0; height:8px; background:linear-gradient(90deg,#80e783 0 17%,#55c980 17% 34%,#00ad68 34% 50%,#80e783 50% 67%,#55c980 67% 84%,#00ad68 84%)}
-    .hero h1 {margin:8px 0 4px; font-size:clamp(25px, 4vw, 34px); font-weight:850; letter-spacing:-.035em}
-    .hero .sub {color:#d0d5e7; font-size:13px}
-    .big {font-size:clamp(38px, 8vw, 54px); font-weight:850; letter-spacing:-.05em; margin:10px 0 0}
-    .bar {display:flex; height:13px; border-radius:99px; overflow:hidden; background:#e7ebf0; margin:12px 0 8px}
-    .bar.sm {height:8px; margin:10px 0 6px}
-    .bar i {display:block; height:100%; transition:width .3s}
-    .hero .bar {background:#33416c}
-    .leg {display:flex; justify-content:space-between; gap:8px; font-size:12px; color:var(--muted)}
-    .hero .leg {color:#cbd2e5}
-    .leg b {color:inherit}
-    .hero .leg b {color:#fff}
-    .nav {display:flex; gap:8px; overflow:auto; margin:14px 0 18px; padding-bottom:2px}
-    .nav button {white-space:nowrap; flex:1; min-width:max-content}
-    .nav button.active {background:#d9f5e6; color:#12633f}
-    .card {background:#fff; border:1px solid #e7e8ed; box-shadow:0 5px 18px #19234f08; border-radius:19px; padding:19px; min-width:0; margin-bottom:16px}
-    .card h2, .card h3 {margin:0 0 12px; letter-spacing:-.02em}
-    .row {display:flex; align-items:center; justify-content:space-between; gap:12px}
-    .hidden {display:none !important}
-    .muted {color:var(--muted); font-size:13px}
-    .formgrid {display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px}
-    .field label {display:block; font-size:12px; font-weight:700; color:var(--muted); margin-bottom:4px}
-    .field input {width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:9px}
-    .actions {display:flex; gap:8px; margin-top:14px; flex-wrap:wrap}
+    /* Global Reset & Responsive Box Model */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f6f8;
+      color: #1a202c;
+      padding: 16px;
+      line-height: 1.5;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+
+    /* Outer Wrapper - Scaled to Viewport */
+    .app-container {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Header & Navigation Bar */
+    header {
+      background: #1e293b;
+      color: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .total-debt {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #38bdf8;
+    }
+
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav-tabs button {
+      background: #334155;
+      color: #f8fafc;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .nav-tabs button.active {
+      background: #22c55e;
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    /* Currency Select Box */
+    .currency-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+
+    .currency-selector select {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: #ffffff;
+      cursor: pointer;
+    }
+
+    /* Card Panels */
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      width: 100%;
+    }
+
+    /* Calendar Header & Arrows */
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+
+    .calendar-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .calendar-nav button {
+      background: #e2e8f0;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .calendar-nav button:hover {
+      background: #cbd5e1;
+    }
+
+    .month-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      min-width: 160px;
+      text-align: center;
+    }
+
+    /* Fully Responsive Grid System */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+      width: 100%;
+    }
+
+    .day-name {
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: #64748b;
+      padding-bottom: 4px;
+    }
+
+    .day-cell {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      min-height: 70px;
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0; /* Prevents overflow */
+    }
+
+    .day-cell.other-month {
+      opacity: 0.4;
+      background: #f1f5f9;
+    }
+
+    .day-number {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 2px;
+    }
+
+    .bill-tag {
+      background: #fecdd3;
+      color: #9f1239;
+      font-size: 0.7rem;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    /* Bill Creation Form */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    .form-group input {
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      width: 100%;
+    }
+
+    .btn-submit {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 12px;
+      align-self: start;
+    }
+
+    /* Due Dates List */
+    .due-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .due-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: #f8fafc;
+      border-left: 4px solid #2563eb;
+      border-radius: 4px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .due-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .due-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .due-meta {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    .btn-delete {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    /* Mobile Adaptations */
+    @media (max-width: 600px) {
+      body { padding: 8px; }
+      .day-cell { min-height: 50px; }
+      .bill-tag { font-size: 0.65rem; }
+      header { flex-direction: column; align-items: flex-start; }
+    }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <header class="hero">
-      <h1>CLEARPATH FINANCIAL</h1>
-      <div class="sub">YOUR MONEY, WITH A CLEARER PLAN · DEBT & BUDGET DASHBOARD</div>
-      <div style="height:18px"></div>
-      <div class="sub">TOTAL DEBT REMAINING</div>
-      <div class="big" id="totalDebt">$0.00</div>
-      <div id="heroBar"></div>
+
+  <div class="app-container">
+    <!-- Navigation & Header -->
+    <header>
+      <div>
+        <div class="brand-title">CLEARPATH FINANCIAL</div>
+        <div style="font-size: 0.85rem; opacity: 0.8;">DEBT & BUDGET DASHBOARD</div>
+      </div>
+
+      <div class="controls-bar">
+        <div class="nav-tabs">
+          <button>Overview</button>
+          <button>Debts</button>
+          <button>Budget</button>
+          <button class="active">Bills & reminders</button>
+        </div>
+
+        <div class="currency-selector">
+          <label for="currencySelect">Currency:</label>
+          <select id="currencySelect">
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="CAD">CAD (CA$)</option>
+            <option value="AUD">AUD (A$)</option>
+            <option value="JPY">JPY (¥)</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size: 0.75rem; text-transform: uppercase; opacity: 0.7;">Total Remaining</div>
+        <div class="total-debt" id="totalRemainingDisplay">$19,893.00</div>
+      </div>
     </header>
 
-    <nav class="nav">
-      <button class="active" data-tab="overview">Overview</button>
-      <button class="secondary" data-tab="debts">Debts</button>
-      <button class="secondary" data-tab="budget">Budget</button>
-      <button class="secondary" data-tab="calendar">Bills & reminders</button>
-      <button class="secondary" data-tab="sync">Sync</button>
-      <button class="secondary" data-tab="backup">Backup</button>
-    </nav>
-
-    <section id="overview">
-      <div id="ov2"></div>
-      <div class="card" style="display:none">
-        <h2>Beating the interest</h2>
-        <div id="interestBox" class="muted">Add a debt to see how much you need to pay.</div>
-      </div>
-      <div class="card" style="display:none">
-        <h2>Progress by debt</h2>
-        <div id="overviewList" class="muted"></div>
-      </div>
-    </section>
-
-    <section id="debts" class="hidden">
-      <div class="row" style="margin:8px 0 12px">
-        <h2 style="margin:0">Your debts</h2>
-        <button id="addDebtBtn">+ Add debt</button>
-      </div>
-      <div id="debtForm" class="card hidden">
-        <h2 id="formTitle">Add a debt</h2>
-        <form id="debtEditor">
-          <div class="formgrid">
-            <div class="field"><label for="name">Debt name</label><input id="name" required placeholder="e.g. Visa credit card"></div>
-            <div class="field"><label for="balance">Current balance ($)</label><input id="balance" type="number" min="0.01" step=".01" required></div>
-            <div class="field"><label for="start">Original balance ($)</label><input id="start" type="number" min="0.01" step=".01" placeholder="Same as current"></div>
-            <div class="field"><label for="apr">APR (%)</label><input id="apr" type="number" min="0" step=".01" required></div>
-            <div class="field"><label for="payment">Usual payment ($)</label><input id="payment" type="number" min="0" step=".01" required></div>
-            <div class="field"><label for="minimum">Minimum payment ($)</label><input id="minimum" type="number" min="0" step=".01"></div>
-            <div class="field"><label for="due">Next due date</label><input id="due" type="date"></div>
-          </div>
-          <div class="actions">
-            <button type="submit">Save debt</button>
-            <button type="button" class="secondary" id="cancelEdit">Cancel</button>
-          </div>
-        </form>
-      </div>
-      <div id="debtList"></div>
-    </section>
-
-    <section id="budget" class="hidden">
-      <div class="card">
-        <h2>Bi-weekly paycheck</h2>
-        <div class="field"><label for="bPay">Take-home pay per paycheck ($)</label><input id="bPay" type="number" inputmode="decimal" min="0" step=".01"></div>
-        <div id="bSum" style="margin-top:12px"></div>
-        <div id="budgetChart" style="margin-top:18px"></div>
-      </div>
-      <div class="card">
-        <h2>Monthly bills</h2>
-        <div id="bBills"></div>
-        <div class="formgrid" style="margin-top:10px">
-          <div class="field"><label for="bName">Bill name</label><input id="bName" placeholder="e.g. Rent"></div>
-          <div class="field"><label for="bAmt">Monthly amount ($)</label><input id="bAmt" type="number" inputmode="decimal" min="0" step=".01"></div>
-        </div>
-        <div class="actions"><button id="addBill">Add bill</button></div>
-      </div>
-    </section>
-
-    <section id="calendar" class="hidden">
-      <div class="card">
-        <div class="row" style="margin-bottom:12px">
-          <div>
-            <h2 style="margin:0" id="calendarMonthTitle">Monthly Schedule</h2>
-            <div class="muted">Visual schedule of upcoming bills</div>
-          </div>
-          <button id="notifyBtn">Enable reminders</button>
-        </div>
-        
-        <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; font-weight:700; text-align:center; font-size:11px; color:var(--muted); margin-bottom:8px;">
-          <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
-        </div>
-
-        <div id="calendarGrid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px;"></div>
-      </div>
-
-      <div class="card">
-        <h2>Add recurring bill</h2>
-        <div class="formgrid">
-          <div class="field">
-            <label for="cName">Bill Name</label>
-            <input id="cName" placeholder="e.g. Rent, Netflix">
-          </div>
-          <div class="field">
-            <label for="cAmt">Monthly Amount ($)</label>
-            <input id="cAmt" type="number" min="0" step=".01" placeholder="0.00">
-          </div>
-          <div class="field">
-            <label for="cDay">Day of Month Due (1–31)</label>
-            <input id="cDay" type="number" min="1" max="31" placeholder="15">
-          </div>
-        </div>
-        <div class="actions" style="margin-top:14px">
-          <button id="addCalendarBill">Add Recurring Bill</button>
+    <!-- Calendar View with Navigation -->
+    <section class="card">
+      <div class="calendar-header">
+        <div class="calendar-nav">
+          <button id="prevMonthBtn" aria-label="Previous Month">&lt;</button>
+          <div class="month-title" id="monthYearDisplay">October 2026</div>
+          <button id="nextMonthBtn" aria-label="Next Month">&gt;</button>
         </div>
       </div>
 
-      <div class="card">
-        <h2>Upcoming Due Dates</h2>
-        <div id="calendarList"></div>
+      <div class="calendar-grid" id="calendarGrid">
+        <!-- Rendered dynamically via JavaScript -->
       </div>
     </section>
 
-    <section id="sync" class="hidden">
-      <div class="card">
-        <h2>Sync across devices</h2>
-        <p class="muted">Sync your records across devices using Supabase connection.</p>
-      </div>
-    </section>
-<button id="sync-btn" onclick="handleAuth()">
-  🔒 Sign in with Google to Sync
-</button>
-<span id="user-status"></span>
-    <section id="backup" class="hidden">
-      <div class="card">
-        <h2>Back up your records</h2>
-        <div class="actions">
-          <button id="export">Export backup (.json)</button>
+    <!-- Recurring Bill Input Form -->
+    <section class="card">
+      <h3>Add recurring bill</h3>
+      <form id="addBillForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="billName">Bill Name</label>
+            <input type="text" id="billName" placeholder="e.g., Internet" required />
+          </div>
+          <div class="form-group">
+            <label for="billAmount">Monthly Amount</label>
+            <input type="number" id="billAmount" step="0.01" placeholder="0.00" required />
+          </div>
+          <div class="form-group">
+            <label for="billDay">Day of Month Due (1–31)</label>
+            <input type="number" id="billDay" min="1" max="31" placeholder="15" required />
+          </div>
         </div>
-      </div>
+        <button type="submit" class="btn-submit">Add Recurring Bill</button>
+      </form>
     </section>
 
-    <footer>Estimates only, not lender statements. Monthly interest is approximated as balance × APR ÷ 12.</footer>
-  </main>
+    <!-- Dynamic Due Dates List -->
+    <section class="card">
+      <h3 id="dueDatesHeader">Upcoming Due Dates</h3>
+      <div class="due-list" id="dueList">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+  </div>
 
   <script>
-    const $ = id => document.getElementById(id);
-    const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n) || 0);
+    // Initial State Data
+    const baseTotalDebt = 19893.00;
+    let selectedCurrency = 'USD';
+    let activeDate = new Date(2026, 9, 1); // October 2026
 
-    const KEY = 'clearpath-debts-v1';
-    const BKEY = 'clearpath-budget-v1';
-    const CKEY = 'clearpath-recurring-bills-v1';
+    let bills = [
+      { id: 1, name: 'Rent', amount: 188.00, day: 1 },
+      { id: 2, name: 'Upstart', amount: 27.00, day: 5 },
+      { id: 3, name: 'CareCredit', amount: 75.00, day: 9 },
+      { id: 4, name: 'Priceline', amount: 68.00, day: 11 },
+      { id: 5, name: 'Agoda', amount: 122.00, day: 12 },
+      { id: 6, name: 'Car Insurance', amount: 100.00, day: 13 },
+      { id: 7, name: 'CreditOne', amount: 30.00, day: 14 },
+      { id: 8, name: 'Discover', amount: 210.00, day: 15 },
+      { id: 9, name: 'MVB Credit', amount: 87.00, day: 16 },
+      { id: 10, name: 'Sofi', amount: 190.00, day: 20 },
+      { id: 11, name: 'Wifi', amount: 25.00, day: 22 }
+    ];
 
-    let debts = [], budget = { pay: 0, bills: [] }, recurring = [], editingId = null;
-    // Replace with your actual Client ID from Step 1
-const GOOGLE_CLIENT_ID = 'YOUR_CLIENT_ID.apps.googleusercontent.com';
-const FILE_NAME = 'clearpath_user_data.json';
-
-let tokenClient;
-let accessToken = null;
-
-// Initialize Google OAuth Token Client
-window.onload = () => {
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: GOOGLE_CLIENT_ID,
-    scope: 'https://www.googleapis.com/auth/drive.appdata',
-    callback: async (response) => {
-      if (response.access_token) {
-        accessToken = response.access_token;
-        updateSyncStatus('Syncing with Google Drive...');
-        
-        // Perform initial sync on sign-in
-        await syncDataWithDrive();
-      }
-    },
-  });
-};
-
-// Triggered when user clicks "Sign in with Google to Sync"
-function handleGoogleAuth() {
-  tokenClient.requestAccessToken();
-}
-
-// Update UI button status
-function updateSyncStatus(msg) {
-  const statusElem = document.getElementById('sync-status');
-  if (statusElem) statusElem.innerText = msg;
-}
-
-// Primary 2-Way Sync Engine
-async function syncDataWithDrive() {
-  try {
-    const remoteData = await downloadFromDrive();
-
-    if (remoteData) {
-      // Data exists in Google Drive -> Update local app state
-      localStorage.setItem('clearpath_data', JSON.stringify(remoteData));
-      updateSyncStatus('Synced from Cloud ✓');
-      
-      // OPTIONAL: Call your app's UI render function here
-      // renderDashboard();
-    } else {
-      // No cloud backup found -> Upload current local app data
-      const localData = JSON.parse(localStorage.getItem('clearpath_data') || '{}');
-      await uploadToDrive(localData);
-      updateSyncStatus('Backup Created on Cloud ✓');
-    }
-  } catch (err) {
-    console.error('Sync failed:', err);
-    updateSyncStatus('Sync failed. Please try again.');
-  }
-}
-
-// Download file from hidden appDataFolder
-async function downloadFromDrive() {
-  // Search for clearpath_user_data.json in appDataFolder
-  const query = encodeURIComponent("name = '" + FILE_NAME + "' and 'appDataFolder' in parents");
-  const searchRes = await fetch(`https://www.googleapis.com/drive/v3/files?q=${query}`, {
-    headers: { Authorization: `Bearer ${accessToken}` }
-  });
-  const searchData = await searchRes.json();
-
-  if (searchData.files && searchData.files.length > 0) {
-    const fileId = searchData.files[0].id;
-    
-    // Fetch file contents
-    const fileRes = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    });
-    return await fileRes.json();
-  }
-  
-  return null; // File doesn't exist yet
-}
-
-// Upload file to hidden appDataFolder
-async function uploadToDrive(data) {
-  const metadata = {
-    name: FILE_NAME,
-    mimeType: 'application/json',
-    parents: ['appDataFolder']
-  };
-
-  const form = new FormData();
-  form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-  form.append('file', new Blob([JSON.stringify(data)], { type: 'application/json' }));
-
-  await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${accessToken}` },
-    body: form
-  });
-}
-
-// Auto-save helper: Call this whenever the user updates debts, budgets, or bills
-async function autoSaveToCloud() {
-  if (!accessToken) return; // Silent return if not logged in
-  const localData = JSON.parse(localStorage.getItem('clearpath_data') || '{}');
-  await uploadToDrive(localData);
-  updateSyncStatus('Saved to Cloud ✓');
-}
-
-    function loadAllData() {
-      try { debts = JSON.parse(localStorage.getItem(KEY) || '[]'); if (!Array.isArray(debts)) debts = []; } catch { debts = []; }
-      try { 
-        const b = JSON.parse(localStorage.getItem(BKEY) || 'null'); 
-        if (b && typeof b === 'object') budget = { pay: Number(b.pay) || 0, bills: Array.isArray(b.bills) ? b.bills : [] }; 
-      } catch { budget = { pay: 0, bills: [] }; }
-      try { recurring = JSON.parse(localStorage.getItem(CKEY) || '[]'); if (!Array.isArray(recurring)) recurring = []; } catch { recurring = []; }
+    // Helper: Currency Formatter
+    function formatCurrency(val) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: selectedCurrency,
+        minimumFractionDigits: 2
+      }).format(val);
     }
 
-    function save() { localStorage.setItem(KEY, JSON.stringify(debts)); render(); }
-    function saveBudget() { localStorage.setItem(BKEY, JSON.stringify(budget)); renderBudget(); }
-    function saveRecurring() { localStorage.setItem(CKEY, JSON.stringify(recurring)); renderCalendar(); }
+    // Render Function
+    function renderApp() {
+      const year = activeDate.getFullYear();
+      const month = activeDate.getMonth();
 
-    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      // 1. Update Header Total
+      document.getElementById('totalRemainingDisplay').textContent = formatCurrency(baseTotalDebt);
 
-    function bar(parts, cls = '') {
-      const t = parts.reduce((a, p) => a + Math.max(0, p.v), 0) || 1;
-      return '<div class="bar ' + cls + '">' + parts.map(p => '<i style="width:' + Math.max(0, p.v) / t * 100 + '%;background:' + p.c + '"></i>').join('') + '</div>';
-    }
+      // 2. Update Month Display Header
+      const monthNames = ["January", "February", "March", "April", "May", "June", 
+                          "July", "August", "September", "October", "November", "December"];
+      document.getElementById('monthYearDisplay').textContent = `${monthNames[month]} ${year}`;
+      document.getElementById('dueDatesHeader').textContent = `Upcoming Due Dates — ${monthNames[month]} ${year}`;
 
-    function render() {
-      const bal = debts.reduce((s, d) => s + (Number(d.balance) || 0), 0);
-      const totalDebtEl = $('totalDebt');
-      if (totalDebtEl) totalDebtEl.textContent = money(bal);
+      // 3. Render Calendar Grid
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '';
 
-      const debtList = $('debtList');
-      if (debtList) {
-        debtList.innerHTML = debts.length ? debts.map(d => `
-          <article class="card">
-            <div class="row">
-              <div>
-                <h3 style="margin:0">${esc(d.name)}</h3>
-                <div class="muted">${d.apr}% APR · Usual pay ${money(d.payment)}/mo</div>
-              </div>
-              <div class="balance">${money(d.balance)}</div>
-            </div>
-            <div class="actions" style="margin-top:12px">
-              <button class="smallbtn secondary" onclick="editDebt('${d.id}')">Edit</button>
-              <button class="smallbtn danger" onclick="removeDebt('${d.id}')">Delete</button>
-            </div>
-          </article>
-        `).join('') : '<div class="card empty">No debts added yet. Tap "+ Add debt" above.</div>';
-      }
-    }
+      // Day Name Headers
+      const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+      days.forEach(d => {
+        const div = document.createElement('div');
+        div.className = 'day-name';
+        div.textContent = d;
+        grid.appendChild(div);
+      });
 
-    function renderBudget() {
-      const payInput = $('bPay');
-      if (payInput && document.activeElement !== payInput) payInput.value = budget.pay || '';
+      // Calculate Grid Offsets
+      const firstDayIdx = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const prevMonthDays = new Date(year, month, 0).getDate();
 
-      const monthlyPay = (budget.pay || 0) * 26 / 12;
-      const billsTotal = (budget.bills || []).reduce((s, b) => s + (Number(b.amount) || 0), 0);
-      const debtPayments = debts.reduce((s, d) => s + (Number(d.payment) || 0), 0);
-      const leftover = monthlyPay - billsTotal - debtPayments;
-
-      const bSum = $('bSum');
-      if (bSum) {
-        bSum.innerHTML = `
-          <div class="row" style="margin-bottom:6px"><span>Estimated monthly income (26 paychecks/yr)</span><b>${money(monthlyPay)}</b></div>
-          <div class="row" style="margin-bottom:6px"><span>Fixed bills total</span><b>${money(billsTotal)}</b></div>
-          <div class="row" style="margin-bottom:6px"><span>Debt payments total</span><b>${money(debtPayments)}</b></div>
-          <hr style="border:0; border-top:1px solid var(--line); margin:10px 0">
-          <div class="row"><span><strong>Leftover monthly cash</strong></span><b style="color:${leftover >= 0 ? 'var(--green)' : 'var(--red)'}">${money(leftover)}</b></div>
-        `;
+      // Render Leading Days (Previous Month)
+      for (let i = firstDayIdx - 1; i >= 0; i--) {
+        const cell = document.createElement('div');
+        cell.className = 'day-cell other-month';
+        cell.innerHTML = `<span class="day-number">${prevMonthDays - i}</span>`;
+        grid.appendChild(cell);
       }
 
-      const bChart = $('budgetChart');
-      if (bChart) {
-        bChart.innerHTML = monthlyPay > 0 ? bar([
-          { v: billsTotal, c: '#b83f4b' },
-          { v: debtPayments, c: '#e9b949' },
-          { v: Math.max(0, leftover), c: '#00ad68' }
-        ]) + `<div class="leg"><span>Bills <b>${money(billsTotal)}</b></span><span>Debt <b>${money(debtPayments)}</b></span><span>Leftover <b>${money(Math.max(0, leftover))}</b></span></div>` : '';
-      }
-
-      const bBills = $('bBills');
-      if (bBills) {
-        bBills.innerHTML = (budget.bills || []).length ? budget.bills.map((b, i) => `
-          <div class="row" style="padding:8px 0; border-bottom:1px solid var(--line)">
-            <div><strong>${esc(b.name)}</strong></div>
-            <div class="row" style="gap:8px">
-              <b>${money(b.amount)}</b>
-              <button class="smallbtn danger" onclick="removeBill(${i})">✕</button>
-            </div>
-          </div>
-        `).join('') : '<div class="muted">No monthly bills added yet.</div>';
-      }
-    }
-
-    function removeBill(i) {
-      budget.bills.splice(i, 1);
-      saveBudget();
-    }
-
-    function renderCalendar() {
-      const calList = $('calendarList');
-      const calGrid = $('calendarGrid');
-      if (!calList || !calGrid) return;
-
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      const currentMonthIndex = today.getMonth();
-      const currentMonthStr = today.toISOString().slice(0, 7);
-      const currentDayNumber = today.getDate();
-
-      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      
-      const monthTitleEl = $('calendarMonthTitle');
-      if (monthTitleEl) monthTitleEl.textContent = `${monthNames[currentMonthIndex]} ${currentYear}`;
-
-      const daysInMonth = new Date(currentYear, currentMonthIndex + 1, 0).getDate();
-      const firstDayOfWeek = new Date(currentYear, currentMonthIndex, 1).getDay();
-
-      let gridHTML = '';
-      for (let i = 0; i < firstDayOfWeek; i++) {
-        gridHTML += `<div style="background:#f8f9fa; border-radius:8px; min-height:54px; opacity:0.3;"></div>`;
-      }
-
+      // Render Current Month Days
       for (let day = 1; day <= daysInMonth; day++) {
-        const dayBills = recurring.filter(b => Number(b.day) === day);
-        const isToday = day === currentDayNumber;
+        const cell = document.createElement('div');
+        cell.className = 'day-cell';
+        let cellHtml = `<span class="day-number">${day}</span>`;
 
-        gridHTML += `
-          <div style="background:${isToday ? '#edf4ff' : '#fff'}; border:1px solid ${isToday ? 'var(--navy)' : '#e7e8ed'}; border-radius:8px; padding:4px; min-height:58px; display:flex; flex-direction:column; justify-content:space-between;">
-            <div style="font-weight:700; font-size:11px; color:${isToday ? 'var(--navy)' : 'var(--ink)'};">
-              ${day}${isToday ? ' <span style="font-size:9px; color:var(--navy);">(Today)</span>' : ''}
-            </div>
-            <div>
-              ${dayBills.map(b => {
-                const isPaid = b.lastPaidMonth === currentMonthStr;
-                return `
-                  <div style="background:${isPaid ? '#d9f5e6' : '#fae9e7'}; color:${isPaid ? '#12633f' : '#9a352d'}; font-size:9px; font-weight:700; padding:2px 3px; border-radius:3px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${esc(b.name)} - ${money(b.amount)}">
-                    ${isPaid ? '✓ ' : ''}${esc(b.name)}
-                  </div>
-                `;
-              }).join('')}
-            </div>
+        // Check for bills due on this day
+        const dueBills = bills.filter(b => b.day === day);
+        dueBills.forEach(b => {
+          cellHtml += `<div class="bill-tag" title="${b.name}: ${formatCurrency(b.amount)}">${b.name}</div>`;
+        });
+
+        cell.innerHTML = cellHtml;
+        grid.appendChild(cell);
+      }
+
+      // Render Trailing Days (Next Month)
+      const totalCells = firstDayIdx + daysInMonth;
+      const trailingDays = (7 - (totalCells % 7)) % 7;
+      for (let i = 1; i <= trailingDays; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'day-cell other-month';
+        cell.innerHTML = `<span class="day-number">${i}</span>`;
+        grid.appendChild(cell);
+      }
+
+      // 4. Render Due Dates List
+      const dueList = document.getElementById('dueList');
+      dueList.innerHTML = '';
+
+      const sortedBills = [...bills].sort((a, b) => a.day - b.day);
+      sortedBills.forEach(bill => {
+        const item = document.createElement('div');
+        item.className = 'due-item';
+        item.innerHTML = `
+          <div class="due-info">
+            <span class="due-name">${bill.name}</span>
+            <span class="due-meta">Due on the ${ordinalSuffix(bill.day)} · ${formatCurrency(bill.amount)}</span>
           </div>
+          <button class="btn-delete" onclick="deleteBill(${bill.id})">Delete</button>
         `;
-      }
-
-      calGrid.innerHTML = gridHTML;
-
-      if (!recurring.length) {
-        calList.innerHTML = '<div class="muted">No recurring bills added yet. Add one above!</div>';
-        return;
-      }
-
-      const sorted = [...recurring].sort((a, b) => a.day - b.day);
-
-      calList.innerHTML = sorted.map(b => {
-        const isPaid = b.lastPaidMonth === currentMonthStr;
-        return `
-          <div class="card" style="margin-bottom:10px; padding:12px 16px;">
-            <div class="row">
-              <div>
-                <strong>${esc(b.name)}</strong>
-                <div class="muted">Due on the ${b.day}${getOrdinalSuffix(b.day)} · ${money(b.amount)}</div>
-              </div>
-              <div class="actions" style="margin:0">
-                <button class="smallbtn ${isPaid ? 'secondary' : ''}" onclick="toggleBillPaid('${b.id}')">
-                  ${isPaid ? '✓ Paid' : 'Mark Paid'}
-                </button>
-                <button class="smallbtn danger" onclick="removeRecurringBill('${b.id}')">Delete</button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function getOrdinalSuffix(i) {
-      const j = i % 10, k = i % 100;
-      if (j === 1 && k !== 11) return "st";
-      if (j === 2 && k !== 12) return "nd";
-      if (j === 3 && k !== 13) return "rd";
-      return "th";
-    }
-
-    function toggleBillPaid(id) {
-      const currentMonthStr = new Date().toISOString().slice(0, 7);
-      recurring = recurring.map(b => {
-        if (b.id === id) {
-          b.lastPaidMonth = (b.lastPaidMonth === currentMonthStr) ? '' : currentMonthStr;
-        }
-        return b;
+        dueList.appendChild(item);
       });
-      saveRecurring();
     }
 
-    function removeRecurringBill(id) {
-      recurring = recurring.filter(b => b.id !== id);
-      saveRecurring();
+    function ordinalSuffix(d) {
+      if (d > 3 && d < 21) return d + 'th';
+      switch (d % 10) {
+        case 1:  return d + "st";
+        case 2:  return d + "nd";
+        case 3:  return d + "rd";
+        default: return d + "th";
+      }
     }
 
-    function switchTab(tab) {
-      document.querySelectorAll('main section').forEach(s => s.classList.toggle('hidden', s.id !== tab));
-      document.querySelectorAll('.nav button').forEach(b => {
-        b.classList.toggle('active', b.dataset.tab === tab);
-        b.classList.toggle('secondary', b.dataset.tab !== tab);
-      });
-      loadAllData();
-      render();
-      renderBudget();
-      renderCalendar();
+    // Global Action Handlers
+    function deleteBill(id) {
+      bills = bills.filter(b => b.id !== id);
+      renderApp();
     }
 
-    function editDebt(id) {
-      const d = debts.find(x => x.id === id);
-      if (!d) return;
-      editingId = id;
-      $('formTitle').textContent = 'Edit debt';
-      $('name').value = d.name || '';
-      $('balance').value = d.balance || '';
-      $('start').value = d.startBalance || '';
-      $('apr').value = d.apr || '';
-      $('payment').value = d.payment || '';
-      $('minimum').value = d.minimum || '';
-      $('due').value = d.due || '';
-      $('debtForm').classList.remove('hidden');
-    }
-
-    function removeDebt(id) {
-      if (!confirm('Are you sure you want to delete this debt?')) return;
-      debts = debts.filter(d => d.id !== id);
-      save();
-    }
-
-    function setupNotifications() {
-      const notifyBtn = $('notifyBtn');
-      if (!notifyBtn) return;
-
-      if ('Notification' in window && Notification.permission === 'granted') {
-        notifyBtn.textContent = '✓ Reminders Enabled';
-        notifyBtn.classList.add('secondary');
-      }
-
-      notifyBtn.onclick = async () => {
-        if (!('Notification' in window)) {
-          alert('Web Notifications are not supported in this browser window.');
-          return;
-        }
-
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-          notifyBtn.textContent = '✓ Reminders Enabled';
-          notifyBtn.classList.add('secondary');
-          new Notification('ClearPath Notifications Active', { body: 'You will receive reminders when bills are due soon.' });
-        } else {
-          alert('Notification permission was denied.');
-        }
-      };
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.nav button').forEach(b => {
-        b.onclick = () => switchTab(b.dataset.tab);
-      });
-
-      // Budget Form Handlers
-      const bPayInput = $('bPay');
-      if (bPayInput) {
-        bPayInput.oninput = () => {
-          budget.pay = parseFloat(bPayInput.value) || 0;
-          saveBudget();
-        };
-      }
-
-      const addBillBtn = $('addBill');
-      if (addBillBtn) {
-        addBillBtn.onclick = () => {
-          const name = $('bName').value.trim();
-          const amount = parseFloat($('bAmt').value) || 0;
-          if (!name || amount <= 0) {
-            alert('Please enter a bill name and valid amount.');
-            return;
-          }
-          budget.bills.push({ name, amount });
-          saveBudget();
-          $('bName').value = '';
-          $('bAmt').value = '';
-        };
-      }
-
-      // Debt Form Handlers
-      const addBtn = $('addDebtBtn');
-      if (addBtn) {
-        addBtn.onclick = () => {
-          editingId = null;
-          $('formTitle').textContent = 'Add a debt';
-          $('debtEditor').reset();
-          $('debtForm').classList.toggle('hidden');
-        };
-      }
-
-      const cancelBtn = $('cancelEdit');
-      if (cancelBtn) cancelBtn.onclick = () => $('debtForm').classList.add('hidden');
-
-      const form = $('debtEditor');
-      if (form) {
-        form.onsubmit = e => {
-          e.preventDefault();
-          const item = {
-            id: editingId || String(Date.now()),
-            name: $('name').value.trim(),
-            balance: parseFloat($('balance').value) || 0,
-            startBalance: parseFloat($('start').value) || parseFloat($('balance').value) || 0,
-            apr: parseFloat($('apr').value) || 0,
-            payment: parseFloat($('payment').value) || 0,
-            minimum: parseFloat($('minimum').value) || 0,
-            due: $('due').value || ''
-          };
-
-          if (editingId) {
-            debts = debts.map(d => d.id === editingId ? item : d);
-          } else {
-            debts.push(item);
-          }
-
-          save();
-          $('debtForm').classList.add('hidden');
-          form.reset();
-        };
-      }
-
-      const addCalBtn = $('addCalendarBill');
-      if (addCalBtn) {
-        addCalBtn.onclick = () => {
-          const name = $('cName').value.trim();
-          const amount = parseFloat($('cAmt').value) || 0;
-          const day = parseInt($('cDay').value, 10) || 1;
-
-          if (!name) {
-            alert('Please enter a bill name.');
-            return;
-          }
-
-          recurring.push({
-            id: String(Date.now()),
-            name,
-            amount,
-            day: Math.min(31, Math.max(1, day)),
-            lastPaidMonth: ''
-          });
-
-          saveRecurring();
-          $('cName').value = '';
-          $('cAmt').value = '';
-          $('cDay').value = '';
-        };
-      }
-
-      setupNotifications();
-      loadAllData();
-      render();
-      renderBudget();
-      renderCalendar();
+    // Event Listeners
+    document.getElementById('prevMonthBtn').addEventListener('click', () => {
+      activeDate.setMonth(activeDate.getMonth() - 1);
+      renderApp();
     });
+
+    document.getElementById('nextMonthBtn').addEventListener('click', () => {
+      activeDate.setMonth(activeDate.getMonth() + 1);
+      renderApp();
+    });
+
+    document.getElementById('currencySelect').addEventListener('change', (e) => {
+      selectedCurrency = e.target.value;
+      renderApp();
+    });
+
+    document.getElementById('addBillForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('billName').value;
+      const amount = parseFloat(document.getElementById('billAmount').value);
+      const day = parseInt(document.getElementById('billDay').value, 10);
+
+      if (name && !isNaN(amount) && !isNaN(day)) {
+        bills.push({ id: Date.now(), name, amount, day });
+        document.getElementById('addBillForm').reset();
+        renderApp();
+      }
+    });
+
+    // Initial Load Execution
+    renderApp();
   </script>
-  <script src="overview.js"></script>
 </body>
 </html>
