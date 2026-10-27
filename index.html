@@ -444,10 +444,24 @@
             cursor: pointer;
         }
     </style>
+<style>
+#cp-auth{position:fixed;inset:0;z-index:9999;background:#0d1527;color:white;display:flex;align-items:center;justify-content:center;padding:20px}
+#cp-auth[hidden]{display:none}
+.cp-auth-card{width:min(100%,420px);background:#17223b;border:1px solid #243356;border-radius:22px;padding:28px;display:grid;gap:13px}
+.cp-auth-card h2{color:#10b981}.cp-auth-card input{width:100%;padding:14px;border:1px solid #40506c;border-radius:10px;background:#0d1527;color:#fff}
+.cp-auth-card button{padding:12px;border:0;border-radius:10px;background:#10b981;color:#061923;font-weight:800;cursor:pointer}
+.cp-auth-actions{display:flex;gap:8px}.cp-auth-actions button{flex:1}
+#cp-account{display:none;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:#94a3b8;margin-bottom:10px}
+#cp-account button{background:#243356;border:1px solid #40506c;border-radius:8px;padding:8px;color:#fff}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="./supabase-config.js"></script>
+<script defer src="./clearpath-auth.js"></script>
 </head>
 <body>
 
-<div class="dashboard-container">
+<div id="cp-auth" hidden><form class="cp-auth-card" id="cp-auth-form"><h2>ClearPath</h2><p>Private debt tracking, on every device.</p><input id="cp-email" type="email" autocomplete="email" placeholder="Email" required><input id="cp-password" type="password" autocomplete="current-password" minlength="8" placeholder="Password (8+ characters)" required><div class="cp-auth-actions"><button type="submit" id="cp-login">Sign in</button><button type="button" id="cp-signup">Create account</button></div><button type="button" id="cp-reset">Forgot password?</button><p id="cp-auth-status" role="status" aria-live="polite"></p></form></div>
+<div class="dashboard-container"><div id="cp-account"><span id="cp-user-email"></span><button type="button" id="cp-signout">Sign out</button></div>
     <header class="header">
         <h1>CLEARPATH FINANCIAL</h1>
         <p>Debt & Budget Dashboard</p>
@@ -626,14 +640,15 @@
     ];
 
     // Local Storage Loading
-    let debts = JSON.parse(localStorage.getItem('clearpath_debts')) || defaultDebts;
-    let budget = JSON.parse(localStorage.getItem('clearpath_budget')) || defaultBudget;
-    let bills = JSON.parse(localStorage.getItem('clearpath_bills')) || defaultBills;
+    let debts = JSON.parse(localStorage.getItem('clearpath_debts')) || [];
+    let budget = JSON.parse(localStorage.getItem('clearpath_budget')) || [];
+    let bills = JSON.parse(localStorage.getItem('clearpath_bills')) || [];
 
     function saveToStorage() {
         localStorage.setItem('clearpath_debts', JSON.stringify(debts));
         localStorage.setItem('clearpath_budget', JSON.stringify(budget));
         localStorage.setItem('clearpath_bills', JSON.stringify(bills));
+        if (window.ClearPathAuth?.ready) window.ClearPathAuth.scheduleSave({debts,budget,bills});
     }
 
     let debtSelectedIndex = null;
@@ -1168,7 +1183,8 @@
     }
 
     // Initialize on load
-    renderUI();
+    if (!window.ClearPathAuth?.configured) renderUI();
+    window.ClearPathBoot = function(data){debts=data.debts||[];budget=data.budget||[];bills=data.bills||[];renderUI();};
 </script>
 
 </body>
