@@ -18,6 +18,10 @@
      const {data,error}=await client.from('user_finances').select('data').eq('user_id',user.id).maybeSingle();
      if(error)throw error;
      const d=data?.data||{debts:[],budget:[],bills:[]};
+     if(!localStorage.getItem('clearpath_legacy_backup')){
+       const legacy=localSnapshot();
+       if(['debts','budget','bills'].some(k=>legacy[k].length))localStorage.setItem('clearpath_legacy_backup',JSON.stringify(legacy));
+     }
      apply(d);
      api.ready=true;authPanel.hidden=true;account.style.display='flex';$('cp-user-email').textContent=user.email||'Signed in';
    }catch(e){authPanel.hidden=false;message('Unable to load private account data: '+e.message);}
