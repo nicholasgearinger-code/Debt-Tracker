@@ -15,6 +15,7 @@
             --border-color: #243356;
             --accent-green: #10b981;
             --accent-red: #ef4444;
+            --accent-wife: #a78bfa;
             --accent-amber: #f59e0b;
         }
 
@@ -587,6 +588,13 @@
             <label>Current Balance / Amount ($)</label>
             <input type="number" id="modalInputAmount" step="0.01" placeholder="0.00">
         </div>
+        <div class="form-group" id="budgetOwnerGroup" style="display:none;">
+            <label>Budget Category</label>
+            <select id="modalBudgetOwner" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-color);color:var(--text-main);font-size:1rem;">
+                <option value="general">Household / General</option>
+                <option value="wife">Wife</option>
+            </select>
+        </div>
         <div class="form-group" id="originalLimitGroup">
             <label>Original Loan Amount / Credit Limit ($)</label>
             <input type="number" id="modalInputOriginal" step="0.01" placeholder="e.g. 10000">
@@ -656,6 +664,8 @@
 
     let debtChart = null;
     let budgetChart = null;
+    const BUDGET_WIFE_COLOR = '#a78bfa';
+    const BUDGET_CHART_COLORS = ['#10b981', '#ef4444', BUDGET_WIFE_COLOR];
 
     /* --- CHART.JS CUSTOM PLUGINS --- */
 
@@ -834,13 +844,14 @@
         container.innerHTML = '';
         budget.forEach((item, index) => {
             const isPos = item.amount >= 0;
-            const colorStyle = isPos ? 'color: var(--accent-green)' : 'color: var(--accent-red)';
+            const isWife = item.owner === 'wife';
+            const colorStyle = isPos ? 'color: var(--accent-green)' : (isWife ? 'color: var(--accent-wife)' : 'color: var(--accent-red)');
             const prefix = isPos ? '+$' : '-$';
             container.innerHTML += `
                 <div class="list-item">
                     <div class="item-top-row">
                         <div class="item-info">
-                            <div class="title">${item.title}</div>
+                            <div class="title">${item.title}${isWife ? ' <span style="font-size:0.72rem;color:var(--accent-wife);font-weight:600;">Wife</span>' : ''}</div>
                             <div class="sub">${item.sub}</div>
                         </div>
                         <div class="item-right">
@@ -953,17 +964,20 @@
     /* --- Budget Chart --- */
     function renderBudgetChart() {
         let totalIncome = 0;
-        let totalExpenses = 0;
+        let generalExpenses = 0;
+        let wifeExpenses = 0;
 
         budget.forEach(item => {
-            if (item.amount >= 0) totalIncome += item.amount;
-            else totalExpenses += Math.abs(item.amount);
+            const amount = Number(item.amount) || 0;
+            if (amount >= 0) totalIncome += amount;
+            else if (item.owner === 'wife') wifeExpenses += Math.abs(amount);
+            else generalExpenses += Math.abs(amount);
         });
 
-        const netIncome = totalIncome - totalExpenses;
-        const labels = ['Monthly Income', 'Monthly Bills & Expenses'];
-        const dataValues = [totalIncome, totalExpenses];
-        const colors = ['#10b981', '#ef4444'];
+        const netIncome = totalIncome - generalExpenses - wifeExpenses;
+        const labels = ['Monthly Income', 'Monthly Bills & Expenses', 'Wife'];
+        const dataValues = [totalIncome, generalExpenses, wifeExpenses];
+        const colors = BUDGET_CHART_COLORS;
 
         if (budgetChart) budgetChart.destroy();
 
@@ -1018,7 +1032,7 @@
 
     function updateBudgetChartFocus() {
         if (!budgetChart) return;
-        const colors = ['#10b981', '#ef4444'];
+        const colors = BUDGET_CHART_COLORS;
         const updatedColors = colors.map((color, index) => {
             if (budgetSelectedIndex === null) return hexToRGBA(color, 1.0);
             return index === budgetSelectedIndex ? hexToRGBA(color, 1.0) : hexToRGBA(color, 0.2);
@@ -1095,9 +1109,11 @@
         document.getElementById('modalIndex').value = index !== null ? index : '';
         const colorGroup = document.getElementById('colorGroup');
         const originalLimitGroup = document.getElementById('originalLimitGroup');
+        const budgetOwnerGroup = document.getElementById('budgetOwnerGroup');
         const deleteBtn = document.getElementById('btnDelete');
 
         colorGroup.style.display = category === 'debts' ? 'flex' : 'none';
+        budgetOwnerGroup.style.display = category === 'budget' ? 'flex' : 'none';
         originalLimitGroup.style.display = category === 'debts' ? 'flex' : 'none';
 
         if (index !== null) {
@@ -1111,6 +1127,7 @@
             document.getElementById('modalInputTitle').value = item.title;
             document.getElementById('modalInputSub').value = item.sub;
             document.getElementById('modalInputAmount').value = item.amount;
+            if (category === 'budget') document.getElementById('modalBudgetOwner').value = item.owner === 'wife' ? 'wife' : 'general';
             if (category === 'debts') {
                 document.getElementById('modalInputOriginal').value = item.original || item.amount;
                 document.getElementById('modalInputColor').value = item.color || '#38bdf8';
@@ -1123,6 +1140,7 @@
             document.getElementById('modalInputAmount').value = '';
             document.getElementById('modalInputOriginal').value = '';
             document.getElementById('modalInputColor').value = '#38bdf8';
+            document.getElementById('modalBudgetOwner').value = 'general';
         }
 
         document.getElementById('modalOverlay').classList.add('active');
@@ -1151,7 +1169,8 @@
             if (isEdit) debts[index] = newItem;
             else debts.push(newItem);
         } else if (category === 'budget') {
-            const newItem = { title, sub, amount };
+            const owner = document.getElementById('modalBudgetOwner').value === 'wife' ? 'wife' : 'general';
+            const newItem = { ...((isEdit && budget[index]) || {}), title, sub, amount, owner };
             if (isEdit) budget[index] = newItem;
             else budget.push(newItem);
         } else if (category === 'bills') {
