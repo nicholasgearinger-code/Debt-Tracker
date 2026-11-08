@@ -516,7 +516,8 @@
     .debt-legend .legend-item:hover,.debt-legend .legend-item:focus-visible {
         background:rgba(57,84,113,.38); border-color:#426581; }
     .debt-legend .legend-color { width:10px; height:27px; border-radius:7px; flex:0 0 10px; }
-    .debt-legend .legend-item span { overflow-wrap:anywhere; }
+    .debt-legend .legend-label { flex:1; min-width:0; font-weight:650; color:#e4edf9; overflow-wrap:anywhere; }
+    .debt-legend .legend-amount { font-variant-numeric:tabular-nums; font-weight:750; color:#f3f8ff; white-space:nowrap; }
     .debt-legend .legend-item.dimmed { opacity:.40; }
     .list-item { border-radius:15px; background:#112039; border-color:#2b415c; padding:15px; }
     .progress-bar-bg { height:8px; background:#273b55; border-radius:99px; }
@@ -1229,17 +1230,33 @@
 
     function renderLegend(containerId, labels, colors, onClickCallback, amounts = null) {
         const legendContainer = document.getElementById(containerId);
-        legendContainer.innerHTML = '';
+        legendContainer.replaceChildren();
         labels.forEach((label, i) => {
             const item = document.createElement('div');
             item.className = 'legend-item';
+            item.tabIndex = 0;
+            item.setAttribute('role', 'button');
             const dot = document.createElement('div');
             dot.className = 'legend-color';
             dot.style.backgroundColor = colors[i];
-            const text = document.createElement('span');
-            text.textContent = label + (amounts ? ' · $' + Number(amounts[i]).toLocaleString('en-US', { maximumFractionDigits: 2 }) : '');
-            item.append(dot, text);
+            const name = document.createElement('span');
+            name.className = 'legend-label';
+            name.textContent = label;
+            item.append(dot, name);
+            if (amounts) {
+                const amount = document.createElement('span');
+                amount.className = 'legend-amount';
+                amount.textContent = '$' + Number(amounts[i]).toLocaleString('en-US', { maximumFractionDigits: 2 });
+                item.appendChild(amount);
+            }
+            item.setAttribute('aria-label', amounts ? label + ', $' + Number(amounts[i]).toLocaleString() : label);
             item.addEventListener('click', () => onClickCallback(i));
+            item.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    onClickCallback(i);
+                }
+            });
             legendContainer.appendChild(item);
         });
     }
