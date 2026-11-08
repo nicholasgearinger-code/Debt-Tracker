@@ -667,6 +667,66 @@
     const BUDGET_WIFE_COLOR = '#a78bfa';
     const BUDGET_CHART_COLORS = ['#10b981', '#ef4444', BUDGET_WIFE_COLOR];
 
+
+    // Ensure older, synced and newly added debts never use near-identical
+    // colors. Persist the assigned color in each existing debt object.
+    const DEBT_PALETTE = [
+      '#38bdf8','#f97316','#a855f7','#22c55e','#f43f5e',
+      '#eab308','#06b6d4','#e879f9','#84cc16','#6366f1',
+      '#fb7185','#14b8a6','#d97706','#c084fc','#3b82f6',
+      '#be123c','#a3e635','#0d9488','#facc15','#f472b6'
+    ];
+    const validDebtHex = c => typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c);
+    function debtOklab(hex) {
+      const [r,g,b]=[1,3,5].map(i=>{
+        const x=parseInt(hex.slice(i,i+2),16)/255;
+        return x<=.04045?x/12.92:((x+.055)/1.055)**2.4;
+      });
+      const l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b);
+      const m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b);
+      const q=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+      return [.2104542553*l+.793617785*m-.0040720468*q,
+        1.9779984951*l-2.428592205*m+.4505937099*q,
+        .0259040371*l+.7827717662*m-.808675766*q];
+    }
+    function debtColorDifference(a,b) {
+      const x=debtOklab(a),y=debtOklab(b);
+      return Math.hypot(x[0]-y[0],x[1]-y[1],x[2]-y[2]);
+    }
+    function nextDebtColor(used) {
+      const old=used.filter(validDebtHex).map(c=>c.toLowerCase());
+      if(!old.length)return DEBT_PALETTE[0];
+      const options=DEBT_PALETTE.slice();
+      for(let hue=0;hue<360;hue+=15) for(const light of [48,62,72]){
+        const a=.78*Math.min(light,100-light);
+        const f=n=>{
+          const k=(n+hue/30)%12;
+          return Math.round((light-a*Math.max(-1,Math.min(k-3,9-k,1)))*2.55)
+            .toString(16).padStart(2,'0');
+        };
+        options.push('#'+f(0)+f(8)+f(4));
+      }
+      let best='',distance=-1;
+      for(const c of options){
+        if(old.includes(c.toLowerCase()))continue;
+        const nearest=Math.min(...old.map(x=>debtColorDifference(c,x)));
+        if(nearest>distance){best=c;distance=nearest;}
+      }
+      return best||DEBT_PALETTE[0];
+    }
+    function normalizeDebtColors(){
+      const used=[];
+      for(const debt of debts){
+        const color=validDebtHex(debt.color)?debt.color.toLowerCase():null;
+        debt.color=!color||used.some(c=>debtColorDifference(c,color)<.115)
+          ?nextDebtColor(used):color;
+        used.push(debt.color);
+      }
+    }
+    function suggestDebtColor(excludeIndex=null){
+      return nextDebtColor(debts.filter((_,i)=>i!==excludeIndex).map(d=>d.color));
+    }
+
     /* --- CHART.JS CUSTOM PLUGINS --- */
 
     // Center Stats Plugin
@@ -787,6 +847,7 @@
     }
 
     function renderUI() {
+        normalizeDebtColors();
         renderDebts();
         renderBudget();
         renderBills();
@@ -902,7 +963,9 @@
                 datasets: [{
                     data: dataValues,
                     backgroundColor: colors.map(c => hexToRGBA(c, 1.0)),
-                    borderWidth: 0,
+                    borderColor: '#17223b',
+                    borderWidth: 2,
+                    hoverBorderWidth: 3,
                     hoverOffset: 8
                 }]
             },
@@ -1130,7 +1193,7 @@
             if (category === 'budget') document.getElementById('modalBudgetOwner').value = item.owner === 'wife' ? 'wife' : 'general';
             if (category === 'debts') {
                 document.getElementById('modalInputOriginal').value = item.original || item.amount;
-                document.getElementById('modalInputColor').value = item.color || '#38bdf8';
+                document.getElementById('modalInputColor').value = item.color || suggestDebtColor(index);
             }
         } else {
             document.getElementById('modalTitle').innerText = 'Add New Item';
@@ -1139,7 +1202,7 @@
             document.getElementById('modalInputSub').value = '';
             document.getElementById('modalInputAmount').value = '';
             document.getElementById('modalInputOriginal').value = '';
-            document.getElementById('modalInputColor').value = '#38bdf8';
+            document.getElementById('modalInputColor').value = category === 'debts' ? suggestDebtColor() : '#38bdf8';
             document.getElementById('modalBudgetOwner').value = 'general';
         }
 
@@ -1165,7 +1228,10 @@
         const index = isEdit ? parseInt(indexStr) : null;
 
         if (category === 'debts') {
-            const newItem = { title, sub, amount, original, color };
+            const used = debts.filter((_, i) => i !== index).map(d => d.color).filter(validDebtHex);
+            const autoColor = !validDebtHex(color) || used.some(c => debtColorDifference(c,color) < .115)
+                ? nextDebtColor(used) : color;
+            const newItem = { title, sub, amount, original, color: autoColor };
             if (isEdit) debts[index] = newItem;
             else debts.push(newItem);
         } else if (category === 'budget') {
