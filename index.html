@@ -461,6 +461,83 @@
             font-weight: 600;
             cursor: pointer;
         }
+
+    /* ClearPath visual refresh: intentionally CSS-only and data-safe */
+    :root {
+        --bg-color: #0b1426; --card-bg: #16253d;
+        --text-sub: #a3b3cc; --border-color: #263b56;
+        --accent-green: #43d5ab; --accent-blue: #59c8f6;
+    }
+    html { color-scheme: dark; }
+    body { min-height:100vh; padding:22px 16px 46px; line-height:1.45;
+        background: radial-gradient(ellipse 65% 23% at 88% -3%,rgba(39,117,124,.20),transparent 75%),
+        radial-gradient(ellipse 60% 25% at 0% 25%,rgba(62,73,154,.11),transparent 75%),#0b1426;
+    }
+    .dashboard-container { max-width:580px; gap:18px; }
+    .header { padding:4px 3px 0; }
+    .brand-eyebrow { display:flex; align-items:center; gap:9px; letter-spacing:.15em;
+        font-size:.66rem; font-weight:800; color:#85e2c9; margin-bottom:12px; }
+    .brand-mark { width:30px; height:30px; display:grid; place-items:center; border-radius:10px;
+        background:rgba(67,213,171,.13); color:#5eead4; font-size:1.15rem; }
+    .header h1 { font-size:clamp(1.65rem,6vw,2.05rem); line-height:1.15; letter-spacing:-.045em; }
+    .header p { margin-top:8px; font-size:.85rem; line-height:1.5; }
+    .nav-buttons { flex-wrap:nowrap; gap:6px; padding:5px; border-radius:16px;
+        background:#152339; border:1px solid #293d57; }
+    .nav-buttons .btn { flex:1; min-width:0; padding:12px 7px; border-radius:11px;
+        background:transparent; font-size:.76rem; color:#a8bad0; white-space:normal; line-height:1.2; }
+    .nav-buttons .btn.active { color:#082826; background:#69dfbd;
+        box-shadow:0 4px 18px rgba(67,213,171,.17); }
+    .nav-buttons .btn:hover:not(.active) { background:#23344e; }
+    .tab-content { gap:18px; }
+    .card { padding:22px; border-radius:21px; border-color:#2b3e5a;
+        background:linear-gradient(150deg,rgba(28,45,70,.95),rgba(19,33,55,.98));
+        box-shadow:0 12px 32px rgba(0,0,0,.10); }
+    .card:hover { transform:none; border-color:#365372; box-shadow:0 12px 32px rgba(0,0,0,.12); }
+    .card-title { font-size:1.16rem; font-weight:760; letter-spacing:-.025em; }
+    .card-subtitle { font-size:.84rem; line-height:1.5; margin-bottom:12px; }
+    .card-eyebrow { color:#71cdb8; font-size:.65rem; font-weight:800;
+        letter-spacing:.15em; margin-bottom:8px; }
+    .metrics-grid { grid-template-columns:1.6fr .8fr; gap:14px; }
+    .overview-metrics { background:linear-gradient(130deg,#1b334e,#15263d 65%,#17263b); }
+    .metric-label { font-size:.67rem; font-weight:650; letter-spacing:.095em; line-height:1.5; }
+    .metric-value { font-size:clamp(1.35rem,6vw,2rem); letter-spacing:-.045em;
+        font-weight:800; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+    .metric-value.count { color:#e8f2ff; }
+    .debt-overview-card { padding-bottom:18px; }
+    .debt-chart-container { max-width:320px; margin:-2px auto 7px; }
+    .debt-selection { background:linear-gradient(100deg,rgba(33,61,81,.65),rgba(24,40,66,.7));
+        border-radius:13px; border-color:#304964; margin:0 0 14px; padding:13px 14px; }
+    .debt-selection .selection-value { color:#eafaf6; }
+    .debt-legend { grid-template-columns:1fr; gap:5px; font-size:.83rem; }
+    .debt-legend .legend-item { display:flex; background:rgba(9,20,36,.33);
+        border:1px solid rgba(118,153,184,.10); border-radius:11px;
+        padding:11px 12px; gap:11px; min-height:45px;
+        transition:background .18s ease,opacity .18s ease,border-color .18s ease; }
+    .debt-legend .legend-item:hover,.debt-legend .legend-item:focus-visible {
+        background:rgba(57,84,113,.38); border-color:#426581; }
+    .debt-legend .legend-color { width:10px; height:27px; border-radius:7px; flex:0 0 10px; }
+    .debt-legend .legend-item span { overflow-wrap:anywhere; }
+    .debt-legend .legend-item.dimmed { opacity:.40; }
+    .list-item { border-radius:15px; background:#112039; border-color:#2b415c; padding:15px; }
+    .progress-bar-bg { height:8px; background:#273b55; border-radius:99px; }
+    .progress-bar-fill { border-radius:99px; background:linear-gradient(90deg,#38bdf8,#43d5ab); }
+    .btn-add { padding:10px 14px; border-radius:11px; background:#6bd9f2; }
+    .btn-action { padding:8px 11px; border-radius:9px; background:#263d58; color:#d5e5fa; }
+    .btn:focus-visible,.btn-add:focus-visible,.btn-action:focus-visible,
+    .debt-legend .legend-item:focus-visible { outline:2px solid #8de9d1; outline-offset:3px; }
+    .modal { border-radius:22px; background:#192b44; border-color:#38506b; }
+    .form-group input,.form-group select { border-radius:11px; padding:12px; }
+    .cal-day { border-radius:11px; background:#12223b; }
+    @media(max-width:390px) {
+        body { padding:16px 12px 38px; }
+        .card { padding:18px; border-radius:18px; }
+        .nav-buttons .btn { padding:10px 5px; font-size:.7rem; }
+        .debt-chart-container { max-width:280px; }
+        .card-header-flex { gap:8px; flex-wrap:wrap; }
+    }
+    @media(prefers-reduced-motion:reduce) {
+        *,*::before,*::after { scroll-behavior:auto!important; transition-duration:.01ms!important; animation-duration:.01ms!important; }
+    }
     </style>
 <style>
 #cp-auth{position:fixed;inset:0;z-index:9999;background:#0d1527;color:white;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -481,8 +558,9 @@
 <div id="cp-auth" hidden><form class="cp-auth-card" id="cp-auth-form"><h2>ClearPath</h2><p>Private debt tracking, on every device.</p><input id="cp-email" type="email" autocomplete="email" placeholder="Email" required><input id="cp-password" type="password" autocomplete="current-password" minlength="8" placeholder="Password (8+ characters)" required><div class="cp-auth-actions"><button type="submit" id="cp-login">Sign in</button><button type="button" id="cp-signup">Create account</button></div><button type="button" id="cp-reset">Forgot password?</button><p id="cp-auth-status" role="status" aria-live="polite"></p></form></div>
 <div class="dashboard-container"><div id="cp-account"><span id="cp-user-email"></span><button type="button" id="cp-signout">Sign out</button></div>
     <header class="header">
-        <h1>CLEARPATH FINANCIAL</h1>
-        <p>Debt & Budget Dashboard</p>
+        <div class="brand-eyebrow"><span class="brand-mark" aria-hidden="true">◈</span> CLEARPATH FINANCIAL</div>
+        <h1>Your money, clearly.</h1>
+        <p>Debt, bills and budget—all in one place.</p>
     </header>
 
     <nav class="nav-buttons">
@@ -494,7 +572,7 @@
 
     <!-- Overview Tab -->
     <div id="tab-overview" class="tab-content active">
-        <div class="card metrics-grid">
+        <div class="card metrics-grid overview-metrics">
             <div>
                 <div class="metric-label">Total Debt Balance</div>
                 <div class="metric-value" id="metric-total-debt">$0.00</div>
@@ -505,16 +583,17 @@
             </div>
         </div>
 
-        <div class="card">
-            <h2 class="card-title" style="margin-bottom: 6px;">Debt & Bills Distribution</h2>
-            <p class="card-subtitle">Tap any segment to isolate proportions or inspect slice values.</p>
+        <div class="card debt-overview-card">
+            <div class="card-eyebrow">YOUR DEBT AT A GLANCE</div>
+            <h2 class="card-title" style="margin-bottom: 6px;">Debt overview</h2>
+            <p class="card-subtitle">Tap a segment to explore your balances and proportions.</p>
 
-            <div class="chart-container">
+            <div class="chart-container debt-chart-container">
                 <canvas id="debtChart"></canvas>
             </div>
 
             <div id="debtSelection" class="debt-selection" role="status" aria-live="polite" hidden></div>
-            <div class="custom-legend" id="chartLegend"></div>
+            <div class="custom-legend debt-legend" id="chartLegend"></div>
         </div>
     </div>
 
