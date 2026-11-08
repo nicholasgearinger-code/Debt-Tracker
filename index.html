@@ -1035,12 +1035,11 @@
             if (debtSelectedIndex === null) return hexToRGBA(color, 1.0);
             return index === debtSelectedIndex ? hexToRGBA(color, 1.0) : hexToRGBA(color, 0.2);
         });
-
         debtChart.data.datasets[0].backgroundColor = updatedColors;
         debtChart.update();
 
         const selection = document.getElementById('debtSelection');
-        const selected = debtSelectedIndex == null ? null : debts[debtSelectedIndex];
+        const selected = debtSelectedIndex === null ? null : debts[debtSelectedIndex];
         selection.hidden = !selected;
         if (selected) {
             selection.style.borderLeftColor = colors[debtSelectedIndex];
@@ -1050,15 +1049,8 @@
             const value = document.createElement('span');
             value.className = 'selection-value';
             const total = debts.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
-            const portion = total > 0 ? (selected.amount / total * 100).toFixed(1) : '0.0';
-            value.textContent = ' = document.querySelectorAll('#chartLegend .legend-item');
-        legendItems.forEach((item, index) => {
-            if (debtSelectedIndex === null || index === debtSelectedIndex) item.classList.remove('dimmed');
-            else item.classList.add('dimmed');
-        });
-    }
-
-     + Number(selected.amount).toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' · ' + portion + '% of debt';
+            const portion = total > 0 ? (Number(selected.amount) / total * 100).toFixed(1) : '0.0';
+            value.textContent = '$' + Number(selected.amount).toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' · ' + portion + '% of debt';
             selection.append(name, value);
         }
 
@@ -1162,17 +1154,12 @@
         labels.forEach((label, i) => {
             const item = document.createElement('div');
             item.className = 'legend-item';
-            item.innerHTML = `
-                <div class="legend-color" style="background-color: ${colors[i]}"></div>
-                <span>${label}${amounts ? ' · 
-            `;
-            item.addEventListener('click', () => onClickCallback(i));
-            legendContainer.appendChild(item);
-        });
-    }
-
-     + Number(amounts[i]).toLocaleString('en-US', { maximumFractionDigits: 2 }) : ''}</span>
-            `;
+            const dot = document.createElement('div');
+            dot.className = 'legend-color';
+            dot.style.backgroundColor = colors[i];
+            const text = document.createElement('span');
+            text.textContent = label + (amounts ? ' · $' + Number(amounts[i]).toLocaleString('en-US', { maximumFractionDigits: 2 }) : '');
+            item.append(dot, text);
             item.addEventListener('click', () => onClickCallback(i));
             legendContainer.appendChild(item);
         });
