@@ -157,6 +157,23 @@
             margin: 0 auto 20px auto;
         }
 
+        .debt-selection {
+            margin: 0 0 18px;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-blue);
+            border-radius: 10px;
+            background: rgba(13, 21, 39, 0.65);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px 16px;
+            font-size: 0.9rem;
+        }
+        .debt-selection[hidden] { display: none; }
+        .debt-selection strong { font-weight: 700; color: #fff; }
+        .debt-selection .selection-value { font-weight: 750; white-space: nowrap; }
         .custom-legend {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -496,6 +513,7 @@
                 <canvas id="debtChart"></canvas>
             </div>
 
+            <div id="debtSelection" class="debt-selection" role="status" aria-live="polite" hidden></div>
             <div class="custom-legend" id="chartLegend"></div>
         </div>
     </div>
@@ -771,7 +789,12 @@
             const centerX = (left + right) / 2;
             const centerY = (top + bottom) / 2;
 
+            const isDebtChart = chart.canvas?.id === 'debtChart';
             meta.data.forEach((element, i) => {
+                // On the debt chart, tiny arcs cannot fit callout labels
+                // without overlaps. Their exact amounts remain visible
+                // in the legend and the tap-to-select details below.
+                if (isDebtChart && chart.data.datasets[0].data[i] / total <= 0.08) return;
                 const value = chart.data.datasets[0].data[i];
                 const percentage = (value / total) * 100;
                 const { startAngle, endAngle, outerRadius, innerRadius } = element;
@@ -981,11 +1004,10 @@
                         amountText: `$${Math.round(totalDebt).toLocaleString()}`,
                         labelText: 'Total Debt'
                     },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) { return ` $${context.raw.toLocaleString()}`; }
-                        }
-                    }
+                    // Native canvas tooltip overlaps our in-slice values
+                    // on touch devices. Tapping now displays a persistent
+                    // selection summary beneath the doughnut instead.
+                    tooltip: { enabled: false }
                 },
                 onClick: (event, elements) => {
                     if (elements.length > 0) {
@@ -1002,7 +1024,7 @@
         renderLegend('chartLegend', labels, colors, (i) => {
             debtSelectedIndex = (debtSelectedIndex === i) ? null : i;
             updateDebtChartFocus();
-        });
+        }, dataValues);
         updateDebtChartFocus();
     }
 
@@ -1016,6 +1038,29 @@
 
         debtChart.data.datasets[0].backgroundColor = updatedColors;
         debtChart.update();
+
+        const selection = document.getElementById('debtSelection');
+        const selected = debtSelectedIndex == null ? null : debts[debtSelectedIndex];
+        selection.hidden = !selected;
+        if (selected) {
+            selection.style.borderLeftColor = colors[debtSelectedIndex];
+            selection.replaceChildren();
+            const name = document.createElement('strong');
+            name.textContent = selected.title;
+            const value = document.createElement('span');
+            value.className = 'selection-value';
+            const total = debts.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+            const portion = total > 0 ? (selected.amount / total * 100).toFixed(1) : '0.0';
+            value.textContent = ' = document.querySelectorAll('#chartLegend .legend-item');
+        legendItems.forEach((item, index) => {
+            if (debtSelectedIndex === null || index === debtSelectedIndex) item.classList.remove('dimmed');
+            else item.classList.add('dimmed');
+        });
+    }
+
+     + Number(selected.amount).toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' · ' + portion + '% of debt';
+            selection.append(name, value);
+        }
 
         const legendItems = document.querySelectorAll('#chartLegend .legend-item');
         legendItems.forEach((item, index) => {
@@ -1111,7 +1156,7 @@
         });
     }
 
-    function renderLegend(containerId, labels, colors, onClickCallback) {
+    function renderLegend(containerId, labels, colors, onClickCallback, amounts = null) {
         const legendContainer = document.getElementById(containerId);
         legendContainer.innerHTML = '';
         labels.forEach((label, i) => {
@@ -1119,7 +1164,14 @@
             item.className = 'legend-item';
             item.innerHTML = `
                 <div class="legend-color" style="background-color: ${colors[i]}"></div>
-                <span>${label}</span>
+                <span>${label}${amounts ? ' · 
+            `;
+            item.addEventListener('click', () => onClickCallback(i));
+            legendContainer.appendChild(item);
+        });
+    }
+
+     + Number(amounts[i]).toLocaleString('en-US', { maximumFractionDigits: 2 }) : ''}</span>
             `;
             item.addEventListener('click', () => onClickCallback(i));
             legendContainer.appendChild(item);
