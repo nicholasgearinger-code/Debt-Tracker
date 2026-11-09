@@ -574,26 +574,150 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="./supabase-config.js"></script>
 <script defer src="./clearpath-auth.js"></script>
+<style id="clearpath-aurora-design">
+
+/* ClearPath Aurora: image-inspired mobile-first visual redesign */
+:root{
+  --bg-color:#130d29; --card-bg:rgba(37,26,65,.86);
+  --border-color:rgba(178,151,237,.20); --text-sub:#b3a9cb;
+  --accent-green:#76edcd; --accent-blue:#7de6de; --accent-red:#ff6f99;
+}
+html{background:#130d29}
+body{
+  color:#f9f5ff;min-height:100vh;padding:24px 16px 115px;
+  background:radial-gradient(ellipse at 15% -10%,rgba(119,51,159,.43),transparent 46%),
+             radial-gradient(ellipse at 96% 26%,rgba(67,34,129,.34),transparent 45%),
+             linear-gradient(153deg,#24143f,#130e29 60%,#160c2d);
+}
+.dashboard-container{max-width:600px;gap:19px;position:relative}
+.header{padding:9px 5px 0}
+.brand-eyebrow{font-size:.69rem;letter-spacing:.2em;color:#a8f7e4}
+.header h1{font-size:2.1rem;font-weight:800;letter-spacing:-.055em;display:flex;align-items:center;gap:10px}
+.cp-brand-symbol{font-size:1.45rem;background:linear-gradient(145deg,#a3ffe2,#66d3db);color:transparent;background-clip:text}
+.header p{color:#c1b9d3;margin-top:0;font-size:.88rem}
+.nav-buttons{
+ position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:160;
+ width:min(100%,600px);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:7px;padding:11px max(15px,env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(15px,env(safe-area-inset-left));
+ background:rgba(27,17,50,.96);border:1px solid rgba(163,136,214,.22);
+ border-radius:24px 24px 0 0;box-shadow:0 -15px 35px rgba(9,5,24,.5);
+ backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)
+}
+.nav-buttons .btn{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;min-width:0;padding:9px 3px;min-height:58px;border-radius:17px;background:transparent;color:#d3cbe2;font-size:.73rem}
+.nav-buttons .btn .nav-icon{font-size:1.47rem;font-weight:650;line-height:1;display:block}
+.nav-buttons .btn.active{color:#9affdc;background:linear-gradient(155deg,rgba(87,140,159,.43),rgba(68,54,116,.56));box-shadow:inset 0 0 0 1px rgba(135,253,224,.22),0 7px 20px rgba(0,0,0,.15)}
+.nav-buttons .btn:hover{background:rgba(112,83,150,.35)}
+.tab-content{gap:17px}
+.card,.list-item{background:linear-gradient(145deg,rgba(62,44,93,.83),rgba(33,25,61,.91));border-color:rgba(181,144,244,.2);box-shadow:0 10px 28px rgba(8,5,20,.16)}
+.card{border-radius:21px}
+.card:hover{transform:none;border-color:rgba(178,151,237,.4)}
+.card-title{letter-spacing:-.02em}
+.btn-add,.btn-save,.btn.active{background:#73dfbe;color:#17243b}
+.modal{background:#241b3e;border:1px solid rgba(178,151,237,.3);border-radius:22px}
+.cp-premium-hero{display:grid;gap:16px}
+.cp-glass{background:linear-gradient(133deg,rgba(86,68,121,.55),rgba(46,33,77,.88) 67%,rgba(57,37,96,.83));border:1px solid rgba(189,163,248,.35);border-radius:22px;box-shadow:inset 0 1px rgba(255,255,255,.10),0 14px 36px rgba(11,5,27,.24)}
+.cp-snapshot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:20px 10px;gap:0;overflow:hidden;position:relative}
+.cp-snapshot-grid:before{content:"";position:absolute;left:-40px;bottom:-60px;width:170px;height:120px;background:radial-gradient(ellipse,rgba(103,245,219,.2),transparent 70%);pointer-events:none}
+.cp-snapshot-item{position:relative;min-width:0;padding:0 11px;display:flex;flex-direction:column;gap:5px}
+.cp-snapshot-item+.cp-snapshot-item{border-left:1px solid rgba(207,185,242,.22)}
+.cp-snapshot-icon{color:#80f1d7;font-size:1.25rem;height:23px}
+.cp-snapshot-label{font-size:.69rem;color:#d5d0df;line-height:1.3}
+.cp-snapshot-item strong{font-size:clamp(.94rem,3.5vw,1.45rem);letter-spacing:-.04em;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+#cp-stat-surplus{color:#8af2d1}
+.cp-projection-card{padding:20px 17px 15px}
+.cp-projection-heading{display:flex;align-items:start;justify-content:space-between;gap:10px}
+.cp-projection-heading h2,.cp-overview-debts-header h2{font-size:1.12rem;line-height:1.3;letter-spacing:-.025em}
+.cp-overline{color:#96e8d3;letter-spacing:.13em;font-size:.61rem;font-weight:800}
+.cp-forecast-pill{color:#a2edda;white-space:nowrap;border-radius:30px;background:rgba(77,184,149,.14);border:1px solid rgba(120,240,200,.25);padding:6px 9px;font-size:.66rem;font-weight:700}
+.cp-forecast-canvas{height:205px;position:relative;margin-top:12px}
+.cp-projection-note{font-size:.72rem;color:#c7c0d6;line-height:1.5;margin-top:8px}
+.cp-overview-debts-header{display:flex;align-items:end;justify-content:space-between;gap:12px;padding:4px 3px 0}
+.cp-overview-debts-header h2{font-size:1.43rem}
+.cp-view-all{background:transparent;border:0;color:#8af2d1;font-size:.82rem;cursor:pointer;font-weight:700;padding:7px}
+.cp-overview-debt-list{display:grid;gap:11px}
+.cp-mini-debt{border-radius:17px;padding:14px 15px;background:linear-gradient(117deg,rgba(65,44,87,.89),rgba(38,28,65,.9));border:1px solid rgba(181,145,235,.23);box-shadow:0 9px 24px rgba(10,5,29,.16);display:grid;gap:10px;position:relative;overflow:hidden}
+.cp-mini-debt:before{content:"";position:absolute;top:0;bottom:0;left:0;width:4px;background:#74edcb}
+.cp-mini-debt.cp-risk:before{background:#fb7198}
+.cp-mini-debt.cp-slow:before{background:#efba63}
+.cp-mini-debt-top,.cp-mini-meta{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cp-mini-debt-top strong{font-size:.96rem}
+.cp-mini-debt-top span{font-size:.69rem;color:#d7bfd6;white-space:nowrap}
+.cp-mini-meta{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:12px}
+.cp-mini-meta span{font-size:.65rem;display:block;color:#bcb4cd}
+.cp-mini-meta strong{font-size:.86rem;display:block;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.cp-mini-alert{color:#ff9cba;background:rgba(255,98,140,.13);border-radius:9px;padding:7px 9px;font-size:.72rem;font-weight:750;line-height:1.5}
+.cp-mini-debt.cp-slow .cp-mini-alert{color:#ffd085;background:rgba(246,168,75,.13)}
+.cp-mini-debt.cp-healthy .cp-mini-alert{color:#a1f3d4;background:rgba(102,231,175,.11)}
+.cp-mini-bar{display:flex;overflow:hidden;height:23px;border-radius:20px;background:#322447}
+.cp-mini-bar .interest{background:linear-gradient(90deg,#d14f87,#b46390)}
+.cp-mini-bar .principal{background:linear-gradient(90deg,#65e1c6,#a4f4d3)}
+.cp-mini-foot{font-size:.7rem;color:#c9bed7}
+.cp-overview-empty{padding:18px;color:#c5b8d8;border:1px dashed #8b70ad;border-radius:15px}
+.overview-hero{display:none}
+.debt-overview-card{margin-top:1px}
+.debt-overview-card .debt-chart-container{max-width:245px}
+#tab-debts .card,#tab-budget .card,#tab-bills .card{padding:19px 16px}
+.item-list{gap:12px}
+.list-item{border-radius:15px}
+.cp-interest{background:rgba(20,13,43,.73);border-color:rgba(183,146,235,.24)}
+.cp-impact{font-size:.76rem}
+.cp-interest .cp-impact-stat{background:rgba(255,255,255,.04)}
+input,select,textarea{accent-color:#70e6c5}
+@media(min-width:700px){
+ body{padding-top:36px}
+ .dashboard-container{max-width:720px}
+ .nav-buttons{border-radius:24px;width:min(620px,calc(100% - 30px));bottom:15px}
+ .cp-snapshot-item{padding:0 22px}
+ .cp-forecast-canvas{height:240px}
+}
+@media(max-width:380px){
+ .cp-snapshot-grid{padding:16px 3px}
+ .cp-snapshot-item{padding:0 7px}
+ .cp-snapshot-label{font-size:.61rem}
+ .cp-snapshot-item strong{font-size:.96rem}
+ .cp-mini-meta{gap:6px}
+ .cp-mini-debt{padding:13px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+</style>
 </head>
 <body>
 
 <div id="cp-auth" hidden><form class="cp-auth-card" id="cp-auth-form"><h2>ClearPath</h2><p>Private debt tracking, on every device.</p><input id="cp-email" type="email" autocomplete="email" placeholder="Email" required><input id="cp-password" type="password" autocomplete="current-password" minlength="8" placeholder="Password (8+ characters)" required><div class="cp-auth-actions"><button type="submit" id="cp-login">Sign in</button><button type="button" id="cp-signup">Create account</button></div><button type="button" id="cp-reset">Forgot password?</button><p id="cp-auth-status" role="status" aria-live="polite"></p></form></div>
 <div class="dashboard-container"><div id="cp-account"><span id="cp-user-email"></span><button type="button" id="cp-signout">Sign out</button></div>
     <header class="header">
-        <div class="brand-eyebrow"><span class="brand-mark" aria-hidden="true">◈</span> CLEARPATH FINANCIAL</div>
-        <h1>Your money, clearly.</h1>
-        <p>Debt, bills and budget—all in one place.</p>
+        <div class="brand-eyebrow"><span class="brand-mark" aria-hidden="true">◈</span> YOUR FINANCIAL JOURNEY</div>
+        <h1><span class="cp-brand-symbol">◢</span> ClearPath</h1>
+        <p>Make every payment count.</p>
     </header>
 
-    <nav class="nav-buttons">
-        <button class="btn active" onclick="switchTab('overview', this)">Overview</button>
-        <button class="btn" onclick="switchTab('debts', this)">Debts</button>
-        <button class="btn" onclick="switchTab('budget', this)">Budget</button>
-        <button class="btn" onclick="switchTab('bills', this)">Bills & Reminders</button>
+    <nav class="nav-buttons" aria-label="Main navigation">
+        <button class="btn active" onclick="switchTab('overview', this)" aria-label="Overview"><span class="nav-icon" aria-hidden="true">⌂</span><span>Overview</span></button>
+        <button class="btn" onclick="switchTab('debts', this)" aria-label="Debts"><span class="nav-icon" aria-hidden="true">▱</span><span>Debts</span></button>
+        <button class="btn" onclick="switchTab('budget', this)" aria-label="Budget"><span class="nav-icon" aria-hidden="true">▥</span><span>Budget</span></button>
+        <button class="btn" onclick="switchTab('bills', this)" aria-label="Bills and reminders"><span class="nav-icon" aria-hidden="true">▦</span><span>Bills</span></button>
     </nav>
 
     <!-- Overview Tab -->
     <div id="tab-overview" class="tab-content active">
+        <section class="cp-premium-hero" aria-label="Your financial snapshot">
+            <div class="cp-glass cp-snapshot-grid">
+                <div class="cp-snapshot-item"><span class="cp-snapshot-icon">◇</span><span class="cp-snapshot-label">Total debt</span><strong id="cp-stat-debt">—</strong></div>
+                <div class="cp-snapshot-item"><span class="cp-snapshot-icon">ϟ</span><span class="cp-snapshot-label">Monthly surplus</span><strong id="cp-stat-surplus">—</strong></div>
+                <div class="cp-snapshot-item"><span class="cp-snapshot-icon">♡</span><span class="cp-snapshot-label">Emergency savings</span><strong id="cp-stat-savings">Set up</strong></div>
+            </div>
+            <div class="cp-glass cp-projection-card">
+                <div class="cp-projection-heading"><div><span class="cp-overline">YOUR MOMENTUM</span><h2>Debt payoff progress</h2></div><span class="cp-forecast-pill">Projected · minimums</span></div>
+                <div class="cp-forecast-canvas"><canvas id="cpPayoffChart" role="img" aria-label="Estimated debt balances over the next twelve months at current minimum payments"></canvas></div>
+                <p id="cp-projection-note" class="cp-projection-note">Calculated from your current balances and APRs.</p>
+            </div>
+            <div class="cp-overview-debts-header">
+                <div><span class="cp-overline">THE BIG PICTURE</span><h2>Your debts</h2></div>
+                <button type="button" class="cp-view-all" onclick="switchTab('debts', document.querySelectorAll('.nav-buttons .btn')[1])">View all ↗</button>
+            </div>
+            <div class="cp-overview-debt-list" id="cp-overview-debt-list" aria-live="polite"></div>
+        </section>
         <section class="overview-hero">
             <div class="hero-heading"><div><div class="hero-eyebrow">FINANCIAL OVERVIEW</div><h2>Make every payment count.</h2></div><div class="hero-wallet" aria-hidden="true">◈</div></div>
             <div class="card outstanding-card">
@@ -1595,6 +1719,136 @@
     }
     const cpPreviousRenderUI=renderUI;
     renderUI=function(){cpUnifyCapitalOne();cpPreviousRenderUI()};
+
+
+    // Aurora overview reads existing data without changing or seeding balances.
+    let cpAuroraChart = null;
+    function cpAuroraMoney(n) {
+      return '
+    if (!window.ClearPathAuth?.configured) renderUI();
+    window.ClearPathBoot = function(data){debts=data.debts||[];budget=data.budget||[];bills=data.bills||[];renderUI();};
+</script>
+
+</body>
+</html>
++(Number(n)||0).toLocaleString('en-US',{maximumFractionDigits:0});
+    }
+    function cpAuroraDebtForecast(){
+      const entries=debts.filter(d=>Number(d.amount)>0).map(d=>{
+        const terms=cpTerms(d);
+        return {balance:Math.max(0,Number(d.amount)||0),apr:terms.apr,min:terms.min};
+      });
+      if(!entries.length || entries.some(d=>d.apr===null||d.min===null))return null;
+      // Minimum-only illustration: assumes current minimum amounts stay fixed.
+      const values=[entries.reduce((sum,d)=>sum+d.balance,0)];
+      for(let month=0;month<12;month++){
+        for(const d of entries){
+          if(d.balance<=0)continue;
+          d.balance=Math.max(0,d.balance*(1+d.apr/1200)-Math.min(d.balance*(1+d.apr/1200),d.min));
+        }
+        values.push(entries.reduce((sum,d)=>sum+d.balance,0));
+      }
+      return values;
+    }
+    function cpAuroraOverview(){
+      const debtTotal=debts.reduce((sum,d)=>sum+Math.max(0,Number(d.amount)||0),0);
+      const surplus=budget.reduce((sum,d)=>sum+(Number(d.amount)||0),0);
+      const debtEl=document.getElementById('cp-stat-debt');
+      const surplusEl=document.getElementById('cp-stat-surplus');
+      const savingsEl=document.getElementById('cp-stat-savings');
+      if(!debtEl)return;
+      debtEl.textContent=cpAuroraMoney(debtTotal);
+      surplusEl.textContent=(surplus<0?'-':'')+cpAuroraMoney(Math.abs(surplus));
+      surplusEl.style.color=surplus<0?'#ff9fb7':'#8af2d1';
+      // Savings is only shown if the user created an actual savings budget item.
+      const savingsItems=budget.filter(b=>/savings|emergency fund/i.test(b.title||'') && Number(b.amount)>=0);
+      savingsEl.textContent=savingsItems.length
+        ?cpAuroraMoney(savingsItems.reduce((n,b)=>n+(Number(b.amount)||0),0))
+        :'Not tracked';
+      const list=document.getElementById('cp-overview-debt-list');
+      list.replaceChildren();
+      const active=debts.map((d,index)=>({d,index})).filter(x=>Number(x.d.amount)>0);
+      if(!active.length){
+        const e=document.createElement('p');e.className='cp-overview-empty';e.textContent='Add your first debt to see payment insights here.';list.appendChild(e);
+      }
+      // Show the four largest balances in the compact overview; the full tab retains all cards.
+      for(const {d,index} of active.sort((a,b)=>Number(b.d.amount)-Number(a.d.amount)).slice(0,4)){
+        const {apr,min}=cpTerms(d);
+        const balance=Number(d.amount)||0;
+        const interest=apr===null?null:balance*apr/1200;
+        const principal=interest===null||min===null?null:min-interest;
+        const pct=principal===null||min<=0?null:Math.max(0,Math.min(100,100*principal/min));
+        const risk=pct===null?'cp-healthy':principal<=0?'cp-risk':pct<35?'cp-slow':'cp-healthy';
+        const wrap=document.createElement('article');wrap.className='cp-mini-debt '+risk;
+        const top=document.createElement('div');top.className='cp-mini-debt-top';
+        const name=document.createElement('strong');name.textContent=d.title;
+        const rate=document.createElement('span');rate.textContent=apr!==null?apr.toFixed(2)+'% APR':'APR not set';
+        top.append(name,rate);
+        const meta=document.createElement('div');meta.className='cp-mini-meta';
+        for(const [label,value] of [['Balance',cpAuroraMoney(balance)],['Minimum',min!==null?cpAuroraMoney(min):'—'],['Monthly interest',interest!==null?cpAuroraMoney(interest):'—']]){
+          const cell=document.createElement('div');const l=document.createElement('span');l.textContent=label;
+          const v=document.createElement('strong');v.textContent=value;cell.append(l,v);meta.appendChild(cell);
+        }
+        const alert=document.createElement('div');alert.className='cp-mini-alert';
+        alert.textContent=principal===null?'Enter APR and minimum to see the impact.':
+          principal<=0?'⚠ Minimum payment does not lower the balance':
+          'Only '+cpAuroraMoney(principal)+' of the minimum reduces debt ('+Math.round(pct)+'%)';
+        wrap.append(top,meta,alert);
+        if(pct!==null){
+          const bar=document.createElement('div');bar.className='cp-mini-bar';
+          const interestPart=document.createElement('div');interestPart.className='interest';interestPart.style.width=(100-pct)+'%';
+          const principalPart=document.createElement('div');principalPart.className='principal';principalPart.style.width=pct+'%';
+          bar.append(interestPart,principalPart);wrap.appendChild(bar);
+        }
+        const foot=document.createElement('div');foot.className='cp-mini-foot';
+        foot.textContent='Estimated interest vs. principal · View full details in Debts';
+        wrap.appendChild(foot);
+        list.appendChild(wrap);
+      }
+      const series=cpAuroraDebtForecast();
+      const note=document.getElementById('cp-projection-note');
+      note.textContent=series
+        ?'Illustrative next 12 months if you pay each current minimum every month. Interest is estimated monthly; actual minimums and APRs can change.'
+        :'Set APR and minimum payment for every debt to view a 12-month forecast.';
+      const canvas=document.getElementById('cpPayoffChart');
+      if(cpAuroraChart){cpAuroraChart.destroy();cpAuroraChart=null;}
+      if(!canvas || typeof Chart==='undefined')return;
+      if(series){
+        cpAuroraChart=new Chart(canvas.getContext('2d'),{
+          type:'line',
+          data:{
+            labels:Array.from({length:13},(_,i)=>i===0?'Now':i===12?'12 mo':i%3===0?i+' mo':''),
+            datasets:[{label:'Balance with minimum payments',data:series,fill:true,
+              borderColor:'#8df4d0',borderWidth:3,tension:.3,pointRadius:0,pointHoverRadius:5,
+              backgroundColor:context=>{
+                const chart=context.chart,area=chart.chartArea;
+                if(!area)return 'rgba(117,237,207,.19)';
+                const g=chart.ctx.createLinearGradient(0,area.top,0,area.bottom);
+                g.addColorStop(0,'rgba(111,238,199,.42)');g.addColorStop(1,'rgba(111,238,199,.015)');return g;
+              }}]
+          },
+          options:{
+            responsive:true,maintainAspectRatio:false,
+            interaction:{intersect:false,mode:'index'},
+            plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'Estimated balance: '+cpAuroraMoney(ctx.parsed.y)}}},
+            scales:{
+              x:{grid:{display:false},ticks:{color:'#bfb3d5',maxRotation:0,font:{size:10}}},
+              y:{beginAtZero:true,grid:{color:'rgba(196,172,227,.14)'},border:{display:false},
+                ticks:{color:'#bfb3d5',font:{size:10},callback:v=>'
+    if (!window.ClearPathAuth?.configured) renderUI();
+    window.ClearPathBoot = function(data){debts=data.debts||[];budget=data.budget||[];bills=data.bills||[];renderUI();};
+</script>
+
+</body>
+</html>
++(v>=1000?Math.round(v/1000)+'k':v)}}
+            }
+          }
+        });
+      }
+    }
+    const cpAuroraOriginalRenderUI=renderUI;
+    renderUI=function(){cpAuroraOriginalRenderUI();cpAuroraOverview()};
 
     // Initialize on load
     if (!window.ClearPathAuth?.configured) renderUI();
