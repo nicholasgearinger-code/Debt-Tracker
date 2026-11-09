@@ -1453,35 +1453,56 @@
     function cpRenderInterest(){
       const cards=document.querySelectorAll('#debt-list .list-item');
       cards.forEach((card,i)=>{
-        const d=debts[i]; if(!d)return;
+        const d=debts[i];if(!d)return;
         let box=card.querySelector('.cp-interest');
         if(!box){box=document.createElement('div');box.className='cp-interest';card.appendChild(box)}
-        const {apr,min}=cpTerms(d),balance=Math.max(0,Number(d.amount)||0);
         box.replaceChildren();
+        const {apr,min}=cpTerms(d),balance=Math.max(0,Number(d.amount)||0);
+        const line=(parent,cls,content)=>{
+          const el=document.createElement('div');el.className=cls;el.textContent=content;parent.appendChild(el);return el;
+        };
         if(apr===null||min===null){
-          box.textContent='Edit this debt to set APR and monthly minimum for an interest estimate.';
+          line(box,'cp-info','Add APR and monthly minimum in Edit to see how payments affect the balance.');
           return;
         }
+        if(balance===0){line(box,'cp-good','Paid off — no interest projected.');return;}
         const interest=balance*apr/1200;
-        const required=Math.min(balance+interest,min);
-        const principal=required-interest;
-        const target=Math.min(balance+interest,min+interest);
-        const rows=[
-          ['APR',apr.toFixed(2)+'%'],
-          ['Estimated monthly interest',cpMoney(interest)],
-          ['Minimum due (already includes interest)',cpMoney(required)],
-          ['Principal change at minimum',principal<0?'Balance increases '+cpMoney(-principal):cpMoney(principal)],
-          ['Optional minimum + interest payment',cpMoney(target)]
-        ];
-        for(const [label,value] of rows){
-          const r=document.createElement('div');r.className='cp-interest-row';
-          const l=document.createElement('span');l.textContent=label;
-          const v=document.createElement('strong');v.textContent=value;
-          r.append(l,v);box.appendChild(r);
+        const payment=Math.min(min,balance+interest);
+        const principal=payment-interest;
+        const interestShare=payment>0?Math.min(100,interest/payment*100):100;
+        const stalled=principal<=0.005;
+        const slow=!stalled&&principal/payment<0.35;
+        const status=line(box,'cp-impact '+(stalled?'cp-danger':slow?'cp-caution':'cp-good'),
+          stalled?'⚠ MINIMUM WILL NOT REDUCE YOUR DEBT':
+          slow?'⚠ MINIMUM BARELY REDUCES YOUR DEBT':'✓ MINIMUM REDUCES YOUR DEBT');
+        status.setAttribute('role','status');
+        const split=document.createElement('div');split.className='cp-impact-split';
+        const left=document.createElement('div');left.className='cp-impact-stat';
+        line(left,'cp-caption','INTEREST THIS MONTH');
+        line(left,'cp-impact-amount',cpMoney(interest));
+        const right=document.createElement('div');right.className='cp-impact-stat';
+        line(right,'cp-caption',stalled?'BALANCE INCREASE':'DEBT REDUCTION AT MINIMUM');
+        line(right,'cp-impact-amount',cpMoney(stalled?Math.max(0,-principal):principal));
+        split.append(left,right);box.appendChild(split);
+        const track=document.createElement('div');track.className='cp-impact-bar';
+        const interestBar=document.createElement('div');interestBar.className='cp-impact-bar-interest';
+        interestBar.style.width=interestShare.toFixed(2)+'%';
+        const principalBar=document.createElement('div');principalBar.className='cp-impact-bar-principal';
+        principalBar.style.width=(100-interestShare).toFixed(2)+'%';
+        track.append(interestBar,principalBar);box.appendChild(track);
+        line(box,'cp-impact-caption','Of the '+cpMoney(payment)+' minimum, '+Math.round(interestShare)+'% goes toward interest and '+Math.round(100-interestShare)+'% toward reducing debt.');
+        let projected=balance;
+        for(let month=0;month<12&&projected>0;month++){
+          const accrued=projected*apr/1200;
+          projected=Math.max(0,projected+accrued-Math.min(min,projected+accrued));
         }
-        const note=document.createElement('p');
-        note.textContent='The minimum normally pays interest first; it does not need interest added again. The optional amount is an extra-payment goal, not the contractual minimum. Estimates use balance × APR ÷ 12; actual statement interest can differ.';
-        box.appendChild(note);
+        const projection=document.createElement('div');projection.className='cp-impact-year';
+        line(projection,'','AFTER 12 MINIMUM-ONLY PAYMENTS');
+        line(projection,'cp-year-value',cpMoney(projected)+' remaining');
+        box.appendChild(projection);
+        const target=Math.min(balance+interest,min+interest);
+        line(box,'cp-impact-target','OPTIONAL FASTER PAYMENT  '+cpMoney(target));
+        line(box,'cp-impact-footnote','Estimate uses APR ÷ 12, the same minimum every month and no new purchases. The minimum already includes interest. Actual statement amounts may differ.');
       });
     }
     const cpOriginalRenderDebts=renderDebts;
@@ -1543,6 +1564,9 @@
       .cp-interest p{color:#9fb2ca;font-size:.72rem;line-height:1.5}
     `;
     document.head.appendChild(cpStyle);
+    const cpImpactStyles=document.createElement('style');
+    cpImpactStyles.textContent=".cp-interest{font-size:.83rem;gap:10px}\n.cp-impact{border-radius:9px;padding:10px 12px;font-size:.8rem;font-weight:800;letter-spacing:.02em}\n.cp-danger{background:rgba(239,68,68,.16);color:#fda4af;border:1px solid rgba(239,68,68,.55)}\n.cp-caution{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.5)}\n.cp-good{background:rgba(16,185,129,.12);color:#86efac;border:1px solid rgba(16,185,129,.4);padding:10px;border-radius:9px}\n.cp-impact-split{display:grid;grid-template-columns:1fr 1fr;gap:8px}\n.cp-impact-stat{background:rgba(255,255,255,.045);border-radius:10px;padding:10px;min-width:0}\n.cp-caption{font-size:.65rem;font-weight:700;color:#aabbd0;line-height:1.4}\n.cp-impact-amount{font-size:1.3rem;font-weight:800;color:#fff;overflow-wrap:anywhere;margin-top:4px}\n.cp-impact-bar{height:13px;background:#243356;display:flex;overflow:hidden;border-radius:20px}\n.cp-impact-bar-interest{background:#f59e0b}\n.cp-impact-bar-principal{background:#10b981}\n.cp-impact-caption{font-size:.77rem;color:#cbd5e1;line-height:1.5}\n.cp-impact-year{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid #334155;padding-top:10px;font-size:.72rem;color:#aabbd0;font-weight:700}\n.cp-year-value{font-size:.95rem;color:#fff}\n.cp-impact-target{background:rgba(16,185,129,.13);color:#86efac;border-radius:9px;padding:10px;font-size:.86rem;font-weight:800}\n.cp-impact-footnote{font-size:.7rem;color:#aabbd0;line-height:1.5}";
+    document.head.appendChild(cpImpactStyles);
 
 
     // The legacy Discover account was the same card as Capital One.
