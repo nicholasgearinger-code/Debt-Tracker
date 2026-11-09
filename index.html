@@ -1233,6 +1233,175 @@ body::after{
 }
 
 </style>
+<style id="clearpath-liquid-glass-v3">
+
+/* Liquid Glass 3 — distinct optical layers rather than another flat purple fill. */
+:root{--lg3-edge:rgba(217,210,255,.39);--lg3-cyan:rgba(129,251,236,.40)}
+html{background:#0c1027}
+body{
+ background:linear-gradient(148deg,#151a43 0%,#13132f 43%,#19102f 100%);
+ background-attachment:fixed;
+}
+/* Actual luminous shapes behind the translucent surfaces create perceivable depth. */
+.lg3-atmosphere{
+ position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;
+ transform:translateZ(0);
+}
+.lg3-orb{
+ position:absolute;display:block;border-radius:50%;opacity:.85;
+}
+.lg3-orb-a{
+ width:390px;height:460px;top:-130px;left:-180px;
+ background:radial-gradient(ellipse,rgba(136,114,255,.69) 0%,rgba(85,92,220,.30) 46%,transparent 72%);
+ filter:blur(25px);
+}
+.lg3-orb-b{
+ width:350px;height:510px;right:-190px;top:22%;
+ background:radial-gradient(ellipse,rgba(92,246,219,.57) 0%,rgba(58,172,206,.25) 45%,transparent 73%);
+ filter:blur(24px);
+}
+.lg3-orb-c{
+ width:390px;height:460px;left:-185px;top:61%;
+ background:radial-gradient(ellipse,rgba(236,105,226,.39) 0%,rgba(122,67,191,.24) 48%,transparent 74%);
+ filter:blur(29px);
+}
+.lg3-orb-d{
+ width:330px;height:300px;right:-135px;bottom:-90px;
+ background:radial-gradient(ellipse,rgba(103,144,252,.45),rgba(77,91,182,.20) 44%,transparent 72%);
+ filter:blur(26px);
+}
+.dashboard-container{position:relative;z-index:1}
+.cp-glass,.cp-mini-debt,.debt-overview-card,#tab-budget .card:first-child,
+#tab-debts .card,#tab-bills .card,#chartLegend .legend-item,#budgetLegend .legend-item{
+  position:relative;
+  isolation:isolate;
+  background:
+    linear-gradient(164deg,rgba(255,255,255,.21) 0%,rgba(255,255,255,.055) 18%,rgba(255,255,255,.01) 45%,rgba(6,9,37,.13) 100%),
+    linear-gradient(115deg,rgba(101,103,158,.49) 0%,rgba(55,47,109,.45) 53%,rgba(38,35,86,.55) 100%);
+  border:1px solid rgba(220,210,255,.40);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,.48),
+    inset 1px 0 0 rgba(255,255,255,.17),
+    inset 0 -2px 0 rgba(14,20,57,.38),
+    inset 0 -28px 38px rgba(19,14,54,.15),
+    0 21px 45px rgba(4,6,29,.34),
+    0 0 26px rgba(142,121,255,.10);
+  -webkit-backdrop-filter:blur(26px) saturate(170%) brightness(1.10);
+  backdrop-filter:blur(26px) saturate(170%) brightness(1.10);
+}
+.cp-glass,.debt-overview-card,#tab-budget .card:first-child{
+  border-radius:26px;
+}
+.cp-snapshot-grid{
+ background:
+   radial-gradient(ellipse at 0% 8%,rgba(255,255,255,.21),transparent 52%),
+   linear-gradient(145deg,rgba(114,148,188,.54),rgba(69,66,142,.47) 54%,rgba(62,40,111,.56));
+}
+.cp-projection-card{
+ background:
+   radial-gradient(ellipse at 100% 0%,rgba(159,253,238,.19),transparent 52%),
+   linear-gradient(140deg,rgba(92,92,164,.53),rgba(54,47,109,.52) 65%,rgba(43,37,98,.58));
+}
+.cp-monthly-strip{
+ background:linear-gradient(127deg,rgba(100,137,177,.48),rgba(82,59,139,.54));
+}
+.debt-overview-card,#tab-budget .card:first-child{
+ background:
+   radial-gradient(ellipse at 6% 3%,rgba(236,225,255,.24),transparent 52%),
+   linear-gradient(155deg,rgba(105,103,169,.51),rgba(64,52,123,.54) 65%,rgba(41,37,96,.62));
+}
+.cp-mini-debt{
+ background:
+   linear-gradient(170deg,rgba(255,255,255,.13),transparent 30%),
+   linear-gradient(126deg,rgba(94,91,151,.42),rgba(41,35,90,.60));
+}
+.cp-mini-debt.cp-risk{
+ background:linear-gradient(169deg,rgba(255,255,255,.13),transparent 33%),
+            linear-gradient(124deg,rgba(129,66,113,.50),rgba(43,34,92,.60));
+}
+.cp-mini-debt.cp-slow{
+ background:linear-gradient(169deg,rgba(255,255,255,.13),transparent 33%),
+            linear-gradient(124deg,rgba(135,99,85,.46),rgba(43,34,92,.60));
+}
+/* Refractive-looking highlight is its own clipped optical layer. */
+.lg3-optics{
+ position:absolute!important;inset:0;display:block;border-radius:inherit;
+ overflow:hidden;pointer-events:none;z-index:0!important;
+ background:
+  radial-gradient(ellipse 92% 48% at var(--lg3-x,22%) var(--lg3-y,-8%),rgba(255,255,255,.25),rgba(206,240,255,.11) 36%,transparent 72%),
+  radial-gradient(ellipse 68% 47% at 102% 105%,rgba(96,251,224,.12),transparent 72%),
+  linear-gradient(166deg,rgba(255,255,255,.085),transparent 40%);
+}
+.lg3-optics:before{
+ content:"";position:absolute;top:-58%;left:-18%;width:130%;height:78%;
+ border-radius:50%;transform:rotate(-10deg);
+ border-bottom:1px solid rgba(255,255,255,.38);
+ box-shadow:0 19px 28px rgba(217,219,255,.07),0 2px 15px rgba(255,255,255,.11);
+ background:linear-gradient(174deg,rgba(245,251,255,.19),rgba(255,255,255,.02) 83%);
+}
+.lg3-optics:after{
+ content:"";position:absolute;right:-27%;bottom:-58%;width:112%;height:83%;
+ border-radius:50%;transform:rotate(-20deg);
+ border-top:1px solid rgba(186,253,244,.31);
+ background:radial-gradient(ellipse at 40% 0%,rgba(136,255,241,.12),transparent 58%);
+ box-shadow:0 -10px 28px rgba(124,243,232,.06);
+}
+/* Keep account text, buttons, charts and editable fields above the optical film. */
+.cp-glass> :not(.lg3-optics),.cp-mini-debt> :not(.lg3-optics),
+.debt-overview-card> :not(.lg3-optics),
+#tab-budget .card:first-child> :not(.lg3-optics),
+#tab-debts .card> :not(.lg3-optics),
+#tab-bills .card> :not(.lg3-optics),
+#chartLegend .legend-item> :not(.lg3-optics),
+#budgetLegend .legend-item> :not(.lg3-optics){position:relative;z-index:1}
+.cp-glass:after,.cp-mini-debt:after,.debt-overview-card:after,
+#tab-budget .card:first-child:after,#tab-debts .card:after,#tab-bills .card:after{
+ background:linear-gradient(133deg,rgba(239,248,255,.70),rgba(171,236,252,.45) 18%,rgba(196,171,253,.21) 55%,rgba(255,169,225,.31) 94%);
+ opacity:1;z-index:3;
+}
+.cp-mini-debt:before{z-index:4}
+.cp-projection-card .cp-forecast-summary{
+ background:linear-gradient(133deg,rgba(169,203,230,.25),rgba(74,80,151,.28));
+ border-color:rgba(228,237,255,.3);
+}
+/* Noticeably raised, floating lens-like active navigation. */
+.nav-buttons{
+ bottom:calc(7px + env(safe-area-inset-bottom));
+ width:min(590px,calc(100% - 18px));
+ border-radius:24px;
+ padding:10px 12px;
+ border:1px solid rgba(223,213,255,.38);
+ background:linear-gradient(180deg,rgba(107,105,161,.47),rgba(45,38,97,.68));
+ -webkit-backdrop-filter:blur(29px) saturate(170%);
+ backdrop-filter:blur(29px) saturate(170%);
+ box-shadow:inset 0 2px rgba(255,255,255,.33),inset 0 -2px rgba(26,23,68,.35),
+            0 14px 36px rgba(5,5,25,.42),0 0 22px rgba(155,129,252,.17);
+ overflow:hidden;
+}
+.nav-buttons .btn.active{
+ border-color:rgba(191,255,242,.58);
+ background:linear-gradient(160deg,rgba(180,254,237,.30),rgba(102,184,203,.23) 65%,rgba(78,92,155,.33));
+ box-shadow:inset 0 1px rgba(255,255,255,.43),inset 0 -7px 16px rgba(53,93,128,.12),
+            0 5px 19px rgba(0,0,0,.25),0 0 20px rgba(120,255,227,.27);
+}
+.nav-buttons::after{
+ content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+ box-shadow:inset 0 1px rgba(255,255,255,.22);
+}
+@media(max-width:390px){
+ .lg3-orb{filter:blur(22px);opacity:.75}
+ .cp-glass,.cp-mini-debt,.debt-overview-card,#tab-budget .card:first-child,
+ #tab-debts .card,#tab-bills .card{
+   -webkit-backdrop-filter:blur(17px) saturate(145%);
+   backdrop-filter:blur(17px) saturate(145%);
+ }
+ .nav-buttons{width:calc(100% - 14px);padding:8px}
+}
+@media(prefers-reduced-motion:reduce){
+ .lg3-orb,.lg3-optics,.nav-buttons{animation:none!important;transition:none!important}
+}
+
+</style>
 </head>
 <body>
 
@@ -2458,6 +2627,47 @@ body::after{
     }
     const cpAuroraOriginalRenderUI=renderUI;
     renderUI=function(){cpAuroraOriginalRenderUI();cpAuroraOverview()};
+
+
+    // Liquid Glass 3 optical overlays: presentation only; no data mutations.
+    function lg3Decorate(){
+      const selectors='.cp-glass,.cp-mini-debt,.debt-overview-card,#tab-budget .card:first-child,#tab-debts .card,#tab-bills .card,#chartLegend .legend-item,#budgetLegend .legend-item';
+      document.querySelectorAll(selectors).forEach(panel=>{
+        if(panel.querySelector(':scope > .lg3-optics'))return;
+        const layer=document.createElement('span');
+        layer.className='lg3-optics';layer.setAttribute('aria-hidden','true');
+        panel.insertBefore(layer,panel.firstChild);
+      });
+    }
+    if(!document.getElementById('lg3-atmosphere')){
+      const layer=document.createElement('div');
+      layer.id='lg3-atmosphere';layer.className='lg3-atmosphere';
+      layer.setAttribute('aria-hidden','true');
+      for(const name of ['a','b','c','d']){
+        const orb=document.createElement('span');
+        orb.className='lg3-orb lg3-orb-'+name;
+        layer.appendChild(orb);
+      }
+      document.body.insertBefore(layer,document.body.firstChild);
+    }
+    const lg3PreviousRenderUI=renderUI;
+    renderUI=function(){lg3PreviousRenderUI();lg3Decorate()};
+    // Pointer-highlight responds to desktop hover or a single touch, without
+    // continuous animation or scroll work on iPhone.
+    const lg3FinePointer=window.matchMedia('(pointer:fine)');
+    function lg3Aim(ev){
+      if(!lg3FinePointer.matches && ev.type!=='pointerdown')return;
+      const panel=ev.target.closest('.cp-glass,.cp-mini-debt,.debt-overview-card,#tab-budget .card:first-child,#tab-debts .card,#tab-bills .card');
+      if(!panel)return;
+      const r=panel.getBoundingClientRect();
+      if(!r.width||!r.height)return;
+      panel.style.setProperty('--lg3-x',Math.max(0,Math.min(100,(ev.clientX-r.left)/r.width*100))+'%');
+      panel.style.setProperty('--lg3-y',Math.max(0,Math.min(100,(ev.clientY-r.top)/r.height*100))+'%');
+    }
+    if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      document.addEventListener('pointermove',lg3Aim,{passive:true});
+      document.addEventListener('pointerdown',lg3Aim,{passive:true});
+    }
 
     // Initialize on load
     if (!window.ClearPathAuth?.configured) renderUI();
