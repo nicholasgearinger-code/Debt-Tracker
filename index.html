@@ -908,6 +908,95 @@ body{
 @media(prefers-reduced-motion:reduce){.nav-buttons .btn{transition:none}}
 
 </style>
+<style id="clearpath-premium-donuts">
+
+/* Aurora matching doughnut charts & edge lighting.
+   Keeps the original legend button interactions and per-debt colors. */
+body{
+  background:
+    radial-gradient(ellipse 390px 780px at -22% 17%,rgba(154,89,230,.29),transparent 74%),
+    radial-gradient(ellipse 380px 670px at 119% 55%,rgba(103,212,203,.17),transparent 76%),
+    radial-gradient(ellipse 430px 550px at 106% 93%,rgba(153,82,208,.22),transparent 73%),
+    linear-gradient(165deg,#29153f 0%,#1a1033 50%,#100c25 100%);
+  background-attachment:fixed;
+}
+.dashboard-container{isolation:isolate}
+.debt-overview-card,#tab-budget .card:first-child{
+  position:relative;isolation:isolate;
+  background:
+    radial-gradient(ellipse at 7% 0%,rgba(175,123,237,.22),transparent 55%),
+    radial-gradient(ellipse at 110% 105%,rgba(94,232,203,.095),transparent 53%),
+    linear-gradient(170deg,rgba(115,86,159,.54),rgba(67,46,103,.72) 48%,rgba(41,27,75,.9));
+  border:1px solid rgba(204,175,250,.33);
+  box-shadow:inset 0 1px rgba(249,241,255,.19),
+             inset 0 -22px 45px rgba(16,7,40,.17),
+             0 16px 40px rgba(9,3,29,.30),
+             0 0 33px rgba(140,92,218,.10);
+  border-radius:24px;
+}
+.debt-overview-card:before,#tab-budget .card:first-child:before{
+  content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(172deg,rgba(255,255,255,.095),transparent 33%);
+}
+.debt-overview-card:after,#tab-budget .card:first-child:after{
+  background:linear-gradient(125deg,rgba(147,246,223,.51),rgba(185,154,252,.26) 49%,rgba(224,122,204,.2));
+}
+.debt-overview-card .chart-container,
+#tab-budget .chart-container{
+  width:100%;max-width:340px;margin:4px auto 16px;
+  padding:9px;position:relative;overflow:visible;
+}
+.debt-overview-card .debt-chart-container{max-width:310px}
+.debt-overview-card .chart-container:before,#tab-budget .chart-container:before{
+  content:"";position:absolute;inset:10% 10%;border-radius:50%;
+  pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(119,68,197,.13),rgba(107,242,217,.065) 35%,transparent 70%);
+  filter:blur(17px);
+}
+.debt-overview-card .chart-container canvas,#tab-budget .chart-container canvas{
+  position:relative;z-index:1;
+  filter:drop-shadow(0 8px 12px rgba(12,5,37,.32)) drop-shadow(0 0 10px rgba(156,115,235,.12));
+}
+#chartLegend,#budgetLegend{display:grid;grid-template-columns:1fr;gap:9px;margin-top:15px}
+#chartLegend .legend-item,#budgetLegend .legend-item{
+  display:flex;align-items:center;min-height:59px;gap:12px;
+  padding:11px 14px;border-radius:15px;
+  border:1px solid rgba(182,158,238,.22);
+  background:linear-gradient(178deg,rgba(255,255,255,.074),rgba(255,255,255,.012) 65%),
+             linear-gradient(120deg,rgba(43,34,79,.91),rgba(30,22,59,.92));
+  box-shadow:inset 0 1px rgba(255,255,255,.10),0 8px 18px rgba(8,3,27,.12);
+  transition:opacity .18s ease,border-color .18s ease,background .18s ease;
+}
+#chartLegend .legend-item:hover,#budgetLegend .legend-item:hover,
+#chartLegend .legend-item:focus-visible,#budgetLegend .legend-item:focus-visible{
+  border-color:rgba(131,251,221,.54);outline:2px solid transparent;
+  background:linear-gradient(135deg,rgba(74,60,111,.94),rgba(35,27,69,.96));
+}
+#chartLegend .legend-color,#budgetLegend .legend-color{
+  flex:0 0 7px;width:7px;height:36px;border-radius:50px;
+  box-shadow:0 0 11px color-mix(in srgb,currentColor 22%,transparent);
+}
+#chartLegend .legend-label,#budgetLegend .legend-label{
+  flex:1;min-width:0;font-size:.85rem;font-weight:700;color:#f6f3ff;
+  overflow-wrap:anywhere;letter-spacing:.005em;
+}
+#chartLegend .legend-amount,#budgetLegend .legend-amount{
+  margin-left:auto;font-size:.86rem;font-weight:800;color:#f8f6ff;
+  white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+#chartLegend .legend-item.dimmed,#budgetLegend .legend-item.dimmed{opacity:.36}
+#debtSelection{border-radius:13px;background:rgba(38,30,73,.75);border-color:rgba(169,136,237,.31);box-shadow:inset 0 1px rgba(255,255,255,.06)}
+@media(min-width:620px){#chartLegend,#budgetLegend{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){
+ .debt-overview-card .debt-chart-container{max-width:270px}
+ #chartLegend .legend-item,#budgetLegend .legend-item{padding:10px 11px}
+ #chartLegend .legend-label,#budgetLegend .legend-label{font-size:.79rem}
+}
+@media(prefers-reduced-motion:reduce){
+ #chartLegend .legend-item,#budgetLegend .legend-item{transition:none}
+}
+
+</style>
 </head>
 <body>
 
@@ -1215,6 +1304,7 @@ body{
         id: 'centerStats',
         beforeDraw(chart) {
             if (!chart.config.options.plugins.centerStats) return;
+            if(!chart.chartArea)return;
             const { ctx, chartArea: { top, bottom, left, right } } = chart;
             const opts = chart.config.options.plugins.centerStats;
 
@@ -1226,14 +1316,21 @@ body{
             ctx.textBaseline = 'middle';
 
             // Amount Text
-            ctx.font = '800 1.25rem -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(opts.amountText || '$0', centerX, centerY - 6);
+            const radius=Math.min(right-left,bottom-top)/2;
+            const glow=ctx.createRadialGradient(centerX,centerY,2,centerX,centerY,radius*.69);
+            glow.addColorStop(0,'rgba(121,242,207,.085)');
+            glow.addColorStop(1,'rgba(98,58,143,0)');
+            ctx.beginPath();ctx.arc(centerX,centerY,radius*.71,0,Math.PI*2);
+            ctx.fillStyle=glow;ctx.fill();
+            const amount=opts.amountText || '$0';
+            ctx.font = '800 '+Math.max(16,Math.min(30,radius*.26))+'px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+            ctx.fillStyle = '#f8f6ff';
+            ctx.fillText(amount,centerX,centerY-9,radius*1.3);
 
             // Label Subtext
-            ctx.font = '600 0.65rem -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillText((opts.labelText || '').toUpperCase(), centerX, centerY + 14);
+            ctx.font = '700 '+Math.max(9,Math.min(12,radius*.11))+'px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+            ctx.fillStyle = '#c3b9d9';
+            ctx.fillText((opts.labelText || '').toUpperCase(),centerX,centerY+21,radius*1.4);
 
             ctx.restore();
         }
@@ -1255,7 +1352,8 @@ body{
             const isDebtChart = chart.canvas?.id === 'debtChart';
             // Mockup: keep the donut clean; the legend and selection panel
             // present every exact amount without overlap.
-            if (isDebtChart) return;
+            // Compact card legends display exact values; avoid labels obscuring either ring.
+            if (isDebtChart || chart.canvas?.id === 'budgetChart') return;
             meta.data.forEach((element, i) => {
                 // On the debt chart, tiny arcs cannot fit callout labels
                 // without overlaps. Their exact amounts remain visible
@@ -1458,20 +1556,20 @@ body{
                 datasets: [{
                     data: dataValues,
                     backgroundColor: colors.map(c => hexToRGBA(c, 1.0)),
-                    borderColor: '#17223b',
-                    borderWidth: 4,
-                    borderRadius: 7,
-                    spacing: 2,
-                    hoverBorderWidth: 4,
-                    hoverOffset: 10
+                    borderColor: '#281d46',
+                    borderWidth: 5,
+                    borderRadius: 11,
+                    spacing: 3,
+                    hoverBorderWidth: 3,
+                    hoverOffset: 7
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                layout: { padding: 12 },
-                cutout: '73%',
-                animation: { animateScale: true, animateRotate: true },
+                layout: { padding: 18 },
+                cutout: '66%',
+                animation: { animateScale: true, animateRotate: true, duration: 850 },
                 plugins: {
                     legend: { display: false },
                     centerStats: {
@@ -1563,16 +1661,19 @@ body{
                 datasets: [{
                     data: dataValues,
                     backgroundColor: colors.map(c => hexToRGBA(c, 1.0)),
-                    borderWidth: 0,
-                    hoverOffset: 8
+                    borderColor: '#281d46',
+                    borderWidth: 5,
+                    borderRadius: 11,
+                    spacing: 3,
+                    hoverOffset: 7
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                layout: { padding: 24 },
-                cutout: '70%',
-                animation: { animateScale: true, animateRotate: true },
+                layout: { padding: 18 },
+                cutout: '66%',
+                animation: { animateScale: true, animateRotate: true, duration: 850 },
                 plugins: {
                     legend: { display: false },
                     centerStats: {
@@ -1600,7 +1701,7 @@ body{
         renderLegend('budgetLegend', labels, colors, (i) => {
             budgetSelectedIndex = (budgetSelectedIndex === i) ? null : i;
             updateBudgetChartFocus();
-        });
+        }, dataValues);
         updateBudgetChartFocus();
     }
 
@@ -1627,11 +1728,11 @@ body{
         legendContainer.replaceChildren();
         labels.forEach((label, i) => {
             const item = document.createElement('div');
-            item.className = 'legend-item';
+            item.className = 'legend-item cp-legend-pill';
             item.tabIndex = 0;
             item.setAttribute('role', 'button');
             const dot = document.createElement('div');
-            dot.className = 'legend-color';
+            dot.className = 'legend-color cp-legend-dot';
             dot.style.backgroundColor = colors[i];
             const name = document.createElement('span');
             name.className = 'legend-label';
@@ -1639,7 +1740,7 @@ body{
             item.append(dot, name);
             if (amounts) {
                 const amount = document.createElement('span');
-                amount.className = 'legend-amount';
+                amount.className = 'legend-amount cp-legend-amount';
                 amount.textContent = '$' + Number(amounts[i]).toLocaleString('en-US', { maximumFractionDigits: 2 });
                 item.appendChild(amount);
             }
