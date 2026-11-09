@@ -1074,6 +1074,165 @@ body::after{
 }
 
 </style>
+<style id="clearpath-aurora-glass-v2">
+
+/* Aurora Glass 2.0 — render-only layer. No saved financial state changes. */
+:root {
+  --ag2-night:#0e0c21;
+  --ag2-mint:rgba(120,248,219,.92);
+  --ag2-violet:rgba(175,130,244,.8);
+  --ag2-outline:rgba(200,179,253,.24);
+}
+html {background:var(--ag2-night)}
+body{
+  color:#f7f4ff;
+  background:
+    radial-gradient(ellipse 470px 710px at -18% 18%,rgba(130,86,225,.23),transparent 73%),
+    radial-gradient(ellipse 410px 650px at 116% 48%,rgba(72,222,204,.13),transparent 73%),
+    radial-gradient(ellipse 430px 560px at 109% 89%,rgba(181,86,231,.14),transparent 74%),
+    linear-gradient(160deg,#231339,#16102d 46%,#0e0c21);
+  background-attachment:fixed;
+}
+body::before,body::after{
+  pointer-events:none;
+  filter:blur(42px);
+  opacity:.8;
+  will-change:transform;
+}
+body::before{
+  left:-145px;top:10%;width:310px;height:640px;
+  background:radial-gradient(ellipse,rgba(122,79,235,.23),transparent 73%);
+  animation:ag2FloatLeft 19s ease-in-out infinite;
+}
+body::after{
+  right:-145px;bottom:9%;width:310px;height:530px;
+  background:radial-gradient(ellipse,rgba(75,226,209,.15),transparent 74%);
+  animation:ag2FloatRight 22s ease-in-out infinite;
+}
+@keyframes ag2FloatLeft{
+  0%,100%{transform:translate3d(0,0,0)}
+  50%{transform:translate3d(11px,-13px,0)}
+}
+@keyframes ag2FloatRight{
+  0%,100%{transform:translate3d(0,0,0)}
+  50%{transform:translate3d(-9px,12px,0)}
+}
+/* Glassy thickness and specular catch-lights. Keep the actual debt status
+   rails and their color meaning untouched. */
+.cp-glass,.cp-mini-debt,.card,.list-item,.cp-forecast-summary,
+#chartLegend .legend-item,#budgetLegend .legend-item {
+  border-color:var(--ag2-outline);
+  background:
+    linear-gradient(172deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.035) 18%,transparent 42%,rgba(4,2,20,.08) 100%),
+    radial-gradient(ellipse at 7% 4%,rgba(190,157,253,.11),transparent 48%),
+    linear-gradient(138deg,rgba(83,64,124,.78),rgba(45,33,84,.88) 60%,rgba(30,24,61,.95));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    inset 1px 0 0 rgba(202,181,249,.07),
+    inset 0 -16px 32px rgba(7,3,26,.16),
+    0 16px 36px rgba(7,3,27,.27),
+    0 0 24px rgba(160,104,241,.065);
+  -webkit-backdrop-filter:blur(18px) saturate(145%);
+  backdrop-filter:blur(18px) saturate(145%);
+}
+.cp-glass,.cp-forecast-summary,.card{overflow:hidden}
+.cp-glass::after,.card::after,.list-item::after,.cp-mini-debt::after,
+.cp-forecast-summary::after,#chartLegend .legend-item::after,
+#budgetLegend .legend-item::after{
+  background:linear-gradient(135deg,
+    rgba(141,255,232,.43) 0%,rgba(193,168,251,.23) 41%,
+    rgba(255,255,255,.09) 68%,rgba(239,133,208,.17) 100%);
+  opacity:.9;
+}
+.cp-snapshot-grid{
+  background:
+    radial-gradient(ellipse at 0% 100%,rgba(108,242,214,.18),transparent 54%),
+    linear-gradient(178deg,rgba(255,255,255,.14),rgba(255,255,255,.014) 48%),
+    linear-gradient(120deg,rgba(80,82,129,.82),rgba(67,47,107,.90) 76%,rgba(48,33,85,.95));
+}
+.cp-projection-card,.debt-overview-card,#tab-budget .card:first-child{
+  background:
+    radial-gradient(ellipse at 10% 0%,rgba(186,145,246,.21),transparent 55%),
+    radial-gradient(ellipse at 99% 90%,rgba(101,239,215,.09),transparent 58%),
+    linear-gradient(175deg,rgba(255,255,255,.11),rgba(255,255,255,.018) 37%),
+    linear-gradient(133deg,rgba(71,54,112,.89),rgba(40,30,79,.96) 74%,rgba(29,24,62,.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 -25px 38px rgba(7,3,29,.14),
+    0 17px 40px rgba(7,3,26,.31),
+    0 0 27px rgba(163,112,242,.085);
+}
+.cp-monthly-strip{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.12),transparent 43%),
+    linear-gradient(120deg,rgba(73,72,120,.86),rgba(49,33,91,.94));
+}
+.cp-mini-debt.cp-risk{
+  background:linear-gradient(170deg,rgba(255,255,255,.075),transparent 40%),
+             linear-gradient(120deg,rgba(91,39,83,.83),rgba(39,28,68,.95));
+}
+.cp-mini-debt.cp-slow{
+  background:linear-gradient(170deg,rgba(255,255,255,.075),transparent 40%),
+             linear-gradient(120deg,rgba(96,66,54,.71),rgba(39,28,68,.95));
+}
+/* A moving reflection limited to the primary metric and forecast panels,
+   rather than every scrolling debt card (important for iPhone performance). */
+.cp-snapshot-grid,.cp-projection-card{isolation:isolate}
+.cp-snapshot-grid::before,.cp-projection-card::before{
+  content:"";position:absolute;inset:-40% auto -40% -45%;width:30%;
+  pointer-events:none;z-index:0;border-radius:inherit;
+  background:linear-gradient(92deg,transparent,rgba(255,255,255,.09),transparent);
+  transform:translateX(-140%) skewX(-16deg);
+  animation:ag2Sheen 14s ease-in-out infinite;
+}
+.cp-snapshot-grid>*,.cp-projection-card>*{position:relative;z-index:1}
+@keyframes ag2Sheen{
+  0%,12%{transform:translateX(-150%) skewX(-16deg);opacity:0}
+  22%{opacity:.65}
+  42%,100%{transform:translateX(600%) skewX(-16deg);opacity:0}
+}
+/* Keep the interactive dock in the foreground and safe-area compatible. */
+.nav-buttons{
+  overflow:visible;
+  background:linear-gradient(180deg,rgba(62,45,103,.96),rgba(29,18,55,.985) 64%,rgba(20,13,40,.995));
+  border-color:rgba(194,166,250,.32);
+  box-shadow:inset 0 1px rgba(255,255,255,.15),
+             0 -13px 36px rgba(8,4,27,.39),
+             0 -4px 28px rgba(156,96,234,.14);
+}
+.nav-buttons .btn{
+  transition:background .22s ease,border-color .22s ease,box-shadow .22s ease,color .22s ease;
+}
+.nav-buttons .btn.active{
+  border-color:rgba(141,252,223,.46);
+  background:linear-gradient(153deg,rgba(103,161,177,.54),rgba(74,58,128,.56));
+  box-shadow:inset 0 1px rgba(255,255,255,.25),
+             inset 0 -12px 20px rgba(20,16,49,.13),
+             0 7px 19px rgba(7,4,24,.31),
+             0 0 23px rgba(116,245,211,.20);
+}
+.nav-buttons .btn.active .nav-icon{
+  filter:drop-shadow(0 0 7px rgba(117,250,217,.39));
+}
+/* Thin rings stay thin. Gentle shadow without widening chart borders. */
+.debt-overview-card .chart-container canvas,#tab-budget .chart-container canvas{
+  filter:drop-shadow(0 7px 13px rgba(8,4,26,.25))
+         drop-shadow(0 0 9px rgba(159,118,236,.11));
+}
+#chartLegend .legend-item,#budgetLegend .legend-item{
+  background:linear-gradient(176deg,rgba(255,255,255,.095),transparent 46%),
+             linear-gradient(122deg,rgba(53,41,88,.91),rgba(30,23,64,.96));
+}
+@media(max-width:390px){
+  .cp-glass,.cp-mini-debt,.card,.list-item{ -webkit-backdrop-filter:blur(13px) saturate(130%);backdrop-filter:blur(13px) saturate(130%)}
+}
+@media(prefers-reduced-motion:reduce){
+  body::before,body::after,.cp-snapshot-grid::before,.cp-projection-card::before{animation:none!important;will-change:auto}
+  .nav-buttons .btn{transition:none!important}
+  body{background-attachment:scroll}
+}
+
+</style>
 </head>
 <body>
 
