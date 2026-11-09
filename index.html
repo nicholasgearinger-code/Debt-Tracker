@@ -1233,172 +1233,158 @@ body::after{
 }
 
 </style>
-<style id="clearpath-liquid-glass-v3">
+<style id="clearpath-ocean-teal">
 
-/* Liquid Glass 3 — distinct optical layers rather than another flat purple fill. */
-:root{--lg3-edge:rgba(217,210,255,.39);--lg3-cyan:rgba(129,251,236,.40)}
-html{background:#0c1027}
+/* ClearPath Ocean Teal — unified, calmer frosted-glass appearance.
+   Account colors, financial data and chart datasets are intentionally untouched. */
+:root{
+ --bg-color:#071f28;--card-bg:#173b46;--border-color:#2e6270;
+ --text-main:#f3fafb;--text-sub:#accbd0;--accent-blue:#64b8c5;
+ --ag2-night:#071f28;--ag2-violet:rgba(73,183,190,.52);
+ --ag2-outline:rgba(169,234,231,.20);
+ --ag-mint:rgba(132,237,218,.93);--ag-violet:rgba(99,192,197,.65);
+ --ag-violet-soft:rgba(48,161,167,.12);
+ --ag-line:rgba(164,220,218,.17);--ag-line-strong:rgba(169,235,228,.25);
+ --ag-panel-1:rgba(34,99,108,.38);--ag-panel-2:rgba(11,52,65,.68);
+ --ag-bg-1:#071c25;--ag-bg-2:#092b35;--ag-bg-3:#0a3c45;
+}
+html{background:#071f28}
 body{
- background:linear-gradient(148deg,#151a43 0%,#13132f 43%,#19102f 100%);
+ background:
+  radial-gradient(ellipse 440px 690px at -16% 13%,rgba(38,137,145,.16),transparent 73%),
+  radial-gradient(ellipse 330px 610px at 113% 52%,rgba(54,158,160,.13),transparent 74%),
+  linear-gradient(158deg,#092a35 0%,#081f2b 49%,#071922 100%);
  background-attachment:fixed;
+ color:#f2f9fa;
 }
-/* Actual luminous shapes behind the translucent surfaces create perceivable depth. */
-.lg3-atmosphere{
- position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;
- transform:translateZ(0);
-}
-.lg3-orb{
- position:absolute;display:block;border-radius:50%;opacity:.85;
-}
-.lg3-orb-a{
- width:390px;height:460px;top:-130px;left:-180px;
- background:radial-gradient(ellipse,rgba(136,114,255,.69) 0%,rgba(85,92,220,.30) 46%,transparent 72%);
- filter:blur(25px);
-}
-.lg3-orb-b{
- width:350px;height:510px;right:-190px;top:22%;
- background:radial-gradient(ellipse,rgba(92,246,219,.57) 0%,rgba(58,172,206,.25) 45%,transparent 73%);
- filter:blur(24px);
-}
-.lg3-orb-c{
- width:390px;height:460px;left:-185px;top:61%;
- background:radial-gradient(ellipse,rgba(236,105,226,.39) 0%,rgba(122,67,191,.24) 48%,transparent 74%);
- filter:blur(29px);
-}
-.lg3-orb-d{
- width:330px;height:300px;right:-135px;bottom:-90px;
- background:radial-gradient(ellipse,rgba(103,144,252,.45),rgba(77,91,182,.20) 44%,transparent 72%);
- filter:blur(26px);
-}
+body::before,body::after{opacity:.22;filter:blur(42px);animation:none!important;will-change:auto}
+body::before{background:radial-gradient(ellipse,rgba(37,154,163,.2),transparent 73%)}
+body::after{background:radial-gradient(ellipse,rgba(66,193,164,.14),transparent 73%)}
+.lg3-atmosphere{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.lg3-orb{position:absolute;display:block;border-radius:50%;opacity:.43;filter:blur(32px);animation:none!important;will-change:auto}
+.lg3-orb-a{width:400px;height:440px;top:-160px;left:-190px;background:radial-gradient(ellipse,rgba(68,190,200,.36),transparent 71%)}
+.lg3-orb-b{width:340px;height:490px;right:-180px;top:24%;background:radial-gradient(ellipse,rgba(57,167,164,.26),transparent 74%)}
+.lg3-orb-c{width:370px;height:410px;left:-185px;top:62%;background:radial-gradient(ellipse,rgba(48,136,166,.24),transparent 72%)}
+.lg3-orb-d{width:300px;height:290px;right:-120px;bottom:-120px;background:radial-gradient(ellipse,rgba(68,186,159,.21),transparent 72%)}
 .dashboard-container{position:relative;z-index:1}
-.cp-glass,.cp-mini-debt,.debt-overview-card,#tab-budget .card:first-child,
-#tab-debts .card,#tab-bills .card,#chartLegend .legend-item,#budgetLegend .legend-item{
-  position:relative;
-  isolation:isolate;
-  background:
-    linear-gradient(164deg,rgba(255,255,255,.21) 0%,rgba(255,255,255,.055) 18%,rgba(255,255,255,.01) 45%,rgba(6,9,37,.13) 100%),
-    linear-gradient(115deg,rgba(101,103,158,.49) 0%,rgba(55,47,109,.45) 53%,rgba(38,35,86,.55) 100%);
-  border:1px solid rgba(220,210,255,.40);
-  box-shadow:
-    inset 0 1.5px 0 rgba(255,255,255,.48),
-    inset 1px 0 0 rgba(255,255,255,.17),
-    inset 0 -2px 0 rgba(14,20,57,.38),
-    inset 0 -28px 38px rgba(19,14,54,.15),
-    0 21px 45px rgba(4,6,29,.34),
-    0 0 26px rgba(142,121,255,.10);
-  -webkit-backdrop-filter:blur(26px) saturate(170%) brightness(1.10);
-  backdrop-filter:blur(26px) saturate(170%) brightness(1.10);
-}
-.cp-glass,.debt-overview-card,#tab-budget .card:first-child{
-  border-radius:26px;
-}
-.cp-snapshot-grid{
+.cp-glass,.cp-mini-debt,.card,.list-item,.cp-forecast-summary,
+.debt-overview-card,#tab-budget .card:first-child,
+#chartLegend .legend-item,#budgetLegend .legend-item{
+ position:relative;isolation:isolate;
+ border:1px solid rgba(164,227,223,.22);
  background:
-   radial-gradient(ellipse at 0% 8%,rgba(255,255,255,.21),transparent 52%),
-   linear-gradient(145deg,rgba(114,148,188,.54),rgba(69,66,142,.47) 54%,rgba(62,40,111,.56));
+   linear-gradient(173deg,rgba(245,255,255,.10),rgba(255,255,255,.025) 23%,transparent 53%,rgba(0,13,23,.10)),
+   linear-gradient(135deg,rgba(38,104,111,.55),rgba(13,54,68,.76) 70%,rgba(11,43,59,.86));
+ box-shadow:inset 0 1px rgba(228,255,250,.16),
+            inset 0 -14px 28px rgba(3,22,31,.13),
+            0 13px 29px rgba(0,11,22,.25),
+            0 0 18px rgba(52,174,173,.045);
+ -webkit-backdrop-filter:blur(15px) saturate(120%);
+ backdrop-filter:blur(15px) saturate(120%);
 }
-.cp-projection-card{
+.cp-glass,.debt-overview-card,#tab-budget .card:first-child{border-radius:23px}
+.cp-snapshot-grid,.cp-monthly-strip{
  background:
-   radial-gradient(ellipse at 100% 0%,rgba(159,253,238,.19),transparent 52%),
-   linear-gradient(140deg,rgba(92,92,164,.53),rgba(54,47,109,.52) 65%,rgba(43,37,98,.58));
+   linear-gradient(180deg,rgba(255,255,255,.09),transparent 35%),
+   linear-gradient(133deg,rgba(31,106,117,.70),rgba(11,55,70,.81));
 }
-.cp-monthly-strip{
- background:linear-gradient(127deg,rgba(100,137,177,.48),rgba(82,59,139,.54));
-}
-.debt-overview-card,#tab-budget .card:first-child{
+.cp-projection-card,.debt-overview-card,#tab-budget .card:first-child{
  background:
-   radial-gradient(ellipse at 6% 3%,rgba(236,225,255,.24),transparent 52%),
-   linear-gradient(155deg,rgba(105,103,169,.51),rgba(64,52,123,.54) 65%,rgba(41,37,96,.62));
+   radial-gradient(ellipse at 5% 0%,rgba(137,225,219,.095),transparent 53%),
+   linear-gradient(173deg,rgba(255,255,255,.10),transparent 34%),
+   linear-gradient(130deg,rgba(29,99,112,.65),rgba(11,53,68,.84));
 }
 .cp-mini-debt{
  background:
-   linear-gradient(170deg,rgba(255,255,255,.13),transparent 30%),
-   linear-gradient(126deg,rgba(94,91,151,.42),rgba(41,35,90,.60));
+  linear-gradient(170deg,rgba(255,255,255,.085),transparent 38%),
+  linear-gradient(129deg,rgba(30,94,104,.57),rgba(10,45,59,.78));
 }
 .cp-mini-debt.cp-risk{
- background:linear-gradient(169deg,rgba(255,255,255,.13),transparent 33%),
-            linear-gradient(124deg,rgba(129,66,113,.50),rgba(43,34,92,.60));
+ background:linear-gradient(168deg,rgba(255,255,255,.07),transparent 36%),
+            linear-gradient(125deg,rgba(105,64,80,.57),rgba(13,51,62,.78));
 }
 .cp-mini-debt.cp-slow{
- background:linear-gradient(169deg,rgba(255,255,255,.13),transparent 33%),
-            linear-gradient(124deg,rgba(135,99,85,.46),rgba(43,34,92,.60));
+ background:linear-gradient(168deg,rgba(255,255,255,.07),transparent 36%),
+            linear-gradient(125deg,rgba(109,86,59,.47),rgba(13,51,62,.78));
 }
-/* Refractive-looking highlight is its own clipped optical layer. */
+.cp-glass::before,.debt-overview-card::before,#tab-budget .card:first-child::before,
+.cp-forecast-summary::before{
+ background:linear-gradient(180deg,rgba(241,255,255,.12),rgba(255,255,255,.018) 24%,transparent 51%);
+ opacity:.7;
+}
+.cp-glass::after,.card::after,.list-item::after,.cp-mini-debt::after,
+.cp-forecast-summary::after,.debt-overview-card::after,#tab-budget .card:first-child::after,
+#chartLegend .legend-item::after,#budgetLegend .legend-item::after{
+ background:linear-gradient(135deg,rgba(188,251,238,.31),rgba(134,219,224,.15) 40%,rgba(178,230,230,.09) 75%,rgba(104,185,187,.20));
+ opacity:.85;
+}
+.cp-mini-debt.cp-risk::after{background:linear-gradient(130deg,rgba(245,139,160,.35),rgba(130,209,209,.13) 70%,rgba(211,133,151,.12))}
+.cp-mini-debt.cp-slow::after{background:linear-gradient(130deg,rgba(255,197,118,.32),rgba(130,209,209,.13) 70%,rgba(223,179,113,.10))}
+.cp-mini-debt.cp-healthy::after{background:linear-gradient(130deg,rgba(127,244,212,.30),rgba(137,219,216,.15) 68%,rgba(82,179,165,.11))}
 .lg3-optics{
- position:absolute!important;inset:0;display:block;border-radius:inherit;
- overflow:hidden;pointer-events:none;z-index:0!important;
+ position:absolute!important;inset:0;border-radius:inherit;overflow:hidden;
+ pointer-events:none;z-index:0!important;
  background:
-  radial-gradient(ellipse 92% 48% at var(--lg3-x,22%) var(--lg3-y,-8%),rgba(255,255,255,.25),rgba(206,240,255,.11) 36%,transparent 72%),
-  radial-gradient(ellipse 68% 47% at 102% 105%,rgba(96,251,224,.12),transparent 72%),
-  linear-gradient(166deg,rgba(255,255,255,.085),transparent 40%);
+  radial-gradient(ellipse 75% 36% at var(--lg3-x,22%) var(--lg3-y,-8%),rgba(255,255,255,.085),transparent 78%),
+  linear-gradient(166deg,rgba(255,255,255,.035),transparent 45%);
 }
-.lg3-optics:before{
- content:"";position:absolute;top:-58%;left:-18%;width:130%;height:78%;
- border-radius:50%;transform:rotate(-10deg);
- border-bottom:1px solid rgba(255,255,255,.38);
- box-shadow:0 19px 28px rgba(217,219,255,.07),0 2px 15px rgba(255,255,255,.11);
- background:linear-gradient(174deg,rgba(245,251,255,.19),rgba(255,255,255,.02) 83%);
+.lg3-optics::before{
+ content:"";position:absolute;top:-72%;left:-13%;width:116%;height:82%;
+ border-radius:50%;transform:rotate(-9deg);
+ border-bottom:1px solid rgba(225,255,249,.21);
+ background:linear-gradient(180deg,rgba(238,255,254,.045),transparent 88%);
+ box-shadow:0 11px 20px rgba(173,245,236,.018);
 }
-.lg3-optics:after{
- content:"";position:absolute;right:-27%;bottom:-58%;width:112%;height:83%;
- border-radius:50%;transform:rotate(-20deg);
- border-top:1px solid rgba(186,253,244,.31);
- background:radial-gradient(ellipse at 40% 0%,rgba(136,255,241,.12),transparent 58%);
- box-shadow:0 -10px 28px rgba(124,243,232,.06);
-}
-/* Keep account text, buttons, charts and editable fields above the optical film. */
-.cp-glass> :not(.lg3-optics),.cp-mini-debt> :not(.lg3-optics),
-.debt-overview-card> :not(.lg3-optics),
-#tab-budget .card:first-child> :not(.lg3-optics),
-#tab-debts .card> :not(.lg3-optics),
-#tab-bills .card> :not(.lg3-optics),
-#chartLegend .legend-item> :not(.lg3-optics),
-#budgetLegend .legend-item> :not(.lg3-optics){position:relative;z-index:1}
-.cp-glass:after,.cp-mini-debt:after,.debt-overview-card:after,
-#tab-budget .card:first-child:after,#tab-debts .card:after,#tab-bills .card:after{
- background:linear-gradient(133deg,rgba(239,248,255,.70),rgba(171,236,252,.45) 18%,rgba(196,171,253,.21) 55%,rgba(255,169,225,.31) 94%);
- opacity:1;z-index:3;
-}
-.cp-mini-debt:before{z-index:4}
+.lg3-optics::after{display:none}
+.cp-snapshot-grid::before,.cp-projection-card::before{animation:none!important;opacity:0}
 .cp-projection-card .cp-forecast-summary{
- background:linear-gradient(133deg,rgba(169,203,230,.25),rgba(74,80,151,.28));
- border-color:rgba(228,237,255,.3);
+ background:linear-gradient(138deg,rgba(78,160,164,.17),rgba(12,59,70,.36));
+ border-color:rgba(160,232,221,.21);
 }
-/* Noticeably raised, floating lens-like active navigation. */
+#chartLegend .legend-item,#budgetLegend .legend-item{
+ background:
+  linear-gradient(177deg,rgba(255,255,255,.075),transparent 43%),
+  linear-gradient(130deg,rgba(27,81,93,.75),rgba(10,45,59,.85));
+}
 .nav-buttons{
  bottom:calc(7px + env(safe-area-inset-bottom));
  width:min(590px,calc(100% - 18px));
- border-radius:24px;
- padding:10px 12px;
- border:1px solid rgba(223,213,255,.38);
- background:linear-gradient(180deg,rgba(107,105,161,.47),rgba(45,38,97,.68));
- -webkit-backdrop-filter:blur(29px) saturate(170%);
- backdrop-filter:blur(29px) saturate(170%);
- box-shadow:inset 0 2px rgba(255,255,255,.33),inset 0 -2px rgba(26,23,68,.35),
-            0 14px 36px rgba(5,5,25,.42),0 0 22px rgba(155,129,252,.17);
+ padding:10px 12px;border-radius:22px;
+ border:1px solid rgba(153,231,219,.27);
+ background:linear-gradient(180deg,rgba(34,104,112,.85),rgba(9,45,59,.93));
+ -webkit-backdrop-filter:blur(18px) saturate(125%);
+ backdrop-filter:blur(18px) saturate(125%);
+ box-shadow:inset 0 1px rgba(238,255,253,.13),0 12px 32px rgba(0,17,27,.30),0 0 13px rgba(61,186,179,.055);
  overflow:hidden;
 }
+.nav-buttons::before{background:linear-gradient(90deg,transparent,rgba(142,229,218,.29) 48%,transparent)}
+.nav-buttons::after{box-shadow:inset 0 1px rgba(255,255,255,.08)}
+.nav-buttons .btn{color:#b9d8da}
 .nav-buttons .btn.active{
- border-color:rgba(191,255,242,.58);
- background:linear-gradient(160deg,rgba(180,254,237,.30),rgba(102,184,203,.23) 65%,rgba(78,92,155,.33));
- box-shadow:inset 0 1px rgba(255,255,255,.43),inset 0 -7px 16px rgba(53,93,128,.12),
-            0 5px 19px rgba(0,0,0,.25),0 0 20px rgba(120,255,227,.27);
+ color:#c5fff0;
+ border-color:rgba(137,235,214,.35);
+ background:linear-gradient(157deg,rgba(76,178,173,.31),rgba(26,97,111,.44));
+ box-shadow:inset 0 1px rgba(223,255,246,.21),0 5px 14px rgba(0,25,33,.24),0 0 12px rgba(84,211,179,.12);
 }
-.nav-buttons::after{
- content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
- box-shadow:inset 0 1px rgba(255,255,255,.22);
+.nav-buttons .btn.active .nav-icon{color:#a6f5df;filter:drop-shadow(0 0 4px rgba(98,226,194,.22))}
+.cp-floating-chart-badge{
+ border-color:rgba(136,230,215,.32);
+ background:linear-gradient(135deg,rgba(30,95,107,.91),rgba(11,55,73,.92));
+ box-shadow:inset 0 1px rgba(226,255,248,.11),0 8px 20px rgba(0,14,26,.24);
 }
+.cp-forecast-pill,.cp-overline{color:#9be5d8}
+.header h1,.card-title,.cp-overview-debts-header h2{color:#f4fbfb}
+.header p,.item-info .sub,.cp-projection-note,.cp-snapshot-label,.cp-mini-foot{color:#bdd7d9}
 @media(max-width:390px){
- .lg3-orb{filter:blur(22px);opacity:.75}
- .cp-glass,.cp-mini-debt,.debt-overview-card,#tab-budget .card:first-child,
- #tab-debts .card,#tab-bills .card{
-   -webkit-backdrop-filter:blur(17px) saturate(145%);
-   backdrop-filter:blur(17px) saturate(145%);
+ .cp-glass,.cp-mini-debt,.card,.list-item{
+  -webkit-backdrop-filter:blur(12px) saturate(115%);
+  backdrop-filter:blur(12px) saturate(115%);
  }
  .nav-buttons{width:calc(100% - 14px);padding:8px}
 }
 @media(prefers-reduced-motion:reduce){
- .lg3-orb,.lg3-optics,.nav-buttons{animation:none!important;transition:none!important}
+ body{background-attachment:scroll}
+ .lg3-orb,.lg3-optics,.nav-buttons,.nav-buttons .btn{animation:none!important;transition:none!important}
 }
 
 </style>
