@@ -1446,7 +1446,7 @@
     function cpTerms(d) {
       const known=CP_TERMS.find(x=>x[0].test(d.title||''));
       const legacy=/APR\s*:\s*([0-9.]+)/i.exec(d.sub||'');
-      const a=d.apr!=null&&d.apr!==''?Number(d.apr):(legacy?Number(legacy[1]):known?.[1]);
+      const a=d.apr!=null&&d.apr!==''?Number(d.apr):(known?.[1] ?? (legacy?Number(legacy[1]):undefined));
       const m=d.minimumPayment!=null&&d.minimumPayment!==''?Number(d.minimumPayment):known?.[2];
       return {apr:Number.isFinite(a)&&a>=0?a:null,min:Number.isFinite(m)&&m>=0?m:null};
     }
