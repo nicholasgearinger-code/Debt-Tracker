@@ -726,6 +726,117 @@ body:before{content:"";position:fixed;pointer-events:none;left:-170px;top:190px;
 }
 
 </style>
+<style id="clearpath-glass-depth">
+
+/* ClearPath Aurora — dimensional glass surfaces and restrained luminous edges.
+   Decorative only: no app data, event handlers, or state are modified. */
+:root{--cp-glass-mint:rgba(126,255,224,.30);--cp-glass-lilac:rgba(180,148,255,.25);}
+.cp-glass,.cp-mini-debt,.card,.list-item,.cp-forecast-summary{
+  position:relative;
+  isolation:isolate;
+  border:1px solid rgba(189,166,236,.24);
+  background:
+    linear-gradient(178deg,rgba(255,255,255,.105) 0%,rgba(255,255,255,.028) 29%,rgba(7,2,21,.11) 100%),
+    linear-gradient(136deg,rgba(81,58,122,.9) 0%,rgba(49,35,84,.94) 62%,rgba(34,24,65,.97) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -14px 26px rgba(5,2,20,.14),
+    0 13px 29px rgba(7,3,24,.27),
+    0 0 19px rgba(143,104,223,.075);
+  -webkit-backdrop-filter:blur(17px) saturate(135%);
+  backdrop-filter:blur(17px) saturate(135%);
+}
+/* Narrow perimeter light; the inset box-shadow preserves native rounded corners. */
+.cp-glass:after,.cp-mini-debt:after,.card:after,.list-item:after,.cp-forecast-summary:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  padding:1px;
+  background:linear-gradient(136deg,rgba(145,254,224,.4),rgba(193,167,255,.27) 43%,rgba(244,137,188,.20) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+  z-index:2;
+}
+.cp-glass,.cp-forecast-summary{overflow:hidden}
+.cp-glass:before,.cp-forecast-summary:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:linear-gradient(180deg,rgba(255,255,255,.105) 0%,rgba(255,255,255,.018) 35%,transparent 63%);
+  pointer-events:none;
+  z-index:0;
+}
+.cp-glass>*,.cp-forecast-summary>*{position:relative;z-index:1}
+/* Preserve the debt cards' existing colored left rail while giving it a soft light bloom. */
+.cp-mini-debt{overflow:hidden}
+.cp-mini-debt:before{
+  top:10px;bottom:10px;left:0;width:4px;
+  border-radius:0 7px 7px 0;
+  background:linear-gradient(180deg,#b3fff1,#64eac7 54%,#229a91);
+  box-shadow:0 0 11px rgba(117,243,207,.32);
+  z-index:3;
+}
+.cp-mini-debt.cp-risk:before{
+  background:linear-gradient(180deg,#ffb0c8,#fd6c9a 55%,#c43d75);
+  box-shadow:0 0 12px rgba(253,108,154,.4);
+}
+.cp-mini-debt.cp-slow:before{
+  background:linear-gradient(180deg,#ffe0aa,#f4bc66 55%,#ae7348);
+  box-shadow:0 0 12px rgba(244,188,102,.34);
+}
+.cp-mini-debt.cp-risk:after{
+  background:linear-gradient(135deg,rgba(255,132,171,.46),rgba(195,153,249,.22) 58%,rgba(245,142,192,.20));
+}
+.cp-mini-debt.cp-slow:after{
+  background:linear-gradient(135deg,rgba(255,205,138,.43),rgba(193,151,249,.22) 58%,rgba(240,172,112,.16));
+}
+.cp-mini-debt.cp-healthy:after{
+  background:linear-gradient(135deg,rgba(121,250,213,.44),rgba(185,149,251,.24) 58%,rgba(105,242,225,.13));
+}
+.cp-snapshot-grid{
+  background:
+    radial-gradient(ellipse at 0% 100%,rgba(121,255,225,.19),transparent 49%),
+    linear-gradient(174deg,rgba(255,255,255,.09),rgba(255,255,255,0) 65%),
+    linear-gradient(125deg,rgba(75,80,127,.87),rgba(75,51,120,.87) 71%,rgba(51,33,93,.94));
+}
+.cp-projection-card{
+  background:
+    radial-gradient(ellipse at 97% 6%,rgba(160,105,241,.15),transparent 54%),
+    linear-gradient(180deg,rgba(255,255,255,.07),transparent 46%),
+    linear-gradient(138deg,rgba(77,56,118,.93),rgba(42,29,78,.97));
+}
+.cp-forecast-summary{
+  background:linear-gradient(175deg,rgba(255,255,255,.085),rgba(255,255,255,.012) 45%),
+             linear-gradient(105deg,rgba(33,49,82,.83),rgba(78,55,121,.79));
+}
+.cp-monthly-strip{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.01) 56%),
+    linear-gradient(115deg,rgba(73,66,117,.87),rgba(52,36,95,.93));
+}
+.cp-mini-bar,.cp-impact-bar{
+  box-shadow:inset 0 1px 3px rgba(7,3,18,.38),0 0 0 1px rgba(255,255,255,.055),
+             0 3px 12px rgba(85,55,121,.13);
+}
+.cp-mini-bar .interest{background:linear-gradient(90deg,#d75b8a,#b5589d)}
+.cp-mini-bar .principal{background:linear-gradient(90deg,#57d9bd,#a5f6df)}
+.cp-mini-debt,.card,.list-item{transition:box-shadow .22s ease,border-color .22s ease,background .22s ease}
+@media(hover:hover){
+  .cp-mini-debt:hover,.card:hover,.list-item:hover{
+    border-color:rgba(208,186,254,.36);
+    box-shadow:inset 0 1px rgba(255,255,255,.17),0 16px 37px rgba(7,3,24,.34),
+               0 0 22px rgba(113,232,206,.09),0 0 20px rgba(177,113,233,.1);
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .cp-mini-debt,.card,.list-item{transition:none}
+}
+
+</style>
 </head>
 <body>
 
