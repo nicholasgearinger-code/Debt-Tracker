@@ -1724,14 +1724,7 @@ input,select,textarea{accent-color:#70e6c5}
     // Aurora overview reads existing data without changing or seeding balances.
     let cpAuroraChart = null;
     function cpAuroraMoney(n) {
-      return '
-    if (!window.ClearPathAuth?.configured) renderUI();
-    window.ClearPathBoot = function(data){debts=data.debts||[];budget=data.budget||[];bills=data.bills||[];renderUI();};
-</script>
-
-</body>
-</html>
-+(Number(n)||0).toLocaleString('en-US',{maximumFractionDigits:0});
+      return String.fromCharCode(36)+(Number(n)||0).toLocaleString('en-US',{maximumFractionDigits:0});
     }
     function cpAuroraDebtForecast(){
       const entries=debts.filter(d=>Number(d.amount)>0).map(d=>{
@@ -1834,14 +1827,7 @@ input,select,textarea{accent-color:#70e6c5}
             scales:{
               x:{grid:{display:false},ticks:{color:'#bfb3d5',maxRotation:0,font:{size:10}}},
               y:{beginAtZero:true,grid:{color:'rgba(196,172,227,.14)'},border:{display:false},
-                ticks:{color:'#bfb3d5',font:{size:10},callback:v=>'
-    if (!window.ClearPathAuth?.configured) renderUI();
-    window.ClearPathBoot = function(data){debts=data.debts||[];budget=data.budget||[];bills=data.bills||[];renderUI();};
-</script>
-
-</body>
-</html>
-+(v>=1000?Math.round(v/1000)+'k':v)}}
+                ticks:{color:'#bfb3d5',font:{size:10},callback:v=>String.fromCharCode(36)+(v>=1000?Math.round(v/1000)+'k':v)}}
             }
           }
         });
