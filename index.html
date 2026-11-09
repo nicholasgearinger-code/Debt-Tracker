@@ -539,6 +539,21 @@
     @media(prefers-reduced-motion:reduce) {
         *,*::before,*::after { scroll-behavior:auto!important; transition-duration:.01ms!important; animation-duration:.01ms!important; }
     }
+    /* Dashboard concept: wallet-style summary and compact financial cards */
+    .overview-hero { display:grid;gap:12px; }
+    .hero-heading { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px; }
+    .hero-eyebrow { color:#a5b4ca;font-size:.66rem;font-weight:800;letter-spacing:.13em;margin-bottom:5px; }
+    .hero-heading h2 { font-size:1.3rem;color:#f8fafc;letter-spacing:-.035em; }
+    .hero-wallet { border-radius:50%;display:grid;place-items:center;width:47px;height:47px;flex:none;background:#1d354e;color:#5eead4;font-size:1.5rem; }
+    .outstanding-card { background:linear-gradient(125deg,#203c58,#172b45);padding:22px; }
+    .outstanding-value.metric-value { font-size:clamp(2.15rem,9vw,3rem);font-weight:820;color:#f8fafc;letter-spacing:-.05em;margin-top:9px; }
+    .outstanding-note { margin-top:11px;color:#6ee3c3;font-size:.79rem; }
+    .hero-stats { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px; }
+    .mini-stat { padding:18px;background:linear-gradient(140deg,#1b2e47,#162740); }
+    .mini-stat .metric-value { color:#f8fafc;font-size:clamp(1.35rem,5.5vw,1.85rem);margin-top:7px; }
+    .mini-stat .surplus-value { color:#6ee3c3;font-size:clamp(1.25rem,5vw,1.75rem); }
+    .mini-stat .surplus-value.surplus-negative { color:#fb7185; }
+    @media(max-width:390px){ .mini-stat { padding:15px 12px; } }
     </style>
 <style>
 #cp-auth{position:fixed;inset:0;z-index:9999;background:#0d1527;color:white;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -573,16 +588,17 @@
 
     <!-- Overview Tab -->
     <div id="tab-overview" class="tab-content active">
-        <div class="card metrics-grid overview-metrics">
-            <div>
-                <div class="metric-label">Total Debt Balance</div>
-                <div class="metric-value" id="metric-total-debt">$0.00</div>
+        <section class="overview-hero">
+            <div class="hero-heading"><div><div class="hero-eyebrow">FINANCIAL OVERVIEW</div><h2>Make every payment count.</h2></div><div class="hero-wallet" aria-hidden="true">◈</div></div>
+            <div class="card outstanding-card">
+                <div class="metric-label">TOTAL OUTSTANDING</div><div class="metric-value outstanding-value" id="metric-total-debt">$0.00</div>
+                <p class="outstanding-note">↘ Track every payment toward freedom</p>
             </div>
-            <div>
-                <div class="metric-label">Active Accounts</div>
-                <div class="metric-value count" id="metric-active-count">0</div>
+            <div class="hero-stats">
+                <div class="card mini-stat"><div class="metric-label">ACTIVE DEBTS</div><div class="metric-value count" id="metric-active-count">0</div></div>
+                <div class="card mini-stat"><div class="metric-label">MONTHLY SURPLUS</div><div class="metric-value surplus-value" id="metric-surplus">$0.00</div></div>
             </div>
-        </div>
+        </section>
 
         <div class="card debt-overview-card">
             <div class="card-eyebrow">YOUR DEBT AT A GLANCE</div>
