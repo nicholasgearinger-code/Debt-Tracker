@@ -837,6 +837,77 @@ body:before{content:"";position:fixed;pointer-events:none;left:-170px;top:190px;
 }
 
 </style>
+<style id="clearpath-glass-finishing">
+
+/* ClearPath Aurora polish: atmospheric gradients, floating chart badge, luminous navigation */
+body{
+  background:
+    radial-gradient(ellipse 560px 440px at 12% -6%,rgba(150,78,204,.30),transparent 73%),
+    radial-gradient(ellipse 460px 460px at 110% 38%,rgba(114,67,173,.22),transparent 73%),
+    radial-gradient(ellipse 520px 380px at -15% 81%,rgba(56,137,153,.085),transparent 76%),
+    linear-gradient(158deg,#29153f 0%,#1b1034 42%,#110c26 100%);
+  background-attachment:fixed;
+}
+.cp-premium-hero{position:relative;isolation:isolate}
+.cp-premium-hero:before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  left:-18%;top:19%;width:90%;height:285px;
+  border-radius:50%;background:radial-gradient(ellipse,rgba(125,77,196,.11),transparent 70%);
+  filter:blur(25px);
+}
+.cp-premium-hero:after{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  right:-20%;bottom:2%;width:88%;height:310px;
+  border-radius:50%;background:radial-gradient(ellipse,rgba(74,153,156,.085),transparent 72%);
+  filter:blur(28px);
+}
+.cp-forecast-canvas{position:relative;isolation:isolate}
+.cp-forecast-canvas canvas{position:relative;z-index:1}
+.cp-floating-chart-badge{
+  position:absolute;top:13px;right:12px;z-index:4;
+  display:flex;align-items:center;gap:8px;
+  max-width:min(61%,215px);padding:9px 11px;
+  border:1px solid rgba(142,251,220,.42);border-radius:13px;
+  background:linear-gradient(133deg,rgba(73,89,125,.9),rgba(44,50,88,.89) 58%,rgba(47,71,93,.9));
+  -webkit-backdrop-filter:blur(18px) saturate(145%);
+  backdrop-filter:blur(18px) saturate(145%);
+  box-shadow:0 9px 20px rgba(6,8,26,.27),inset 0 1px rgba(255,255,255,.20),0 0 18px rgba(102,241,198,.10);
+  pointer-events:none;
+}
+.cp-floating-chart-badge[hidden]{display:none}
+.cp-float-icon{font-size:1.13rem;color:#83f5d2;font-weight:800;line-height:1}
+.cp-floating-chart-badge>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.cp-float-label{color:#cce8e1;font-size:.61rem;line-height:1.25}
+.cp-floating-chart-badge strong{font-size:.85rem;line-height:1.2;color:#a1ffdb;font-weight:850;font-variant-numeric:tabular-nums}
+.cp-floating-chart-badge.cp-badge-warning{border-color:rgba(255,146,171,.44)}
+.cp-floating-chart-badge.cp-badge-warning strong,.cp-floating-chart-badge.cp-badge-warning .cp-float-icon{color:#ffa6bd}
+.nav-buttons{
+ background:linear-gradient(180deg,rgba(59,41,95,.93),rgba(29,17,52,.98) 58%,rgba(22,13,43,.99));
+ border:1px solid rgba(184,151,248,.29);
+ border-bottom:0;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 -12px 32px rgba(10,4,26,.42),0 -3px 26px rgba(153,104,228,.12);
+}
+.nav-buttons:before{
+ content:"";position:absolute;left:9%;right:9%;top:-1px;height:1px;
+ background:linear-gradient(90deg,transparent,rgba(159,253,232,.52) 30%,rgba(202,165,255,.47) 67%,transparent);
+ pointer-events:none;
+}
+.nav-buttons .btn{
+ position:relative;border:1px solid transparent;
+ transition:background .2s ease,box-shadow .2s ease,border-color .2s ease,transform .2s ease;
+}
+.nav-buttons .btn.active{
+ color:#a7ffdf;border-color:rgba(146,250,216,.36);
+ background:linear-gradient(155deg,rgba(93,156,161,.55),rgba(85,74,142,.51) 65%,rgba(67,47,118,.46));
+ box-shadow:inset 0 1px rgba(237,255,250,.23),inset 0 -9px 15px rgba(23,33,58,.2),0 6px 17px rgba(25,14,50,.32),0 0 22px rgba(107,243,200,.16);
+ text-shadow:0 0 13px rgba(143,255,223,.28);
+}
+.nav-buttons .btn.active .nav-icon{color:#a0ffe0;filter:drop-shadow(0 0 6px rgba(117,243,208,.38))}
+@media (hover:hover){.nav-buttons .btn:not(.active):hover{border-color:rgba(178,156,227,.25);background:rgba(121,92,167,.19)}}
+@media(max-width:390px){.cp-floating-chart-badge{top:9px;right:8px;padding:7px 8px;max-width:63%}.cp-floating-chart-badge strong{font-size:.75rem}.cp-float-label{font-size:.56rem}}
+@media(prefers-reduced-motion:reduce){.nav-buttons .btn{transition:none}}
+
+</style>
 </head>
 <body>
 
@@ -875,7 +946,7 @@ body:before{content:"";position:fixed;pointer-events:none;left:-170px;top:190px;
                     <strong id="cp-forecast-remaining">Calculating…</strong>
                     <span id="cp-forecast-delta">Based on minimum payments</span>
                 </div>
-                <div class="cp-forecast-canvas"><canvas id="cpPayoffChart" role="img" aria-label="Estimated debt balances over the next twelve months at current minimum payments"></canvas></div>
+                <div class="cp-forecast-canvas"><div class="cp-floating-chart-badge" id="cp-floating-chart-badge" role="status" aria-live="polite"><span class="cp-float-icon" aria-hidden="true">↘</span><div><span class="cp-float-label">12-month payoff progress</span><strong id="cp-floating-progress">Calculating…</strong></div></div><canvas id="cpPayoffChart" role="img" aria-label="Estimated debt balances over the next twelve months at current minimum payments"></canvas></div>
                 <p id="cp-projection-note" class="cp-projection-note">Calculated from your current balances and APRs.</p>
             </div>
             <div class="cp-overview-debts-header">
@@ -1996,16 +2067,23 @@ body:before{content:"";position:fixed;pointer-events:none;left:-170px;top:190px;
       const forecastValue=document.getElementById('cp-forecast-remaining');
       const forecastDelta=document.getElementById('cp-forecast-delta');
       const forecastTitle=document.getElementById('cp-forecast-title');
+      const floatBadge=document.getElementById('cp-floating-chart-badge');
+      const floatProgress=document.getElementById('cp-floating-progress');
       if(series){
         const end=series[series.length-1],change=series[0]-end;
         forecastValue.textContent=cpAuroraMoney(end)+' remaining';
         forecastDelta.textContent=(change>=0?cpAuroraMoney(change)+' lower':'Balance grows by '+cpAuroraMoney(-change))+' in 12 months';
         forecastDelta.classList.toggle('cp-negative',change<0);
         forecastTitle.textContent='12-month outlook · minimums';
+        const progressPercent=series[0]>0?Math.max(0,Math.min(100,change/series[0]*100)):100;
+        floatProgress.textContent=change>=0?progressPercent.toFixed(1)+'% balance reduction':'Balance increasing';
+        floatBadge.classList.toggle('cp-badge-warning',change<0);
+        floatBadge.hidden=false;
       }else{
         forecastValue.textContent='More details needed';
         forecastDelta.textContent='Complete APR and minimum fields in Debts';
         forecastTitle.textContent='Payoff estimate unavailable';
+        floatBadge.hidden=true;
       }
       const note=document.getElementById('cp-projection-note');
       note.textContent=series
