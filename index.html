@@ -1388,6 +1388,51 @@ body::after{background:radial-gradient(ellipse,rgba(66,193,164,.14),transparent 
 }
 
 </style>
+<style id="clearpath-ocean-charts">
+
+/* Ocean Glass charts — muted translucent teal, delicate separation, tidy legends */
+.debt-overview-card .chart-container,
+#tab-budget .chart-container{max-width:min(100%,320px);padding:5px;margin:14px auto 14px}
+.debt-overview-card .chart-container canvas,
+#tab-budget .chart-container canvas{
+ filter:drop-shadow(0 5px 12px rgba(0,20,30,.17)) drop-shadow(0 0 5px rgba(88,194,188,.045));
+}
+.debt-overview-card .chart-container::before,
+#tab-budget .chart-container::before{
+ inset:15%;filter:blur(19px);
+ background:radial-gradient(circle,rgba(105,220,199,.06),transparent 69%);
+}
+#chartLegend,#budgetLegend{gap:8px;margin-top:12px}
+#chartLegend .legend-item,#budgetLegend .legend-item{
+ min-height:56px;padding:11px 13px;border-radius:15px;
+ border:1px solid rgba(157,224,219,.13);
+ background:
+   linear-gradient(180deg,rgba(255,255,255,.052),rgba(255,255,255,.01) 47%),
+   linear-gradient(132deg,rgba(18,73,83,.70),rgba(9,47,59,.81));
+ box-shadow:inset 0 1px rgba(239,255,253,.055),0 7px 15px rgba(0,15,26,.095);
+}
+#chartLegend .legend-color,#budgetLegend .legend-color{
+ width:6px;height:30px;flex:0 0 6px;border-radius:10px;
+ box-shadow:0 0 7px rgba(135,220,215,.12);
+}
+#chartLegend .legend-label,#budgetLegend .legend-label{
+ font-size:.87rem;font-weight:690;color:#edf9f8;
+}
+#chartLegend .legend-amount,#budgetLegend .legend-amount{
+ font-size:.87rem;font-weight:780;color:#e9f8f7;
+}
+#chartLegend .legend-item:focus-visible,#budgetLegend .legend-item:focus-visible{
+ outline:2px solid #94e9d8;outline-offset:2px;
+}
+@media(max-width:390px){
+ .debt-overview-card .chart-container,#tab-budget .chart-container{max-width:min(100%,284px)}
+ #chartLegend .legend-item,#budgetLegend .legend-item{min-height:53px;padding:10px 11px}
+}
+@media(prefers-reduced-motion:reduce){
+ #chartLegend .legend-item,#budgetLegend .legend-item{transition:none!important}
+}
+
+</style>
 </head>
 <body>
 
@@ -1931,10 +1976,17 @@ body::after{background:radial-gradient(ellipse,rgba(66,193,164,.14),transparent 
     }
 
     /* --- Debt Chart --- */
+    const CP_OCEAN_DEBT_COLORS=['#86E9D8','#63D2D6','#5AB7D6','#7EC7C0','#6FA8E8','#9AD9B3','#B7E3D5','#4FAFC5','#6FC9B8','#8EBCC9','#A4DAEB','#62BCAC'];
+    const CP_OCEAN_BUDGET_COLORS=['#7FE7D8','#4FAFC5','#A9D8DE'];
+    function cpOceanDebtColor(index){return CP_OCEAN_DEBT_COLORS[index % CP_OCEAN_DEBT_COLORS.length];}
+    function cpOceanChartAnimation(){
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? false :
+        { animateScale:true,animateRotate:true,duration:650 };
+    }
     function renderDebtChart() {
         const labels = debts.map(d => d.title);
-        const dataValues = debts.map(d => d.amount);
-        const colors = debts.map(d => d.color || '#38bdf8');
+        const dataValues = debts.map(d => Math.max(0,Number(d.amount)||0));
+        const colors = debts.map((d,i)=>cpOceanDebtColor(i));
         const totalDebt = dataValues.reduce((a, b) => a + b, 0);
 
         if (debtChart) debtChart.destroy();
@@ -1947,20 +1999,20 @@ body::after{background:radial-gradient(ellipse,rgba(66,193,164,.14),transparent 
                 datasets: [{
                     data: dataValues,
                     backgroundColor: colors.map(c => hexToRGBA(c, 1.0)),
-                    borderColor: '#211535',
-                    borderWidth: 1.5,
-                    borderRadius: 10,
-                    spacing: 1,
-                    hoverBorderWidth: 1.5,
-                    hoverOffset: 4
+                    borderColor: 'rgba(216,251,247,.14)',
+                    borderWidth: 1.25,
+                    borderRadius: 9,
+                    spacing: 1.5,
+                    hoverBorderWidth: 1.25,
+                    hoverOffset: 3
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
                 layout: { padding: 18 },
-                cutout: '78%',
-                animation: { animateScale: true, animateRotate: true, duration: 700 },
+                cutout: '82%',
+                animation: cpOceanChartAnimation(),
                 plugins: {
                     legend: { display: false },
                     centerStats: {
@@ -1993,7 +2045,7 @@ body::after{background:radial-gradient(ellipse,rgba(66,193,164,.14),transparent 
 
     function updateDebtChartFocus() {
         if (!debtChart) return;
-        const colors = debts.map(d => d.color || '#38bdf8');
+        const colors = debts.map((d,i)=>cpOceanDebtColor(i));
         const updatedColors = colors.map((color, index) => {
             if (debtSelectedIndex === null) return hexToRGBA(color, 1.0);
             return index === debtSelectedIndex ? hexToRGBA(color, 1.0) : hexToRGBA(color, 0.2);
@@ -2040,7 +2092,7 @@ body::after{background:radial-gradient(ellipse,rgba(66,193,164,.14),transparent 
         const netIncome = totalIncome - generalExpenses - wifeExpenses;
         const labels = ['Monthly Income', 'Monthly Bills & Expenses', 'Wife'];
         const dataValues = [totalIncome, generalExpenses, wifeExpenses];
-        const colors = BUDGET_CHART_COLORS;
+        const colors = CP_OCEAN_BUDGET_COLORS;
 
         if (budgetChart) budgetChart.destroy();
 
@@ -2052,23 +2104,23 @@ body::after{background:radial-gradient(ellipse,rgba(66,193,164,.14),transparent 
                 datasets: [{
                     data: dataValues,
                     backgroundColor: colors.map(c => hexToRGBA(c, 1.0)),
-                    borderColor: '#211535',
-                    borderWidth: 1.5,
-                    borderRadius: 10,
-                    spacing: 1,
-                    hoverOffset: 4
+                    borderColor: 'rgba(216,251,247,.14)',
+                    borderWidth: 1.25,
+                    borderRadius: 9,
+                    spacing: 1.5,
+                    hoverOffset: 3
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
                 layout: { padding: 18 },
-                cutout: '78%',
-                animation: { animateScale: true, animateRotate: true, duration: 700 },
+                cutout: '82%',
+                animation: cpOceanChartAnimation(),
                 plugins: {
                     legend: { display: false },
                     centerStats: {
-                        amountText: `$${Math.round(netIncome).toLocaleString()}`,
+                        amountText: (netIncome<0?'-':'')+'$'+Math.abs(Math.round(netIncome)).toLocaleString(),
                         labelText: 'Net Surplus'
                     },
                     tooltip: {
@@ -2098,7 +2150,7 @@ body::after{background:radial-gradient(ellipse,rgba(66,193,164,.14),transparent 
 
     function updateBudgetChartFocus() {
         if (!budgetChart) return;
-        const colors = BUDGET_CHART_COLORS;
+        const colors = CP_OCEAN_BUDGET_COLORS;
         const updatedColors = colors.map((color, index) => {
             if (budgetSelectedIndex === null) return hexToRGBA(color, 1.0);
             return index === budgetSelectedIndex ? hexToRGBA(color, 1.0) : hexToRGBA(color, 0.2);
