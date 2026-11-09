@@ -1437,22 +1437,15 @@
 
     /* Interest-aware repayment panel. Existing balances and categories remain untouched. */
     const CP_TERMS = [
-      [/credit\\s*one/i,29.9,30], [/mvb/i,27.24,87],
-      [/care\\s*credit/i,26.99,75], [/price\\s*line/i,25.4,68],
-      [/agoda/i,24.2,122], [/capital\\s*one/i,21,268],
-      [/upstart/i,12.5,27], [/so\\s*fi/i,9.8,194]
+      [/credit\s*one/i,29.9,30], [/mvb/i,27.24,87],
+      [/care\s*credit/i,26.99,75], [/price\s*line/i,25.4,68],
+      [/agoda/i,24.2,122], [/capital\s*one/i,21,268],
+      [/upstart/i,12.5,27], [/so\s*fi/i,9.8,194]
     ];
-    const cpMoney = n => '
-    if (!window.ClearPathAuth?.configured) renderUI();
-    window.ClearPathBoot = function(data){debts=data.debts||[];budget=data.budget||[];bills=data.bills||[];renderUI();};
-</script>
-
-</body>
-</html>
- + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const cpMoney = n => '$' + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
     function cpTerms(d) {
       const known=CP_TERMS.find(x=>x[0].test(d.title||''));
-      const legacy=/APR\\s*:\\s*([0-9.]+)/i.exec(d.sub||'');
+      const legacy=/APR\s*:\s*([0-9.]+)/i.exec(d.sub||'');
       const a=d.apr!=null&&d.apr!==''?Number(d.apr):(legacy?Number(legacy[1]):known?.[1]);
       const m=d.minimumPayment!=null&&d.minimumPayment!==''?Number(d.minimumPayment):known?.[2];
       return {apr:Number.isFinite(a)&&a>=0?a:null,min:Number.isFinite(m)&&m>=0?m:null};
