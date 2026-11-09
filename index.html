@@ -1434,6 +1434,123 @@
         renderUI();
     }
 
+
+    /* Interest-aware repayment panel. Existing balances and categories remain untouched. */
+    const CP_TERMS = [
+      [/credit\\s*one/i,29.9,30], [/mvb/i,27.24,87],
+      [/care\\s*credit/i,26.99,75], [/price\\s*line/i,25.4,68],
+      [/agoda/i,24.2,122], [/capital\\s*one/i,21,268],
+      [/upstart/i,12.5,27], [/so\\s*fi/i,9.8,194]
+    ];
+    const cpMoney = n => '
+    if (!window.ClearPathAuth?.configured) renderUI();
+    window.ClearPathBoot = function(data){debts=data.debts||[];budget=data.budget||[];bills=data.bills||[];renderUI();};
+</script>
+
+</body>
+</html>
+ + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    function cpTerms(d) {
+      const known=CP_TERMS.find(x=>x[0].test(d.title||''));
+      const legacy=/APR\\s*:\\s*([0-9.]+)/i.exec(d.sub||'');
+      const a=d.apr!=null&&d.apr!==''?Number(d.apr):(legacy?Number(legacy[1]):known?.[1]);
+      const m=d.minimumPayment!=null&&d.minimumPayment!==''?Number(d.minimumPayment):known?.[2];
+      return {apr:Number.isFinite(a)&&a>=0?a:null,min:Number.isFinite(m)&&m>=0?m:null};
+    }
+    function cpRenderInterest(){
+      const cards=document.querySelectorAll('#debt-list .list-item');
+      cards.forEach((card,i)=>{
+        const d=debts[i]; if(!d)return;
+        let box=card.querySelector('.cp-interest');
+        if(!box){box=document.createElement('div');box.className='cp-interest';card.appendChild(box)}
+        const {apr,min}=cpTerms(d),balance=Math.max(0,Number(d.amount)||0);
+        box.replaceChildren();
+        if(apr===null||min===null){
+          box.textContent='Edit this debt to set APR and monthly minimum for an interest estimate.';
+          return;
+        }
+        const interest=balance*apr/1200;
+        const required=Math.min(balance+interest,min);
+        const principal=required-interest;
+        const target=Math.min(balance+interest,min+interest);
+        const rows=[
+          ['APR',apr.toFixed(2)+'%'],
+          ['Estimated monthly interest',cpMoney(interest)],
+          ['Minimum due (already includes interest)',cpMoney(required)],
+          ['Principal change at minimum',principal<0?'Balance increases '+cpMoney(-principal):cpMoney(principal)],
+          ['Optional minimum + interest payment',cpMoney(target)]
+        ];
+        for(const [label,value] of rows){
+          const r=document.createElement('div');r.className='cp-interest-row';
+          const l=document.createElement('span');l.textContent=label;
+          const v=document.createElement('strong');v.textContent=value;
+          r.append(l,v);box.appendChild(r);
+        }
+        const note=document.createElement('p');
+        note.textContent='The minimum normally pays interest first; it does not need interest added again. The optional amount is an extra-payment goal, not the contractual minimum. Estimates use balance × APR ÷ 12; actual statement interest can differ.';
+        box.appendChild(note);
+      });
+    }
+    const cpOriginalRenderDebts=renderDebts;
+    renderDebts=function(){cpOriginalRenderDebts();cpRenderInterest()};
+    function cpEnsureInputs(){
+      if(document.getElementById('cp-apr-input'))return;
+      const anchor=document.getElementById('budgetOwnerGroup');
+      if(!anchor)return;
+      for(const [id,label,placeholder] of [
+        ['cp-apr-input','Interest rate (APR %)','21.00'],
+        ['cp-min-input','Monthly minimum payment ($)','268']
+      ]){
+        const group=document.createElement('div');group.className='form-group cp-terms-group';
+        const l=document.createElement('label');l.textContent=label;
+        const input=document.createElement('input');input.id=id;input.type='number';
+        input.min='0';input.step='0.01';input.inputMode='decimal';input.placeholder=placeholder;
+        group.append(l,input);anchor.parentNode.insertBefore(group,anchor);
+      }
+    }
+    const cpOriginalOpenModal=openModal;
+    openModal=function(category,index=null){
+      cpEnsureInputs();cpOriginalOpenModal(category,index);
+      document.querySelectorAll('.cp-terms-group').forEach(x=>x.style.display=category==='debts'?'flex':'none');
+      const data=category==='debts'&&index!==null?cpTerms(debts[index]):{apr:null,min:null};
+      document.getElementById('cp-apr-input').value=data.apr??'';
+      document.getElementById('cp-min-input').value=data.min??'';
+    };
+    const cpOriginalSaveModal=saveModal;
+    saveModal=function(){
+      const category=document.getElementById('modalCategory').value;
+      const indexStr=document.getElementById('modalIndex').value;
+      let a=null,m=null;
+      if(category==='debts'){
+        const aRaw=document.getElementById('cp-apr-input').value;
+        const mRaw=document.getElementById('cp-min-input').value;
+        a=aRaw===''?null:Number(aRaw);m=mRaw===''?null:Number(mRaw);
+        if((a!==null&&(!Number.isFinite(a)||a<0||a>100))||
+           (m!==null&&(!Number.isFinite(m)||m<0))) {
+          alert('Please enter a valid APR and monthly minimum.');return;
+        }
+      }
+      cpOriginalSaveModal();
+      if(category==='debts'){
+        const index=indexStr===''?debts.length-1:Number(indexStr);
+        const d=debts[index];
+        if(d&&d.title===document.getElementById('modalInputTitle').value.trim()){
+          d.apr=a;d.minimumPayment=m;
+          renderUI();
+        }
+      }
+    };
+    const cpStyle=document.createElement('style');
+    cpStyle.textContent=`
+      .cp-interest{margin-top:12px;padding:12px;background:#0e1b30;border:1px solid #2b4662;border-radius:12px;display:grid;gap:7px;font-size:.78rem;color:#c5d4e7;line-height:1.4}
+      .cp-interest-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+      .cp-interest-row strong{color:#fff;font-variant-numeric:tabular-nums}
+      .cp-interest-row:nth-last-child(2){padding:9px;border-radius:8px;background:rgba(16,185,129,.12)}
+      .cp-interest-row:nth-last-child(2) strong{color:#6ee7b7}
+      .cp-interest p{color:#9fb2ca;font-size:.72rem;line-height:1.5}
+    `;
+    document.head.appendChild(cpStyle);
+
     // Initialize on load
     if (!window.ClearPathAuth?.configured) renderUI();
     window.ClearPathBoot = function(data){debts=data.debts||[];budget=data.budget||[];bills=data.bills||[];renderUI();};
