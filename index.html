@@ -681,6 +681,51 @@ input,select,textarea{accent-color:#70e6c5}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
 </style>
+<style id="clearpath-aurora-refinement">
+
+/* Aurora refinement — compact metrics, bolder data hierarchy and mockup-matched detail */
+body:before{content:"";position:fixed;pointer-events:none;left:-170px;top:190px;width:320px;height:320px;background:radial-gradient(circle,rgba(127,63,173,.18),transparent 72%);filter:blur(18px)}
+.cp-monthly-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:15px 9px;gap:0}
+.cp-monthly-strip>div{display:flex;flex-direction:column;gap:6px;min-width:0;padding:1px 11px}
+.cp-monthly-strip>div+div{border-left:1px solid rgba(189,163,248,.2)}
+.cp-monthly-strip span{color:#c2b7d4;font-size:.61rem;letter-spacing:.045em;font-weight:750;line-height:1.35}
+.cp-monthly-strip strong{font-size:clamp(.94rem,3.9vw,1.35rem);font-weight:850;color:#97f4d5;letter-spacing:-.035em;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.cp-monthly-strip>div:nth-child(2) strong{color:#ffcc93}
+.cp-negative{color:#ff8ca8!important}
+.cp-forecast-summary{background:linear-gradient(95deg,rgba(18,29,52,.46),rgba(104,83,156,.25));border:1px solid rgba(178,174,240,.22);border-radius:13px;padding:11px 13px;margin-top:14px;display:grid;grid-template-columns:1fr auto;gap:3px 8px;align-items:center}
+.cp-forecast-summary>span:first-child{color:#c5b9d8;font-size:.71rem;font-weight:700}
+.cp-forecast-summary strong{font-size:1.06rem;letter-spacing:-.02em;grid-column:2;grid-row:1 / span 2;color:#96f5d6;font-variant-numeric:tabular-nums}
+.cp-forecast-summary>span:last-child{color:#a9ddcd;font-size:.68rem}
+.cp-forecast-canvas{height:190px;margin-top:9px}
+.cp-mini-debt{padding:15px 16px;gap:8px;border-color:rgba(175,138,222,.35)}
+.cp-mini-debt.cp-risk{background:linear-gradient(115deg,rgba(92,36,78,.49),rgba(41,28,67,.96))}
+.cp-mini-debt.cp-slow{background:linear-gradient(115deg,rgba(100,68,42,.31),rgba(41,28,67,.96))}
+.cp-mini-debt-top strong{font-size:1.05rem;letter-spacing:-.025em}
+.cp-mini-debt-top span{background:rgba(180,144,229,.13);border:1px solid rgba(180,144,229,.20);border-radius:16px;padding:4px 9px;color:#ded0f6}
+.cp-mini-meta{grid-template-columns:1.2fr 1fr 1fr;margin:2px 0 5px}
+.cp-mini-meta strong{font-size:.96rem}
+.cp-mini-alert{font-size:.75rem;letter-spacing:.002em}
+.cp-mini-bar-legend{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;font-size:.7rem;font-weight:750;color:#e5d6e8}
+.cp-mini-bar-legend span:first-child{color:#ffc6a8}
+.cp-mini-bar-legend span:last-child{color:#a5f5db}
+.cp-mini-bar{height:17px;box-shadow:inset 0 1px 4px rgba(0,0,0,.2)}
+.cp-mini-foot{font-size:.67rem;color:#ac9fbf}
+.cp-debt-section-note{font-size:.72rem;color:#bbb0cf;margin-top:-10px;padding:0 4px}
+.cp-snapshot-grid{background:linear-gradient(120deg,rgba(71,75,119,.75),rgba(63,43,105,.82) 78%,rgba(83,53,113,.65));}
+.cp-snapshot-item strong{font-variant-numeric:tabular-nums}
+.cp-projection-card{background:linear-gradient(135deg,rgba(68,47,113,.83),rgba(42,29,78,.93) 80%)}
+.cp-glass{box-shadow:0 13px 31px rgba(6,3,22,.26),inset 0 1px rgba(235,223,255,.13)}
+#tab-debts .card .item-list{margin-top:10px}
+@media(max-width:390px){
+.cp-forecast-summary{grid-template-columns:1fr}
+.cp-forecast-summary strong{grid-column:auto;grid-row:auto;font-size:1.05rem}
+.cp-monthly-strip{padding:13px 5px}
+.cp-monthly-strip>div{padding:0 7px}
+.cp-monthly-strip strong{font-size:.92rem}
+.cp-mini-meta strong{font-size:.84rem}
+}
+
+</style>
 </head>
 <body>
 
@@ -707,8 +752,18 @@ input,select,textarea{accent-color:#70e6c5}
                 <div class="cp-snapshot-item"><span class="cp-snapshot-icon">ϟ</span><span class="cp-snapshot-label">Monthly surplus</span><strong id="cp-stat-surplus">—</strong></div>
                 <div class="cp-snapshot-item"><span class="cp-snapshot-icon">♡</span><span class="cp-snapshot-label">Emergency savings</span><strong id="cp-stat-savings">Set up</strong></div>
             </div>
+            <div class="cp-monthly-strip cp-glass" aria-label="Monthly debt payment overview">
+                <div><span>MINIMUM PAYMENTS</span><strong id="cp-stat-minimums">—</strong></div>
+                <div><span>MONTHLY INTEREST</span><strong id="cp-stat-interest">—</strong></div>
+                <div><span>DEBT REDUCTION</span><strong id="cp-stat-principal">—</strong></div>
+            </div>
             <div class="cp-glass cp-projection-card">
                 <div class="cp-projection-heading"><div><span class="cp-overline">YOUR MOMENTUM</span><h2>Debt payoff progress</h2></div><span class="cp-forecast-pill">Projected · minimums</span></div>
+                <div class="cp-forecast-summary">
+                    <span id="cp-forecast-title">12-month outlook</span>
+                    <strong id="cp-forecast-remaining">Calculating…</strong>
+                    <span id="cp-forecast-delta">Based on minimum payments</span>
+                </div>
                 <div class="cp-forecast-canvas"><canvas id="cpPayoffChart" role="img" aria-label="Estimated debt balances over the next twelve months at current minimum payments"></canvas></div>
                 <p id="cp-projection-note" class="cp-projection-note">Calculated from your current balances and APRs.</p>
             </div>
@@ -716,6 +771,7 @@ input,select,textarea{accent-color:#70e6c5}
                 <div><span class="cp-overline">THE BIG PICTURE</span><h2>Your debts</h2></div>
                 <button type="button" class="cp-view-all" onclick="switchTab('debts', document.querySelectorAll('.nav-buttons .btn')[1])">View all ↗</button>
             </div>
+            <div class="cp-debt-section-note" id="cp-debt-section-note">Balances and interest estimates from your saved accounts</div>
             <div class="cp-overview-debt-list" id="cp-overview-debt-list" aria-live="polite"></div>
         </section>
         <section class="overview-hero">
@@ -1743,6 +1799,10 @@ input,select,textarea{accent-color:#70e6c5}
       }
       return values;
     }
+    function activeDebtCountText(source){
+      const count=source.filter(d=>Number(d.amount)>0).length;
+      return count+' active '+(count===1?'debt':'debts');
+    }
     function cpAuroraOverview(){
       const debtTotal=debts.reduce((sum,d)=>sum+Math.max(0,Number(d.amount)||0),0);
       const surplus=budget.reduce((sum,d)=>sum+(Number(d.amount)||0),0);
@@ -1751,12 +1811,24 @@ input,select,textarea{accent-color:#70e6c5}
       const savingsEl=document.getElementById('cp-stat-savings');
       if(!debtEl)return;
       debtEl.textContent=cpAuroraMoney(debtTotal);
+      const termsList=debts.filter(d=>Number(d.amount)>0).map(d=>({d,...cpTerms(d)}));
+      const allKnown=termsList.every(x=>x.apr!==null&&x.min!==null);
+      const minimumTotal=termsList.reduce((sum,x)=>sum+(x.min===null?0:Math.min(x.min,Number(x.d.amount)*(1+(x.apr??0)/1200))),0);
+      const interestTotal=termsList.reduce((sum,x)=>sum+(x.apr===null?0:Number(x.d.amount)*x.apr/1200),0);
+      const principalTotal=minimumTotal-interestTotal;
+      document.getElementById('cp-stat-minimums').textContent=allKnown?cpAuroraMoney(minimumTotal):'Partial';
+      document.getElementById('cp-stat-interest').textContent=allKnown?cpAuroraMoney(interestTotal):'Partial';
+      document.getElementById('cp-stat-principal').textContent=allKnown?(principalTotal>=0?cpAuroraMoney(principalTotal):'+'+cpAuroraMoney(-principalTotal)):'Partial';
+      document.getElementById('cp-stat-principal').classList.toggle('cp-negative',principalTotal<0);
+      document.getElementById('cp-debt-section-note').textContent=activeDebtCountText(debts)+' · '+(allKnown?'Interest and minimums calculated':'Some debts need APR or minimum details');
       surplusEl.textContent=(surplus<0?'-':'')+cpAuroraMoney(Math.abs(surplus));
       surplusEl.style.color=surplus<0?'#ff9fb7':'#8af2d1';
-      // Savings is only shown if the user created an actual savings budget item.
+      // A budget savings allocation is a contribution, not a verified account balance.
       const savingsItems=budget.filter(b=>/savings|emergency fund/i.test(b.title||'') && Number(b.amount)>=0);
+      const savingsLabel=document.querySelector('.cp-snapshot-item:last-child .cp-snapshot-label');
+      savingsLabel.textContent=savingsItems.length?'Savings budget / month':'Emergency savings';
       savingsEl.textContent=savingsItems.length
-        ?cpAuroraMoney(savingsItems.reduce((n,b)=>n+(Number(b.amount)||0),0))
+        ?cpAuroraMoney(savingsItems.reduce((n,b)=>n+Math.abs(Number(b.amount)||0),0))
         :'Not tracked';
       const list=document.getElementById('cp-overview-debt-list');
       list.replaceChildren();
@@ -1764,7 +1836,7 @@ input,select,textarea{accent-color:#70e6c5}
       if(!active.length){
         const e=document.createElement('p');e.className='cp-overview-empty';e.textContent='Add your first debt to see payment insights here.';list.appendChild(e);
       }
-      // Show the four largest balances in the compact overview; the full tab retains all cards.
+      // Show the four largest balances, with the complete accounts accessible in Debts.
       for(const {d,index} of active.sort((a,b)=>Number(b.d.amount)-Number(a.d.amount)).slice(0,4)){
         const {apr,min}=cpTerms(d);
         const balance=Number(d.amount)||0;
@@ -1787,6 +1859,17 @@ input,select,textarea{accent-color:#70e6c5}
           principal<=0?'⚠ Minimum payment does not lower the balance':
           'Only '+cpAuroraMoney(principal)+' of the minimum reduces debt ('+Math.round(pct)+'%)';
         wrap.append(top,meta,alert);
+        const footHead=document.createElement('div');footHead.className='cp-mini-bar-legend';
+        if(pct!==null){
+          const leftLegend=document.createElement('span');
+          leftLegend.textContent='Interest '+Math.round(100-pct)+'% · '+cpAuroraMoney(Math.min(min,interest));
+          const rightLegend=document.createElement('span');
+          rightLegend.textContent='Principal '+Math.round(pct)+'% · '+cpAuroraMoney(Math.max(0,principal));
+          footHead.append(leftLegend,rightLegend);
+        }else{
+          footHead.textContent='Interest / principal breakdown unavailable';
+        }
+        wrap.appendChild(footHead);
         if(pct!==null){
           const bar=document.createElement('div');bar.className='cp-mini-bar';
           const interestPart=document.createElement('div');interestPart.className='interest';interestPart.style.width=(100-pct)+'%';
@@ -1794,11 +1877,25 @@ input,select,textarea{accent-color:#70e6c5}
           bar.append(interestPart,principalPart);wrap.appendChild(bar);
         }
         const foot=document.createElement('div');foot.className='cp-mini-foot';
-        foot.textContent='Estimated interest vs. principal · View full details in Debts';
+        foot.textContent='Tap View all for full account details and payment targets';
         wrap.appendChild(foot);
         list.appendChild(wrap);
       }
       const series=cpAuroraDebtForecast();
+      const forecastValue=document.getElementById('cp-forecast-remaining');
+      const forecastDelta=document.getElementById('cp-forecast-delta');
+      const forecastTitle=document.getElementById('cp-forecast-title');
+      if(series){
+        const end=series[series.length-1],change=series[0]-end;
+        forecastValue.textContent=cpAuroraMoney(end)+' remaining';
+        forecastDelta.textContent=(change>=0?cpAuroraMoney(change)+' lower':'Balance grows by '+cpAuroraMoney(-change))+' in 12 months';
+        forecastDelta.classList.toggle('cp-negative',change<0);
+        forecastTitle.textContent='12-month outlook · minimums';
+      }else{
+        forecastValue.textContent='More details needed';
+        forecastDelta.textContent='Complete APR and minimum fields in Debts';
+        forecastTitle.textContent='Payoff estimate unavailable';
+      }
       const note=document.getElementById('cp-projection-note');
       note.textContent=series
         ?'Illustrative next 12 months if you pay each current minimum every month. Interest is estimated monthly; actual minimums and APRs can change.'
