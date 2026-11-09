@@ -697,7 +697,7 @@
 
         <div class="form-group">
             <label>Title</label>
-            <input type="text" id="modalInputTitle" placeholder="e.g. Discover Card or Rent">
+            <input type="text" id="modalInputTitle" placeholder="e.g. Capital One or Rent">
         </div>
         <div class="form-group">
             <label>Subtext / Details</label>
@@ -749,7 +749,7 @@
         { title: 'Upstart Loan', sub: 'Personal Loan / APR: 12.5%', amount: 6200, original: 10000, color: '#22c55e' },
         { title: 'Car Insurance', sub: 'Monthly Premium', amount: 310, original: 310, color: '#f59e0b' },
         { title: 'Agoda Card', sub: 'Credit Card / APR: 24.2%', amount: 2800, original: 5000, color: '#ef4444' },
-        { title: 'Discover Card', sub: 'Credit Card / APR: 21.0%', amount: 3200, original: 5000, color: '#a855f7' },
+        { title: 'Capital One', sub: 'Credit Card / APR: 21.0%', amount: 3200, original: 5000, color: '#a855f7' },
         { title: 'Sofi Personal', sub: 'Personal Loan / APR: 9.8%', amount: 3000, original: 8000, color: '#ec4899' }
     ];
 
@@ -762,7 +762,7 @@
 
     const defaultBills = [
         { title: 'Car Insurance Payment', sub: 'Due 4th of month', amount: 310, day: 4, paid: false },
-        { title: 'Discover Minimum Payment', sub: 'Due 12th of month', amount: 120, day: 12, paid: false },
+        { title: 'Capital One Minimum Payment', sub: 'Due 12th of month', amount: 268, day: 12, paid: false },
         { title: 'Upstart Monthly Payment', sub: 'Due 16th of month', amount: 210, day: 16, paid: false }
     ];
 
@@ -1439,7 +1439,7 @@
     const CP_TERMS = [
       [/credit\s*one/i,29.9,30], [/mvb/i,27.24,87],
       [/care\s*credit/i,26.99,75], [/price\s*line/i,25.4,68],
-      [/agoda/i,24.2,122], [/capital\s*one/i,21,268],
+      [/agoda/i,24.2,122], [/(?:capital\s*one|discover)/i,21,268],
       [/upstart/i,12.5,27], [/so\s*fi/i,9.8,194]
     ];
     const cpMoney = n => '$' + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -1543,6 +1543,34 @@
       .cp-interest p{color:#9fb2ca;font-size:.72rem;line-height:1.5}
     `;
     document.head.appendChild(cpStyle);
+
+
+    // The legacy Discover account was the same card as Capital One.
+    // Preserve saved balances. Never silently combine two existing debt records.
+    function cpUnifyCapitalOne() {
+      const discover=debts.filter(d=>/^discover(?:\s+card)?$/i.test((d.title||'').trim()));
+      const hasCapital=debts.some(d=>/capital\s*one/i.test(d.title||''));
+      if(!hasCapital) {
+        discover.forEach(d=>{
+          d.title='Capital One';
+          d.sub=(d.sub||'Credit Card').replace(/APR\s*:\s*[0-9.]+\s*%?/i,'APR: 21%');
+          if(!/APR\s*:/i.test(d.sub)) d.sub+=' / APR: 21%';
+          d.apr=21;d.minimumPayment=268;
+        });
+      }
+      if(discover.length&&hasCapital) {
+        console.warn('Discover and Capital One entries both exist; balances retained for reconciliation.');
+      } else if(discover.length) {
+        bills.forEach(b=>{
+          if(/discover/i.test(b.title||'')){
+            b.title=b.title.replace(/discover/ig,'Capital One');
+            if(Number(b.amount)===120)b.amount=268;
+          }
+        });
+      }
+    }
+    const cpPreviousRenderUI=renderUI;
+    renderUI=function(){cpUnifyCapitalOne();cpPreviousRenderUI()};
 
     // Initialize on load
     if (!window.ClearPathAuth?.configured) renderUI();
