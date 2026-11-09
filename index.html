@@ -554,6 +554,12 @@
     .mini-stat .surplus-value { color:#6ee3c3;font-size:clamp(1.25rem,5vw,1.75rem); }
     .mini-stat .surplus-value.surplus-negative { color:#fb7185; }
     @media(max-width:390px){ .mini-stat { padding:15px 12px; } }
+    .chart-card-heading { display:flex;align-items:center;justify-content:space-between;gap:10px; }
+    .chart-card-heading .card-eyebrow { margin-bottom:3px; }
+    .chart-card-heading > span { font-size:1.05rem;color:#9bb0c9;letter-spacing:2px; }
+    .debt-overview-card .card-subtitle { margin-top:5px;margin-bottom:8px; }
+    .debt-chart-container { max-width:285px;margin:0 auto 10px; }
+    @media(max-width:390px){ .debt-chart-container { max-width:255px; } }
     </style>
 <style>
 #cp-auth{position:fixed;inset:0;z-index:9999;background:#0d1527;color:white;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -601,9 +607,8 @@
         </section>
 
         <div class="card debt-overview-card">
-            <div class="card-eyebrow">YOUR DEBT AT A GLANCE</div>
-            <h2 class="card-title" style="margin-bottom: 6px;">Debt overview</h2>
-            <p class="card-subtitle">Tap a segment to explore your balances and proportions.</p>
+            <div class="chart-card-heading"><div><div class="card-eyebrow">AT A GLANCE</div><h2 class="card-title">Debt overview</h2></div><span aria-hidden="true">•••</span></div>
+            <p class="card-subtitle">Select a debt to explore your balance.</p>
 
             <div class="chart-container debt-chart-container">
                 <canvas id="debtChart"></canvas>
@@ -886,6 +891,9 @@
             const centerY = (top + bottom) / 2;
 
             const isDebtChart = chart.canvas?.id === 'debtChart';
+            // Mockup: keep the donut clean; the legend and selection panel
+            // present every exact amount without overlap.
+            if (isDebtChart) return;
             meta.data.forEach((element, i) => {
                 // On the debt chart, tiny arcs cannot fit callout labels
                 // without overlaps. Their exact amounts remain visible
@@ -1089,16 +1097,18 @@
                     data: dataValues,
                     backgroundColor: colors.map(c => hexToRGBA(c, 1.0)),
                     borderColor: '#17223b',
-                    borderWidth: 2,
-                    hoverBorderWidth: 3,
-                    hoverOffset: 8
+                    borderWidth: 4,
+                    borderRadius: 7,
+                    spacing: 2,
+                    hoverBorderWidth: 4,
+                    hoverOffset: 10
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                layout: { padding: 24 },
-                cutout: '70%',
+                layout: { padding: 12 },
+                cutout: '73%',
                 animation: { animateScale: true, animateRotate: true },
                 plugins: {
                     legend: { display: false },
