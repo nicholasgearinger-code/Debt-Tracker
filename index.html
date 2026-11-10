@@ -2733,6 +2733,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
       const data=category==='debts'&&index!==null?cpTerms(debts[index]):{apr:null,min:null};
       document.getElementById('cp-apr-input').value=data.apr??'';
       document.getElementById('cp-min-input').value=data.min??'';
+      cpUpdateDebtKindUI();
     };
     const cpOriginalSaveModal=saveModal;
     saveModal=function(){
