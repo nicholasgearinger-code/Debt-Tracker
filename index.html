@@ -1688,6 +1688,161 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
 @media(prefers-reduced-motion:reduce){.cp-bill-calendar .cal-day{transition:none}}
 
 </style>
+<style id="clearpath-coastal-refresh">
+
+/* ClearPath Coastal Refresh — vibrant ocean-blue Wallet theme, clear contrast.
+   Presentation only; no financial data, calendar or sync changes. */
+:root{
+  --bg-color:#123c57;
+  --card-bg:#245a74;
+  --border-color:rgba(191,236,241,.30);
+  --text-main:#f8fdff;
+  --text-sub:#d1eaf0;
+  --accent-blue:#66e1de;
+  --accent-green:#83efd1;
+  --accent-amber:#ffcb7e;
+  --ag2-night:#123c57;
+}
+html{background:#123c57}
+body{
+  color:#f8fdff;
+  background:
+    radial-gradient(ellipse 460px 540px at -18% 5%,rgba(64,181,207,.33),transparent 76%),
+    radial-gradient(ellipse 430px 560px at 116% 58%,rgba(69,203,189,.22),transparent 76%),
+    linear-gradient(157deg,#235f80 0%,#174866 45%,#113650 100%);
+  background-attachment:fixed;
+}
+.dashboard-container{color:#f8fdff}
+.cp-glass,.card,.list-item,.cp-mini-debt,.cp-forecast-summary,
+.debt-overview-card,#tab-budget .card:first-child{
+  background:linear-gradient(155deg,#326f8b 0%,#265b78 56%,#204c68 100%);
+  border:1px solid rgba(198,238,245,.30);
+  box-shadow:0 14px 28px rgba(5,39,57,.23),inset 0 1px rgba(253,255,255,.17);
+}
+.cp-snapshot-grid{
+  background:
+    radial-gradient(ellipse at 93% 0%,rgba(218,255,248,.27),transparent 50%),
+    linear-gradient(120deg,#36adae 0%,#27899e 55%,#246f95 100%);
+  border:1px solid rgba(213,255,249,.35);
+  box-shadow:0 17px 30px rgba(6,52,73,.24),inset 0 1px rgba(255,255,255,.22);
+}
+.cp-snapshot-item + .cp-snapshot-item{border-left-color:rgba(233,255,255,.30)}
+.cp-snapshot-icon,.cp-snapshot-label{color:#e0fffb}
+.cp-snapshot-item strong,#cp-stat-debt{color:#fff}
+#cp-stat-surplus{color:#c4ffeb!important}
+.cp-monthly-strip{
+  background:linear-gradient(120deg,#2c7690,#245f7d);
+  border:1px solid rgba(199,236,244,.26);
+}
+.cp-monthly-strip span{color:#dbf1f4}
+.cp-monthly-strip strong{color:#f8fdff}
+.cp-projection-card,.debt-overview-card,#tab-budget .card:first-child{
+  background:linear-gradient(150deg,#326f8a,#265872 65%,#224c69);
+  box-shadow:0 12px 29px rgba(5,35,55,.23),inset 0 1px rgba(255,255,255,.14);
+}
+.cp-forecast-summary,.cp-floating-chart-badge,#debtSelection,.cp-forecast-pill{
+  background:rgba(16,66,89,.59);
+  border:1px solid rgba(191,238,235,.26);
+  color:#e2faf7;
+}
+.cp-forecast-summary>span,.cp-projection-note,.cp-debt-section-note{color:#d3e9ef}
+.cp-forecast-summary strong,.cp-floating-chart-badge strong{color:#b5ffe5}
+.cp-overline{color:#aff9ed}
+.header h1,.card-title,.cp-overview-debts-header h2,
+.cp-projection-heading h2{color:#fff}
+.header p,.card-subtitle,.cp-snapshot-label,.item-info .sub,.cp-mini-foot{color:#d4e9ef}
+.cp-overview-debt-list .cp-mini-debt{
+  background:
+    radial-gradient(ellipse at 93% 0%,rgba(252,255,255,.29),transparent 45%),
+    linear-gradient(128deg,#38abae,#25899e 61%,#276c8e);
+  border:1px solid rgba(219,255,252,.34);
+  box-shadow:0 10px 23px rgba(6,48,68,.24),inset 0 1px rgba(255,255,255,.21);
+}
+.cp-overview-debt-list .cp-mini-debt:nth-child(4n+2){
+  background:radial-gradient(ellipse at 93% 0%,rgba(242,255,255,.24),transparent 45%),
+             linear-gradient(130deg,#3d91ba,#327da7 61%,#275d89);
+}
+.cp-overview-debt-list .cp-mini-debt:nth-child(4n+3){
+  background:radial-gradient(ellipse at 93% 0%,rgba(245,255,250,.26),transparent 45%),
+             linear-gradient(130deg,#49a99b,#318f8a 61%,#28747f);
+}
+.cp-overview-debt-list .cp-mini-debt:nth-child(4n+4){
+  background:radial-gradient(ellipse at 93% 0%,rgba(241,254,255,.26),transparent 45%),
+             linear-gradient(130deg,#548eaa,#337994 61%,#28647f);
+}
+.cp-mini-debt-top strong,.cp-mini-meta strong{color:#fff}
+.cp-mini-debt-top span,.cp-mini-meta span,.cp-mini-foot{color:#ecfbfc}
+.cp-mini-debt .cp-impact{background:rgba(16,72,84,.48);color:#d6fff0}
+.cp-mini-bar{background:rgba(15,67,82,.53)}
+#tab-debts .list-item,#tab-budget .list-item,#tab-bills .list-item{
+  background:linear-gradient(146deg,#326d88,#285a77);
+  border-color:rgba(204,241,244,.25);
+  box-shadow:0 7px 19px rgba(5,41,61,.17);
+}
+#chartLegend .legend-item,#budgetLegend .legend-item{
+  background:linear-gradient(146deg,#2c6984,#245775);
+  border:1px solid rgba(199,237,238,.23);
+}
+#chartLegend .legend-label,#budgetLegend .legend-label,
+#chartLegend .legend-amount,#budgetLegend .legend-amount{color:#f9fdff}
+.debt-overview-card .chart-container,#tab-budget .chart-container{background:rgba(13,64,88,.15)}
+.nav-buttons{
+  background:linear-gradient(172deg,rgba(43,103,130,.98),rgba(29,76,103,.99));
+  border:1px solid rgba(196,242,242,.30);
+  box-shadow:0 10px 31px rgba(3,37,57,.31),inset 0 1px rgba(255,255,255,.13);
+}
+.nav-buttons .btn{color:#d7ebf3}
+.nav-buttons .btn.active{
+  background:linear-gradient(145deg,#3aa7aa,#2b869e);
+  border:1px solid rgba(209,255,250,.41);
+  color:#f6ffff;
+  box-shadow:0 5px 14px rgba(5,51,70,.19),inset 0 1px rgba(255,255,255,.18);
+}
+.nav-buttons .btn.active .nav-icon{color:#e2fff7}
+.btn-add,.btn-save,.btn-action,.cp-cal-nav,.cp-cal-today{
+  background:#3190a3;
+  color:#f7ffff;
+  border:1px solid rgba(207,254,250,.31);
+}
+.btn-add:hover,.btn-action:hover,.cp-cal-nav:hover,.cp-cal-today:hover{background:#3caab6}
+.cp-bill-calendar .cal-day{
+  background:#285c78;
+  color:#effbff;
+  border-color:rgba(205,240,242,.24);
+}
+.cp-bill-calendar .cal-day.has-event{
+  background:#35a3a8;border-color:rgba(214,255,244,.48);color:#fff;
+}
+.cp-bill-calendar .cal-day.all-paid{
+  background:#358f8e;border-color:rgba(218,255,232,.52);
+}
+.cp-bill-calendar .cal-day.is-today{outline-color:#c4fff1}
+.cp-calendar-toolbar h3{color:#f9ffff}
+.cp-cal-key,.cp-cal-month-summary{color:#d9eff1}
+.cp-cal-bill-row strong{color:#fff}
+.cp-cal-bill-row small{color:#d4edf0}
+.cp-cal-add,.cp-bill-edit{color:#f8ffff}
+input:not([type="checkbox"]):not([type="radio"]),select,textarea{
+  background:#1b4e68;
+  color:#f5fdff;
+  border:1px solid rgba(193,239,240,.36);
+}
+input::placeholder,textarea::placeholder{color:#c0d9e0}
+#billScheduleGroup label,#debtTermsGroup label{color:#edfdfb}
+.cp-forecast-missing,#debtTermsGroup{background:rgba(18,65,87,.66);border-color:rgba(205,246,239,.28)}
+.cp-missing-title,.cp-terms-hint{color:#e0f5f4}
+.cp-missing-account{background:#287c90;border-color:rgba(199,239,237,.26);color:#f2ffff}
+.cp-missing-account:hover{background:#3495a6}
+.modal{background:#29617d;color:#f7ffff;border:1px solid rgba(221,251,249,.31)}
+.modal-overlay{background:rgba(4,22,35,.71)}
+:where(button,input,select,textarea,.legend-item):focus-visible{outline:2px solid #d4fff3;outline-offset:2px}
+@media(max-width:390px){
+ .cp-snapshot-grid{padding:18px 9px}
+ .nav-buttons{width:calc(100% - 14px)}
+}
+@media(prefers-reduced-motion:reduce){body{background-attachment:scroll}}
+
+</style>
 </head>
 <body>
 
