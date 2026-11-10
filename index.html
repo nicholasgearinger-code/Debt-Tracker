@@ -1843,6 +1843,76 @@ input::placeholder,textarea::placeholder{color:#c0d9e0}
 @media(prefers-reduced-motion:reduce){body{background-attachment:scroll}}
 
 </style>
+<style id="clearpath-overview-spacing">
+
+/* ClearPath overview responsive spacing refinement — iPhone safe. */
+html,body{max-width:100%;overflow-x:clip}
+body{padding:clamp(12px,3vw,20px);padding-bottom:calc(122px + env(safe-area-inset-bottom));}
+.dashboard-container{width:100%;max-width:600px;min-width:0;margin:0 auto}
+#tab-overview{min-width:0;width:100%;gap:22px}
+#tab-overview .cp-premium-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:17px;min-width:0;width:100%}
+#tab-overview .cp-premium-hero>*{min-width:0;max-width:100%}
+#tab-overview .cp-snapshot-grid{width:100%;min-width:0;padding:21px 12px;grid-template-columns:repeat(3,minmax(0,1fr))}
+#tab-overview .cp-snapshot-item{min-width:0;padding:0 clamp(6px,2vw,13px);gap:6px}
+#tab-overview .cp-snapshot-item strong{font-size:clamp(.94rem,3.6vw,1.40rem);line-height:1.2;overflow-wrap:break-word}
+#tab-overview .cp-snapshot-label{line-height:1.35;overflow-wrap:break-word}
+#tab-overview .cp-recurring-overview{width:100%;gap:7px 12px;padding:17px 19px}
+#tab-overview .cp-recurring-overview>div{min-width:0}
+#tab-overview .cp-recurring-overview>strong{font-size:clamp(1rem,3.6vw,1.22rem)}
+#tab-overview .cp-recurring-overview p{overflow-wrap:anywhere}
+#tab-overview .cp-monthly-strip{width:100%;min-width:0;padding:15px 9px;grid-template-columns:repeat(3,minmax(0,1fr))}
+#tab-overview .cp-monthly-strip>div{padding:2px clamp(5px,2vw,11px);gap:7px}
+#tab-overview .cp-monthly-strip span{font-size:clamp(.58rem,2.5vw,.69rem);letter-spacing:.035em}
+#tab-overview .cp-monthly-strip strong{font-size:clamp(.95rem,3.8vw,1.28rem);line-height:1.15;overflow-wrap:break-word}
+#tab-overview .cp-projection-card{min-width:0;width:100%;padding:19px 17px 17px}
+#tab-overview .cp-projection-heading{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
+#tab-overview .cp-projection-heading>div{flex:1 1 175px;min-width:0}
+#tab-overview .cp-projection-heading .cp-forecast-pill{flex:0 0 auto;max-width:100%;white-space:normal}
+#tab-overview .cp-forecast-summary{width:100%;min-width:0;margin-top:15px;padding:13px 14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px}
+#tab-overview .cp-forecast-summary strong{max-width:100%;min-width:0;text-align:right;line-height:1.18;overflow-wrap:break-word}
+#tab-overview .cp-forecast-canvas{height:212px;min-width:0;width:100%;margin-top:14px}
+#tab-overview .cp-forecast-canvas canvas{display:block;max-width:100%!important}
+#tab-overview .cp-floating-chart-badge{position:absolute;top:8px;right:8px;max-width:57%;padding:6px 9px;gap:6px}
+#tab-overview .cp-projection-note{line-height:1.5;margin-top:14px}
+#tab-overview .cp-overview-debts-header{gap:10px;align-items:end}
+#tab-overview .cp-overview-debts-header>div{min-width:0}
+#tab-overview .cp-view-all{flex:0 0 auto}
+#tab-overview .cp-overview-debt-list{width:100%;min-width:0;gap:13px}
+#tab-overview .cp-mini-debt{max-width:100%;min-width:0}
+.nav-buttons{max-width:calc(100% - 16px);box-sizing:border-box}
+@media(max-width:480px){
+ body{padding:14px 14px calc(124px + env(safe-area-inset-bottom))}
+ .dashboard-container{gap:17px}
+ #tab-overview .cp-premium-hero{gap:15px}
+ #tab-overview .cp-snapshot-grid{padding:20px 9px;border-radius:23px}
+ #tab-overview .cp-snapshot-item{padding:0 7px}
+ #tab-overview .cp-snapshot-item strong{font-size:clamp(.96rem,4.2vw,1.24rem)}
+ #tab-overview .cp-recurring-overview{padding:16px;grid-template-columns:minmax(0,1fr) auto}
+ #tab-overview .cp-recurring-overview>strong{align-self:center}
+ #tab-overview .cp-monthly-strip{padding:14px 6px}
+ #tab-overview .cp-monthly-strip>div{padding:2px 7px}
+ #tab-overview .cp-monthly-strip strong{font-size:clamp(.94rem,4vw,1.17rem)}
+ #tab-overview .cp-projection-card{padding:17px 14px 16px}
+ #tab-overview .cp-projection-heading h2{font-size:1.13rem}
+ #tab-overview .cp-forecast-summary{grid-template-columns:minmax(0,1fr);gap:4px 0}
+ #tab-overview .cp-forecast-summary strong{grid-column:1;grid-row:2;text-align:left;font-size:1.09rem}
+ #tab-overview .cp-forecast-summary>span:last-child{grid-column:1;grid-row:3}
+ #tab-overview .cp-forecast-canvas{height:216px;margin-top:16px}
+ #tab-overview .cp-floating-chart-badge{top:5px;right:4px;max-width:55%;padding:5px 7px}
+ #tab-overview .cp-overview-debts-header h2{font-size:1.42rem}
+ .nav-buttons{width:calc(100% - 16px);max-width:calc(100% - 16px);left:50%;bottom:calc(7px + env(safe-area-inset-bottom));padding:8px 9px;border-radius:20px}
+ .nav-buttons .btn{min-width:0}
+}
+@media(max-width:350px){
+ #tab-overview .cp-snapshot-item{padding:0 5px}
+ #tab-overview .cp-snapshot-label{font-size:.63rem}
+ #tab-overview .cp-forecast-pill{font-size:.60rem}
+ #tab-overview .cp-floating-chart-badge{position:relative;top:auto;right:auto;max-width:100%;width:max-content;margin:0 0 5px auto}
+ #tab-overview .cp-forecast-canvas{height:238px}
+}
+@media(prefers-reduced-motion:reduce){.nav-buttons{transition:none}}
+
+</style>
 </head>
 <body>
 
