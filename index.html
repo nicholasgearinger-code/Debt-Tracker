@@ -1606,6 +1606,23 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
 }
 
 </style>
+<style id="clearpath-forecast-editor-fix">
+
+/* Forecast editing + partial-coverage disclosure */
+#debtTermsGroup{padding:13px 14px;border-radius:14px;background:rgba(7,37,47,.55);border:1px solid rgba(153,217,209,.20)}
+#debtTermsGroup label{color:#d8f4ef;font-weight:700}
+#debtTermsGroup input{width:100%;margin-top:7px}
+.cp-terms-hint{font-size:.78rem;line-height:1.5;color:#aecfcb;margin-top:12px}
+.cp-forecast-missing{margin-top:12px;border-radius:15px;padding:13px 14px;background:rgba(10,38,48,.53);border:1px solid rgba(147,215,208,.19)}
+.cp-forecast-missing[hidden]{display:none!important}
+.cp-missing-title{display:block;color:#d4efea;font-size:.84rem;margin-bottom:9px}
+.cp-missing-list{display:grid;gap:7px}
+.cp-missing-account{text-align:left;min-height:43px;border-radius:10px;padding:9px 12px;border:1px solid rgba(152,216,207,.20);background:#224552;color:#d9f7f1;font:inherit;font-size:.83rem;cursor:pointer}
+.cp-missing-account:hover,.cp-missing-account:focus-visible{border-color:#8de9d7;background:#2c5962}
+.cp-projection-card:has(.cp-forecast-missing:not([hidden])) .cp-forecast-canvas{height:205px}
+@media(max-width:390px){.cp-missing-account{font-size:.8rem}}
+
+</style>
 </head>
 <body>
 
@@ -1646,6 +1663,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
                 </div>
                 <div class="cp-forecast-canvas"><div class="cp-floating-chart-badge" id="cp-floating-chart-badge" role="status" aria-live="polite"><span class="cp-float-icon" aria-hidden="true">↘</span><div><span class="cp-float-label">12-month payoff progress</span><strong id="cp-floating-progress">Calculating…</strong></div></div><canvas id="cpPayoffChart" role="img" aria-label="Estimated debt balances over the next twelve months at current minimum payments"></canvas></div>
                 <p id="cp-projection-note" class="cp-projection-note">Calculated from your current balances and APRs.</p>
+                <div id="cp-forecast-missing" class="cp-forecast-missing" hidden></div>
             </div>
             <div class="cp-overview-debts-header">
                 <div><span class="cp-overline">THE BIG PICTURE</span><h2>Your debts</h2></div>
@@ -1773,6 +1791,13 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
                 <option value="general">Household / General</option>
                 <option value="wife">Wife</option>
             </select>
+        </div>
+        <div class="form-group" id="debtTermsGroup" style="display:none;">
+            <label for="modalInputApr">Annual interest rate (APR %)</label>
+            <input type="number" id="modalInputApr" min="0" max="100" step="0.01" inputmode="decimal" placeholder="e.g. 24.20">
+            <label for="modalInputMinimum" style="margin-top:12px;display:block;">Monthly minimum payment ($)</label>
+            <input type="number" id="modalInputMinimum" min="0" step="0.01" inputmode="decimal" placeholder="e.g. 68.00">
+            <p class="cp-terms-hint">These amounts power the payoff chart. Leave a value empty if unknown; no rate or payment will be guessed.</p>
         </div>
         <div class="form-group" id="originalLimitGroup">
             <label>Original Loan Amount / Credit Limit ($)</label>
@@ -2418,12 +2443,14 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
         document.getElementById('modalIndex').value = index !== null ? index : '';
         const colorGroup = document.getElementById('colorGroup');
         const originalLimitGroup = document.getElementById('originalLimitGroup');
+        const debtTermsGroup = document.getElementById('debtTermsGroup');
         const budgetOwnerGroup = document.getElementById('budgetOwnerGroup');
         const deleteBtn = document.getElementById('btnDelete');
 
         colorGroup.style.display = category === 'debts' ? 'flex' : 'none';
         budgetOwnerGroup.style.display = category === 'budget' ? 'flex' : 'none';
         originalLimitGroup.style.display = category === 'debts' ? 'flex' : 'none';
+        debtTermsGroup.style.display = category === 'debts' ? 'block' : 'none';
 
         if (index !== null) {
             document.getElementById('modalTitle').innerText = 'Edit Item';
@@ -2440,6 +2467,9 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
             if (category === 'debts') {
                 document.getElementById('modalInputOriginal').value = item.original || item.amount;
                 document.getElementById('modalInputColor').value = item.color || suggestDebtColor(index);
+                const terms=cpTerms(item);
+                document.getElementById('modalInputApr').value=terms.apr===null?'':String(terms.apr);
+                document.getElementById('modalInputMinimum').value=terms.min===null?'':String(terms.min);
             }
         } else {
             document.getElementById('modalTitle').innerText = 'Add New Item';
@@ -2448,6 +2478,8 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
             document.getElementById('modalInputSub').value = '';
             document.getElementById('modalInputAmount').value = '';
             document.getElementById('modalInputOriginal').value = '';
+            document.getElementById('modalInputApr').value = '';
+            document.getElementById('modalInputMinimum').value = '';
             document.getElementById('modalInputColor').value = category === 'debts' ? suggestDebtColor() : '#38bdf8';
             document.getElementById('modalBudgetOwner').value = 'general';
         }
@@ -2477,7 +2509,17 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
             const used = debts.filter((_, i) => i !== index).map(d => d.color).filter(validDebtHex);
             const autoColor = !validDebtHex(color) || used.some(c => debtColorDifference(c,color) < .115)
                 ? nextDebtColor(used) : color;
-            const newItem = { title, sub, amount, original, color: autoColor };
+            const aprRaw=document.getElementById('modalInputApr').value.trim();
+            const minRaw=document.getElementById('modalInputMinimum').value.trim();
+            const apr=aprRaw===''?null:Number(aprRaw);
+            const minimumPayment=minRaw===''?null:Number(minRaw);
+            if((apr!==null&&(!Number.isFinite(apr)||apr<0||apr>100)) ||
+               (minimumPayment!==null&&(!Number.isFinite(minimumPayment)||minimumPayment<0))){
+                return alert('Enter a valid nonnegative APR (up to 100%) and minimum payment.');
+            }
+            // Retain any future debt properties instead of recreating a stripped record.
+            const newItem = {...((isEdit && debts[index])||{}),title,sub,amount,original,color:autoColor,
+                             apr:aprRaw===''?'':apr,minimumPayment:minRaw===''?'':minimumPayment};
             if (isEdit) debts[index] = newItem;
             else debts.push(newItem);
         } else if (category === 'budget') {
@@ -2526,7 +2568,8 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
       const known=CP_TERMS.find(x=>x[0].test(d.title||''));
       const legacy=/APR\s*:\s*([0-9.]+)/i.exec(d.sub||'');
       const a=d.apr!=null&&d.apr!==''?Number(d.apr):(known?.[1] ?? (legacy?Number(legacy[1]):undefined));
-      const m=d.minimumPayment!=null&&d.minimumPayment!==''?Number(d.minimumPayment):known?.[2];
+      const legacyMin=/(?:minimum(?:\s+payment)?|min(?:\s+payment)?)\s*:\s*\$?([0-9.]+)/i.exec(d.sub||'');
+      const m=d.minimumPayment!=null&&d.minimumPayment!==''?Number(d.minimumPayment):(known?.[2] ?? (legacyMin?Number(legacyMin[1]):undefined));
       return {apr:Number.isFinite(a)&&a>=0?a:null,min:Number.isFinite(m)&&m>=0?m:null};
     }
     function cpRenderInterest(){
@@ -2682,21 +2725,27 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
       return String.fromCharCode(36)+(Number(n)||0).toLocaleString('en-US',{maximumFractionDigits:0});
     }
     function cpAuroraDebtForecast(){
-      const entries=debts.filter(d=>Number(d.amount)>0).map(d=>{
+      const active=debts.map((d,index)=>({d,index})).filter(({d})=>Number(d.amount)>0);
+      if(!active.length)return {series:null,included:[],missing:[],allCount:0};
+      const entries=active.map(({d,index})=>{
         const terms=cpTerms(d);
-        return {balance:Math.max(0,Number(d.amount)||0),apr:terms.apr,min:terms.min};
+        return {index,title:d.title||'Untitled debt',balance:Math.max(0,Number(d.amount)||0),apr:terms.apr,min:terms.min};
       });
-      if(!entries.length || entries.some(d=>d.apr===null||d.min===null))return null;
-      // Minimum-only illustration: assumes current minimum amounts stay fixed.
-      const values=[entries.reduce((sum,d)=>sum+d.balance,0)];
+      const included=entries.filter(d=>d.apr!==null&&d.min!==null);
+      const missing=entries.filter(d=>d.apr===null||d.min===null);
+      if(!included.length)return {series:null,included,missing,allCount:entries.length};
+      // Model only accounts with confirmed terms. Never treat unknown APRs or minimums as zero.
+      const simulated=included.map(d=>({...d}));
+      const values=[simulated.reduce((sum,d)=>sum+d.balance,0)];
       for(let month=0;month<12;month++){
-        for(const d of entries){
+        for(const d of simulated){
           if(d.balance<=0)continue;
-          d.balance=Math.max(0,d.balance*(1+d.apr/1200)-Math.min(d.balance*(1+d.apr/1200),d.min));
+          const afterInterest=d.balance*(1+d.apr/1200);
+          d.balance=Math.max(0,afterInterest-Math.min(afterInterest,d.min));
         }
-        values.push(entries.reduce((sum,d)=>sum+d.balance,0));
+        values.push(simulated.reduce((sum,d)=>sum+d.balance,0));
       }
-      return values;
+      return {series:values,included,missing,allCount:entries.length};
     }
     function activeDebtCountText(source){
       const count=source.filter(d=>Number(d.amount)>0).length;
@@ -2780,32 +2829,56 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
         wrap.appendChild(foot);
         list.appendChild(wrap);
       }
-      const series=cpAuroraDebtForecast();
+      const forecast=cpAuroraDebtForecast();
+      const series=forecast.series;
+      const isPartial=forecast.missing.length>0;
       const forecastValue=document.getElementById('cp-forecast-remaining');
       const forecastDelta=document.getElementById('cp-forecast-delta');
       const forecastTitle=document.getElementById('cp-forecast-title');
       const floatBadge=document.getElementById('cp-floating-chart-badge');
       const floatProgress=document.getElementById('cp-floating-progress');
+      const missingPanel=document.getElementById('cp-forecast-missing');
+      missingPanel.replaceChildren();
       if(series){
         const end=series[series.length-1],change=series[0]-end;
         forecastValue.textContent=cpAuroraMoney(end)+' remaining';
         forecastDelta.textContent=(change>=0?cpAuroraMoney(change)+' lower':'Balance grows by '+cpAuroraMoney(-change))+' in 12 months';
         forecastDelta.classList.toggle('cp-negative',change<0);
-        forecastTitle.textContent='12-month outlook · minimums';
+        forecastTitle.textContent=isPartial?'Partial 12-month forecast':'12-month outlook · minimums';
         const progressPercent=series[0]>0?Math.max(0,Math.min(100,change/series[0]*100)):100;
-        floatProgress.textContent=change>=0?progressPercent.toFixed(1)+'% balance reduction':'Balance increasing';
+        floatProgress.textContent=isPartial?'Partial · '+forecast.included.length+'/'+forecast.allCount+' debts':
+          change>=0?progressPercent.toFixed(1)+'% balance reduction':'Balance increasing';
         floatBadge.classList.toggle('cp-badge-warning',change<0);
         floatBadge.hidden=false;
       }else{
-        forecastValue.textContent='More details needed';
-        forecastDelta.textContent='Complete APR and minimum fields in Debts';
-        forecastTitle.textContent='Payoff estimate unavailable';
+        forecastValue.textContent=forecast.allCount?'Add payment details':'No active debts';
+        forecastDelta.textContent=forecast.allCount?'APR and minimum required':'Add a debt to get started';
+        forecastDelta.classList.remove('cp-negative');
+        forecastTitle.textContent=forecast.allCount?'Payoff estimate unavailable':'12-month outlook';
         floatBadge.hidden=true;
       }
       const note=document.getElementById('cp-projection-note');
-      note.textContent=series
-        ?'Illustrative next 12 months if you pay each current minimum every month. Interest is estimated monthly; actual minimums and APRs can change.'
-        :'Set APR and minimum payment for every debt to view a 12-month forecast.';
+      note.textContent=series?
+        (isPartial?'Partial estimate covering '+cpAuroraMoney(series[0])+' of '+cpAuroraMoney(debtTotal)+
+          ' in active balances. '+forecast.missing.length+' account(s) excluded until APR and minimums are provided.':
+          'Illustrative 12 months at current fixed minimum payments. Actual APRs and minimums can change.'):
+        'Add APR and monthly minimums to active debts to display the 12-month projection.';
+      if(forecast.missing.length){
+        const title=document.createElement('strong');title.className='cp-missing-title';
+        title.textContent='Complete '+forecast.missing.length+' account'+(forecast.missing.length===1?'':'s')+' to unlock the full forecast';
+        missingPanel.appendChild(title);
+        const buttons=document.createElement('div');buttons.className='cp-missing-list';
+        for(const debt of forecast.missing){
+          const button=document.createElement('button');
+          button.type='button';button.className='cp-missing-account';
+          const absent=[debt.apr===null?'APR':null,debt.min===null?'minimum':null].filter(Boolean).join(' and ');
+          button.textContent=debt.title+' — add '+absent;
+          button.addEventListener('click',()=>openModal('debts',debt.index));
+          buttons.appendChild(button);
+        }
+        missingPanel.appendChild(buttons);
+      }
+      missingPanel.hidden=forecast.missing.length===0;
       const canvas=document.getElementById('cpPayoffChart');
       if(cpAuroraChart){cpAuroraChart.destroy();cpAuroraChart=null;}
       if(!canvas || typeof Chart==='undefined')return;
@@ -2830,7 +2903,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
             scales:{
               x:{grid:{display:false},ticks:{color:'#bfb3d5',maxRotation:0,font:{size:10}}},
               y:{beginAtZero:true,grid:{color:'rgba(196,172,227,.14)'},border:{display:false},
-                ticks:{color:'#bfb3d5',font:{size:10},callback:v=>String.fromCharCode(36)+(v>=1000?Math.round(v/1000)+'k':v)}}
+                ticks:{color:'#add4d1',font:{size:10},callback:v=>String.fromCharCode(36)+(v>=1000?Math.round(v/1000)+'k':v)}}
             }
           }
         });
