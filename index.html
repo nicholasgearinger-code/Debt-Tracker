@@ -1623,6 +1623,32 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
 @media(max-width:390px){.cp-missing-account{font-size:.8rem}}
 
 </style>
+<style id="clearpath-recurring-expenses">
+
+/* Recurring monthly expenses are not interest-bearing balances. */
+.cp-recurring-overview{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 12px;padding:17px 19px;
+ border-radius:21px;background:linear-gradient(135deg,#1a4b52,#173540);border:1px solid rgba(150,228,206,.23);
+ box-shadow:0 8px 19px rgba(0,15,25,.19)}
+.cp-recurring-overview[hidden],.cp-recurring-accounts[hidden]{display:none!important}
+.cp-recurring-overview h3{font-size:1.05rem;color:#f0fbf9;margin:3px 0}
+.cp-recurring-overview small{color:#b4d4d1;font-size:.77rem}
+.cp-recurring-overview>strong{font-size:1.22rem;color:#b4f5e1;white-space:nowrap}
+.cp-recurring-overview p{grid-column:1/-1;color:#b4d4d1;line-height:1.4;font-size:.75rem}
+.cp-recurring-accounts{display:grid;gap:8px;margin-top:13px}
+.cp-recurring-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;
+ width:100%;text-align:left;padding:12px 15px;border-radius:14px;
+ border:1px solid rgba(152,217,205,.18);background:#173843;color:#edf9f7;font:inherit;cursor:pointer}
+.cp-recurring-row strong{color:#b8f3df;white-space:nowrap}
+.cp-recurring-row:focus-visible{outline:2px solid #b8f3df;outline-offset:2px}
+.cp-recurring-label{font-size:.68rem;border-radius:999px;background:rgba(85,183,162,.18);
+ padding:3px 7px;color:#a7e9d5;white-space:nowrap}
+.cp-per-month{font-size:.7rem;color:#aacdc7;font-weight:600}
+.cp-recurring-help{font-size:.78rem;line-height:1.5;color:#b7d3d1;margin-top:6px}
+#debtKindGroup select{width:100%;padding:12px;background:#153643;color:#ebfaf7;
+ border:1px solid rgba(152,217,205,.24);border-radius:12px}
+@media(max-width:390px){.cp-recurring-overview{padding:14px}.cp-recurring-overview>strong{font-size:1.04rem}}
+
+</style>
 </head>
 <body>
 
@@ -1649,6 +1675,11 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
                 <div class="cp-snapshot-item"><span class="cp-snapshot-icon">ϟ</span><span class="cp-snapshot-label">Monthly surplus</span><strong id="cp-stat-surplus">—</strong></div>
                 <div class="cp-snapshot-item"><span class="cp-snapshot-icon">♡</span><span class="cp-snapshot-label">Emergency savings</span><strong id="cp-stat-savings">Set up</strong></div>
             </div>
+            <div class="cp-recurring-overview" id="cp-recurring-overview" hidden>
+                <div><span class="cp-overline">MONTHLY SPENDING</span><h3>Recurring expenses</h3><small id="cp-recurring-count"></small></div>
+                <strong id="cp-recurring-total">—</strong>
+                <p id="cp-recurring-note"></p>
+            </div>
             <div class="cp-monthly-strip cp-glass" aria-label="Monthly debt payment overview">
                 <div><span>MINIMUM PAYMENTS</span><strong id="cp-stat-minimums">—</strong></div>
                 <div><span>MONTHLY INTEREST</span><strong id="cp-stat-interest">—</strong></div>
@@ -1671,6 +1702,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
             </div>
             <div class="cp-debt-section-note" id="cp-debt-section-note">Balances and interest estimates from your saved accounts</div>
             <div class="cp-overview-debt-list" id="cp-overview-debt-list" aria-live="polite"></div>
+            <div id="cp-recurring-accounts" class="cp-recurring-accounts" hidden></div>
         </section>
         <section class="overview-hero">
             <div class="hero-heading"><div><div class="hero-eyebrow">FINANCIAL OVERVIEW</div><h2>Make every payment count.</h2></div><div class="hero-wallet" aria-hidden="true">◈</div></div>
@@ -1792,6 +1824,14 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
                 <option value="wife">Wife</option>
             </select>
         </div>
+        <div class="form-group" id="debtKindGroup" style="display:none;">
+            <label for="modalDebtKind">Account type</label>
+            <select id="modalDebtKind" onchange="cpUpdateDebtKindUI()">
+                <option value="debt">Debt · balance decreases with payments</option>
+                <option value="recurring">Recurring expense · monthly, no payoff</option>
+            </select>
+            <p class="cp-terms-hint">Rent, gas, groceries, and insurance are recurring expenses—not debt balances.</p>
+        </div>
         <div class="form-group" id="debtTermsGroup" style="display:none;">
             <label for="modalInputApr">Annual interest rate (APR %)</label>
             <input type="number" id="modalInputApr" min="0" max="100" step="0.01" inputmode="decimal" placeholder="e.g. 24.20">
@@ -1861,6 +1901,38 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
         localStorage.setItem('clearpath_budget', JSON.stringify(budget));
         localStorage.setItem('clearpath_bills', JSON.stringify(bills));
         if (window.ClearPathAuth?.ready) window.ClearPathAuth.scheduleSave({debts,budget,bills});
+    }
+
+
+    // A recurring expense is monthly spending, never an amortizing balance.
+    // Legacy recurring-looking items are classified in place, without migration
+    // or mutating the data saved locally / to Supabase.
+    function cpIsRecurring(d){
+      if(d.kind==='recurring')return true;
+      if(d.kind==='debt')return false;
+      const name=(d.title||'').trim().toLowerCase();
+      const details=(d.sub||'').toLowerCase();
+      if(/\b(?:loan|credit card|balance transfer|installment)\b/.test(details))return false;
+      return /^(?:car insurance|auto insurance|home insurance|rent(?:\s*\/\s*housing)?|housing|gas(?:\s*\/\s*fuel)?|fuel|groceries|grocery|utilities|electric(?:ity)?(?:\s+bill)?|water bill|internet|phone bill|subscriptions?|monthly premium)(?:\s|$|[:/()-])/i.test(name);
+    }
+    function cpDebtEntries(){return debts.map((d,index)=>({d,index})).filter(({d})=>!cpIsRecurring(d));}
+    function cpRecurringEntries(){return debts.map((d,index)=>({d,index})).filter(({d})=>cpIsRecurring(d));}
+    function cpExpenseKey(title){
+      return String(title||'').toLowerCase().replace(/\b(?:payment|monthly|bill|expense|premium|the|cost)\b/g,'').replace(/[^a-z0-9]/g,'');
+    }
+    function cpUnbudgetedRecurring(){
+      const budgeted=new Set(budget.filter(b=>Number(b.amount)<0).map(b=>cpExpenseKey(b.title)).filter(Boolean));
+      return cpRecurringEntries().filter(({d})=>{
+        const key=cpExpenseKey(d.title);
+        return key&&!budgeted.has(key);
+      });
+    }
+    function cpRecurringSummary(){
+      const all=cpRecurringEntries();
+      const unbudgeted=cpUnbudgetedRecurring();
+      const total=all.reduce((n,{d})=>n+Math.abs(Number(d.amount)||0),0);
+      const extra=unbudgeted.reduce((n,{d})=>n+Math.abs(Number(d.amount)||0),0);
+      return {all,total,extra,unbudgeted};
     }
 
     let debtSelectedIndex = null;
@@ -2079,10 +2151,10 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
     }
 
     function updateMetrics() {
-        const total = debts.reduce((sum, item) => sum + item.amount, 0);
+        const total = cpDebtEntries().reduce((sum,{d})=>sum+(Number(d.amount)||0),0);
         document.getElementById('metric-total-debt').innerText = `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-        document.getElementById('metric-active-count').innerText = debts.length;
-        const surplus = budget.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+        document.getElementById('metric-active-count').innerText = cpDebtEntries().length;
+        const surplus = budget.reduce((sum, item) => sum + (Number(item.amount) || 0), 0) - cpRecurringSummary().extra;
         const surplusEl = document.getElementById('metric-surplus');
         if (surplusEl) {
             surplusEl.textContent = (surplus < 0 ? '-$' : '$') + Math.abs(surplus).toLocaleString('en-US', { minimumFractionDigits: 2 });
@@ -2094,26 +2166,27 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
         const container = document.getElementById('debt-list');
         container.innerHTML = '';
         debts.forEach((item, index) => {
-            const hasHighApr = item.sub && item.sub.includes('APR:') && parseFloat(item.sub.split('APR:')[1]) >= 20;
+            const recurring=cpIsRecurring(item);
+            const hasHighApr = !recurring && item.sub && item.sub.includes('APR:') && parseFloat(item.sub.split('APR:')[1]) >= 20;
             const orig = item.original || item.amount;
-            const paidRatio = orig > 0 ? Math.max(0, Math.min(100, Math.round(((orig - item.amount) / orig) * 100))) : 0;
+            const paidRatio = !recurring && orig > 0 ? Math.max(0, Math.min(100, Math.round(((orig - item.amount) / orig) * 100))) : 0;
 
             container.innerHTML += `
-                <div class="list-item">
+                <div class="list-item ${recurring ? 'cp-recurring-item' : ''}">
                     <div class="item-top-row">
                         <div class="item-info">
                             <div class="title">
-                                ${item.title}
+                                ${item.title}${recurring ? ' <span class="cp-recurring-label">Recurring · monthly</span>' : ''}
                                 ${hasHighApr ? '<span class="badge-apr">High APR</span>' : ''}
                             </div>
                             <div class="sub">${item.sub}</div>
                         </div>
                         <div class="item-right">
-                            <div class="item-amount">$${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                            <div class="item-amount">$${Math.abs(Number(item.amount)||0).toLocaleString('en-US', { minimumFractionDigits: 2 })}${recurring ? '<small class="cp-per-month"> / mo</small>' : ''}</div>
                             <button class="btn-action" onclick="openModal('debts', ${index})">Edit</button>
                         </div>
                     </div>
-                    <div class="progress-container">
+                    ${recurring ? '<p class="cp-recurring-help">Ongoing expense · no interest or payoff schedule. Counted as monthly spending if not already in Budget.</p>' : `<div class="progress-container">
                         <div class="progress-labels">
                             <span>Paid Off: ${paidRatio}%</span>
                             <span>Limit/Orig: $${orig.toLocaleString()}</span>
@@ -2121,7 +2194,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
                         <div class="progress-bar-bg">
                             <div class="progress-bar-fill" style="width: ${paidRatio}%;"></div>
                         </div>
-                    </div>
+                    </div>`}
                 </div>
             `;
         });
@@ -2182,9 +2255,10 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
         { animateScale:true,animateRotate:true,duration:650 };
     }
     function renderDebtChart() {
-        const labels = debts.map(d => d.title);
-        const dataValues = debts.map(d => Math.max(0,Number(d.amount)||0));
-        const colors = debts.map((d,i)=>cpOceanDebtColor(i));
+        const chartDebts=cpDebtEntries();
+        const labels = chartDebts.map(({d}) => d.title);
+        const dataValues = chartDebts.map(({d}) => Math.max(0,Number(d.amount)||0));
+        const colors = chartDebts.map((_,i)=>cpOceanDebtColor(i));
         const totalDebt = dataValues.reduce((a, b) => a + b, 0);
 
         if (debtChart) debtChart.destroy();
@@ -2243,7 +2317,8 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
 
     function updateDebtChartFocus() {
         if (!debtChart) return;
-        const colors = debts.map((d,i)=>cpOceanDebtColor(i));
+        const chartDebts=cpDebtEntries();
+        const colors = chartDebts.map((_,i)=>cpOceanDebtColor(i));
         const updatedColors = colors.map((color, index) => {
             if (debtSelectedIndex === null) return hexToRGBA(color, 1.0);
             return index === debtSelectedIndex ? hexToRGBA(color, 1.0) : hexToRGBA(color, 0.2);
@@ -2252,7 +2327,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
         debtChart.update();
 
         const selection = document.getElementById('debtSelection');
-        const selected = debtSelectedIndex === null ? null : debts[debtSelectedIndex];
+        const selected = debtSelectedIndex === null ? null : chartDebts[debtSelectedIndex]?.d;
         selection.hidden = !selected;
         if (selected) {
             selection.style.borderLeftColor = colors[debtSelectedIndex];
@@ -2261,7 +2336,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
             name.textContent = selected.title;
             const value = document.createElement('span');
             value.className = 'selection-value';
-            const total = debts.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+            const total = chartDebts.reduce((sum,{d})=>sum+(Number(d.amount)||0),0);
             const portion = total > 0 ? (Number(selected.amount) / total * 100).toFixed(1) : '0.0';
             value.textContent = '$' + Number(selected.amount).toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' · ' + portion + '% of debt';
             selection.append(name, value);
@@ -2280,7 +2355,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
         let generalExpenses = 0;
         let wifeExpenses = 0;
 
-        budget.forEach(item => {
+        budget.concat(cpUnbudgetedRecurring().map(({d})=>({amount:-Math.abs(Number(d.amount)||0),owner:d.owner||'general'}))).forEach(item => {
             const amount = Number(item.amount) || 0;
             if (amount >= 0) totalIncome += amount;
             else if (item.owner === 'wife') wifeExpenses += Math.abs(amount);
@@ -2451,6 +2526,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
         budgetOwnerGroup.style.display = category === 'budget' ? 'flex' : 'none';
         originalLimitGroup.style.display = category === 'debts' ? 'flex' : 'none';
         debtTermsGroup.style.display = category === 'debts' ? 'block' : 'none';
+        document.getElementById('debtKindGroup').style.display=category==='debts'?'block':'none';
 
         if (index !== null) {
             document.getElementById('modalTitle').innerText = 'Edit Item';
@@ -2465,6 +2541,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
             document.getElementById('modalInputAmount').value = item.amount;
             if (category === 'budget') document.getElementById('modalBudgetOwner').value = item.owner === 'wife' ? 'wife' : 'general';
             if (category === 'debts') {
+                document.getElementById('modalDebtKind').value=cpIsRecurring(item)?'recurring':'debt';
                 document.getElementById('modalInputOriginal').value = item.original || item.amount;
                 document.getElementById('modalInputColor').value = item.color || suggestDebtColor(index);
                 const terms=cpTerms(item);
@@ -2478,12 +2555,14 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
             document.getElementById('modalInputSub').value = '';
             document.getElementById('modalInputAmount').value = '';
             document.getElementById('modalInputOriginal').value = '';
+            document.getElementById('modalDebtKind').value='debt';
             document.getElementById('modalInputApr').value = '';
             document.getElementById('modalInputMinimum').value = '';
             document.getElementById('modalInputColor').value = category === 'debts' ? suggestDebtColor() : '#38bdf8';
             document.getElementById('modalBudgetOwner').value = 'general';
         }
 
+        cpUpdateDebtKindUI();
         document.getElementById('modalOverlay').classList.add('active');
     }
 
@@ -2506,6 +2585,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
         const index = isEdit ? parseInt(indexStr) : null;
 
         if (category === 'debts') {
+            const kind=document.getElementById('modalDebtKind').value==='recurring'?'recurring':'debt';
             const used = debts.filter((_, i) => i !== index).map(d => d.color).filter(validDebtHex);
             const autoColor = !validDebtHex(color) || used.some(c => debtColorDifference(c,color) < .115)
                 ? nextDebtColor(used) : color;
@@ -2518,7 +2598,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
                 return alert('Enter a valid nonnegative APR (up to 100%) and minimum payment.');
             }
             // Retain any future debt properties instead of recreating a stripped record.
-            const newItem = {...((isEdit && debts[index])||{}),title,sub,amount,original,color:autoColor,
+            const newItem = {...((isEdit && debts[index])||{}),title,sub,amount:kind==='recurring'?Math.abs(amount):amount,original,color:autoColor,kind,
                              apr:aprRaw===''?'':apr,minimumPayment:minRaw===''?'':minimumPayment};
             if (isEdit) debts[index] = newItem;
             else debts.push(newItem);
@@ -2565,6 +2645,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
     ];
     const cpMoney = n => '$' + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
     function cpTerms(d) {
+      if(cpIsRecurring(d))return {apr:null,min:null};
       const known=CP_TERMS.find(x=>x[0].test(d.title||''));
       const legacy=/APR\s*:\s*([0-9.]+)/i.exec(d.sub||'');
       const a=d.apr!=null&&d.apr!==''?Number(d.apr):(known?.[1] ?? (legacy?Number(legacy[1]):undefined));
@@ -2576,6 +2657,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
       const cards=document.querySelectorAll('#debt-list .list-item');
       cards.forEach((card,i)=>{
         const d=debts[i];if(!d)return;
+        if(cpIsRecurring(d))return;
         let box=card.querySelector('.cp-interest');
         if(!box){box=document.createElement('div');box.className='cp-interest';card.appendChild(box)}
         box.replaceChildren();
@@ -2725,7 +2807,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
       return String.fromCharCode(36)+(Number(n)||0).toLocaleString('en-US',{maximumFractionDigits:0});
     }
     function cpAuroraDebtForecast(){
-      const active=debts.map((d,index)=>({d,index})).filter(({d})=>Number(d.amount)>0);
+      const active=cpDebtEntries().filter(({d})=>Number(d.amount)>0);
       if(!active.length)return {series:null,included:[],missing:[],allCount:0};
       const entries=active.map(({d,index})=>{
         const terms=cpTerms(d);
@@ -2748,18 +2830,18 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
       return {series:values,included,missing,allCount:entries.length};
     }
     function activeDebtCountText(source){
-      const count=source.filter(d=>Number(d.amount)>0).length;
+      const count=source.filter(d=>!cpIsRecurring(d)&&Number(d.amount)>0).length;
       return count+' active '+(count===1?'debt':'debts');
     }
     function cpAuroraOverview(){
-      const debtTotal=debts.reduce((sum,d)=>sum+Math.max(0,Number(d.amount)||0),0);
-      const surplus=budget.reduce((sum,d)=>sum+(Number(d.amount)||0),0);
+      const debtTotal=cpDebtEntries().reduce((sum,{d})=>sum+Math.max(0,Number(d.amount)||0),0);
+      const surplus=budget.reduce((sum,d)=>sum+(Number(d.amount)||0),0)-cpRecurringSummary().extra;
       const debtEl=document.getElementById('cp-stat-debt');
       const surplusEl=document.getElementById('cp-stat-surplus');
       const savingsEl=document.getElementById('cp-stat-savings');
       if(!debtEl)return;
       debtEl.textContent=cpAuroraMoney(debtTotal);
-      const termsList=debts.filter(d=>Number(d.amount)>0).map(d=>({d,...cpTerms(d)}));
+      const termsList=cpDebtEntries().map(({d})=>d).filter(d=>Number(d.amount)>0).map(d=>({d,...cpTerms(d)}));
       const allKnown=termsList.every(x=>x.apr!==null&&x.min!==null);
       const minimumTotal=termsList.reduce((sum,x)=>sum+(x.min===null?0:Math.min(x.min,Number(x.d.amount)*(1+(x.apr??0)/1200))),0);
       const interestTotal=termsList.reduce((sum,x)=>sum+(x.apr===null?0:Number(x.d.amount)*x.apr/1200),0);
@@ -2780,7 +2862,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
         :'Not tracked';
       const list=document.getElementById('cp-overview-debt-list');
       list.replaceChildren();
-      const active=debts.map((d,index)=>({d,index})).filter(x=>Number(x.d.amount)>0);
+      const active=cpDebtEntries().filter(x=>Number(x.d.amount)>0);
       if(!active.length){
         const e=document.createElement('p');e.className='cp-overview-empty';e.textContent='Add your first debt to see payment insights here.';list.appendChild(e);
       }
@@ -2952,6 +3034,47 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
       document.addEventListener('pointermove',lg3Aim,{passive:true});
       document.addEventListener('pointerdown',lg3Aim,{passive:true});
     }
+
+
+    function cpUpdateDebtKindUI(){
+      const isDebt=document.getElementById('modalCategory').value==='debts';
+      const recurring=isDebt&&document.getElementById('modalDebtKind').value==='recurring';
+      document.getElementById('debtTermsGroup').style.display=isDebt&&!recurring?'block':'none';
+      document.getElementById('originalLimitGroup').style.display=isDebt&&!recurring?'flex':'none';
+      const amountLabel=document.querySelector('label[for="modalInputAmount"]')||
+        document.getElementById('modalInputAmount')?.closest('.form-group')?.querySelector('label');
+      if(amountLabel)amountLabel.textContent=recurring?'Monthly expense amount ($)':'Current Balance / Amount ($)';
+      for(const id of ['cp-apr-input','cp-min-input']){
+        const node=document.getElementById(id);
+        if(node?.closest('.cp-terms-group'))node.closest('.cp-terms-group').style.display=isDebt&&!recurring?'flex':'none';
+      }
+    }
+    const cpRecurringOriginalRenderUI=renderUI;
+    renderUI=function(){
+      cpRecurringOriginalRenderUI();
+      const expense=cpRecurringSummary();
+      const summary=document.getElementById('cp-recurring-overview');
+      if(summary){
+        summary.hidden=expense.all.length===0;
+        document.getElementById('cp-recurring-total').textContent=cpAuroraMoney(expense.total)+'/mo';
+        document.getElementById('cp-recurring-count').textContent=expense.all.length+' recurring '+(expense.all.length===1?'expense':'expenses')+' tracked';
+        document.getElementById('cp-recurring-note').textContent=expense.extra>0?
+          cpAuroraMoney(expense.extra)+'/mo added to budget calculations; matching Budget expenses not counted twice.':
+          'Already represented in Budget or no monthly amount recorded.';
+      }
+      const section=document.getElementById('cp-recurring-accounts');
+      if(section){
+        section.replaceChildren();
+        section.hidden=expense.all.length===0;
+        for(const {d,index} of expense.all){
+          const row=document.createElement('button');row.type='button';row.className='cp-recurring-row';
+          const title=document.createElement('span');title.textContent=d.title;
+          const amount=document.createElement('strong');amount.textContent=cpAuroraMoney(Math.abs(Number(d.amount)||0))+'/mo';
+          row.append(title,amount);row.addEventListener('click',()=>openModal('debts',index));
+          section.appendChild(row);
+        }
+      }
+    };
 
     // Initialize on load
     if (!window.ClearPathAuth?.configured) renderUI();
