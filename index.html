@@ -1649,6 +1649,45 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
 @media(max-width:390px){.cp-recurring-overview{padding:14px}.cp-recurring-overview>strong{font-size:1.04rem}}
 
 </style>
+<style id="clearpath-dynamic-bill-calendar">
+
+/* Responsive interactive Bills calendar */
+.cp-calendar-toolbar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin:18px 0 12px}
+.cp-calendar-toolbar h3{font-size:1rem;letter-spacing:-.015em;flex:1;text-align:center}
+.cp-cal-nav,.cp-cal-today{cursor:pointer;color:#dcf8f1;border:1px solid rgba(172,227,217,.22);background:#254d58;border-radius:12px;min-width:38px;min-height:40px;font:inherit}
+.cp-cal-nav{font-size:1.6rem;line-height:1}
+.cp-cal-today{font-size:.78rem;padding:0 11px}
+.cp-bill-calendar{gap:5px}
+.cp-bill-calendar .cal-day-header{font-size:.67rem;padding:4px 0 8px}
+.cp-bill-calendar .cal-day{min-width:0;aspect-ratio:1;border-radius:11px;border:1px solid rgba(164,212,209,.13);background:#183742;color:#eaf8f5;font:inherit;font-size:.86rem;padding:0;touch-action:manipulation}
+.cp-bill-calendar .cal-day.has-event{background:#285b62;border-color:rgba(143,221,211,.36)}
+.cp-bill-calendar .cal-day.has-event::after{display:none}
+.cp-bill-calendar .cal-day.all-paid{background:#22534d;border-color:rgba(135,222,174,.35)}
+.cp-bill-calendar .cal-day.is-today{outline:2px solid #a2e8d5;outline-offset:-2px}
+.cp-cal-dot{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);min-width:6px;height:6px;border-radius:99px;background:#8eeed8;color:#092b31;font-size:.56rem;font-weight:800;line-height:1}
+.cp-cal-dot:not(:empty){height:13px;min-width:14px;line-height:13px;padding:0 3px;bottom:3px}
+.all-paid .cp-cal-dot{background:#b7d9b1}
+.cp-cal-key{display:flex;align-items:center;flex-wrap:wrap;gap:11px;margin:12px 0;font-size:.68rem;color:#bdd5d3}
+.cp-cal-key span{display:inline-flex;align-items:center;gap:5px}
+.cp-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.cp-dot-due{background:#8eeed8}.cp-dot-paid{background:#b7d9b1}
+.cp-cal-month-summary{color:#c6e4dc;font-size:.82rem;margin:8px 0 22px}
+#billScheduleGroup select,#billScheduleGroup input{width:100%;margin:7px 0 12px}
+#billScheduleGroup label{display:block;color:#e0f5f0;font-weight:650}
+#billScheduleGroup small{display:block;color:#afcecc;line-height:1.5;font-size:.74rem}
+.cp-cal-empty{padding:12px 0;color:#b5d4d0}
+.cp-cal-bill-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid rgba(177,221,215,.16)}
+.cp-cal-bill-row>div:first-child{display:grid;gap:5px;min-width:0}
+.cp-cal-bill-row strong{color:#effbf8}
+.cp-cal-bill-row small{color:#b6d4d0}
+.cp-cal-bill-actions{display:flex;align-items:end;flex-direction:column;gap:8px;white-space:nowrap}
+.cp-bill-paid-label{display:inline-flex;align-items:center;gap:6px}
+.cp-bill-edit{background:transparent;border:0;color:#9ee9d6;text-decoration:underline;cursor:pointer}
+.cp-cal-add{margin-top:16px;min-height:41px}
+@media(max-width:390px){.cp-bill-calendar{gap:3px}.cp-bill-calendar .cal-day{font-size:.77rem;border-radius:8px}.cp-calendar-toolbar{gap:6px}.cp-cal-month-summary{font-size:.78rem}}
+@media(prefers-reduced-motion:reduce){.cp-bill-calendar .cal-day{transition:none}}
+
+</style>
 </head>
 <body>
 
@@ -1771,28 +1810,16 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
                 <h2 class="card-title">Bills & Reminders</h2>
                 <button class="btn-add" onclick="openModal('bills')">+ Add Bill</button>
             </div>
-            <p class="card-subtitle">Tap dates with blue dots to inspect scheduled reminders.</p>
-
-            <div class="calendar-grid" style="margin-bottom: 20px;">
-                <div class="cal-day-header">S</div><div class="cal-day-header">M</div><div class="cal-day-header">T</div>
-                <div class="cal-day-header">W</div><div class="cal-day-header">T</div><div class="cal-day-header">F</div><div class="cal-day-header">S</div>
-
-                <div class="cal-day" onclick="openCalendarDay(1)">1</div><div class="cal-day" onclick="openCalendarDay(2)">2</div>
-                <div class="cal-day" onclick="openCalendarDay(3)">3</div><div class="cal-day has-event" onclick="openCalendarDay(4)">4</div>
-                <div class="cal-day" onclick="openCalendarDay(5)">5</div><div class="cal-day" onclick="openCalendarDay(6)">6</div>
-                <div class="cal-day" onclick="openCalendarDay(7)">7</div><div class="cal-day" onclick="openCalendarDay(8)">8</div>
-                <div class="cal-day" onclick="openCalendarDay(9)">9</div><div class="cal-day" onclick="openCalendarDay(10)">10</div>
-                <div class="cal-day" onclick="openCalendarDay(11)">11</div><div class="cal-day has-event" onclick="openCalendarDay(12)">12</div>
-                <div class="cal-day" onclick="openCalendarDay(13)">13</div><div class="cal-day" onclick="openCalendarDay(14)">14</div>
-                <div class="cal-day" onclick="openCalendarDay(15)">15</div><div class="cal-day has-event" onclick="openCalendarDay(16)">16</div>
-                <div class="cal-day" onclick="openCalendarDay(17)">17</div><div class="cal-day" onclick="openCalendarDay(18)">18</div>
-                <div class="cal-day" onclick="openCalendarDay(19)">19</div><div class="cal-day" onclick="openCalendarDay(20)">20</div>
-                <div class="cal-day" onclick="openCalendarDay(21)">21</div><div class="cal-day" onclick="openCalendarDay(22)">22</div>
-                <div class="cal-day" onclick="openCalendarDay(23)">23</div><div class="cal-day" onclick="openCalendarDay(24)">24</div>
-                <div class="cal-day" onclick="openCalendarDay(25)">25</div><div class="cal-day" onclick="openCalendarDay(26)">26</div>
-                <div class="cal-day" onclick="openCalendarDay(27)">27</div><div class="cal-day" onclick="openCalendarDay(28)">28</div>
+            <p class="card-subtitle">Add monthly bills or one-time payments, choose their due dates, and track what is paid.</p>
+            <div class="cp-calendar-toolbar">
+              <button type="button" class="cp-cal-nav" onclick="cpChangeCalendarMonth(-1)" aria-label="Previous month">‹</button>
+              <h3 id="cp-calendar-heading" aria-live="polite">Calendar</h3>
+              <button type="button" class="cp-cal-today" onclick="cpCalendarToday()">Today</button>
+              <button type="button" class="cp-cal-nav" onclick="cpChangeCalendarMonth(1)" aria-label="Next month">›</button>
             </div>
-
+            <div class="calendar-grid cp-bill-calendar" id="cp-bill-calendar" role="group" aria-label="Bill due date calendar"></div>
+            <div class="cp-cal-key"><span><i class="cp-dot cp-dot-due"></i>Due</span><span><i class="cp-dot cp-dot-paid"></i>Paid</span><span>Tap a date to add or inspect bills</span></div>
+            <div id="cp-calendar-month-summary" class="cp-cal-month-summary" aria-live="polite"></div>
             <div class="item-list" id="bills-list"></div>
         </div>
     </div>
@@ -1816,6 +1843,22 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
         <div class="form-group">
             <label>Current Balance / Amount ($)</label>
             <input type="number" id="modalInputAmount" step="0.01" placeholder="0.00">
+        </div>
+        <div class="form-group" id="billScheduleGroup" style="display:none;">
+            <label for="modalBillFrequency">Bill schedule</label>
+            <select id="modalBillFrequency" onchange="cpUpdateBillScheduleUI()">
+                <option value="monthly">Repeats monthly</option>
+                <option value="once">One-time bill</option>
+            </select>
+            <div id="billMonthlyDayGroup">
+                <label for="modalBillDay">Due day of each month</label>
+                <input type="number" id="modalBillDay" min="1" max="31" step="1" inputmode="numeric" placeholder="1–31">
+                <small>For the 29th–31st, shorter months use their last day.</small>
+            </div>
+            <div id="billOnceDateGroup" style="display:none;">
+                <label for="modalBillDate">Due date</label>
+                <input type="date" id="modalBillDate">
+            </div>
         </div>
         <div class="form-group" id="budgetOwnerGroup" style="display:none;">
             <label>Budget Category</label>
@@ -2225,25 +2268,128 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
         });
     }
 
-    function renderBills() {
-        const container = document.getElementById('bills-list');
-        container.innerHTML = '';
-        bills.forEach((item, index) => {
-            container.innerHTML += `
-                <div class="list-item">
-                    <div class="item-top-row">
-                        <div class="item-info">
-                            <div class="title">${item.title}</div>
-                            <div class="sub">${item.sub}</div>
-                        </div>
-                        <div class="item-right">
-                            <div class="item-amount">$${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
-                            <button class="btn-action" onclick="openModal('bills', ${index})">Edit</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
+    // Bill dates remain within the existing synced "bills" array.
+    // Legacy entries without a frequency are monthly and use their saved day.
+    let cpCalendarVisible=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+    function cpDateKey(date){
+      return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+    }
+    function cpMonthKey(date){return cpDateKey(date).slice(0,7);}
+    function cpValidDateKey(value){
+      if(typeof value!=='string'||!/^\\d{4}-\\d{2}-\\d{2}$/.test(value))return false;
+      const parts=value.split('-').map(Number);
+      const d=new Date(parts[0],parts[1]-1,parts[2]);
+      return d.getFullYear()===parts[0]&&d.getMonth()===parts[1]-1&&d.getDate()===parts[2];
+    }
+    function cpBillDueOn(b,date){
+      if(b.frequency==='once')return cpValidDateKey(b.dueDate)&&b.dueDate===cpDateKey(date);
+      const due=Math.max(1,Math.min(31,Number(b.day)||15));
+      const last=new Date(date.getFullYear(),date.getMonth()+1,0).getDate();
+      return date.getDate()===Math.min(due,last);
+    }
+    function cpBillPaid(b,date){
+      const month=cpMonthKey(date);
+      if(b.paidMonths && Object.prototype.hasOwnProperty.call(b.paidMonths,month))
+        return Boolean(b.paidMonths[month]);
+      if(b.frequency==='once')return Boolean(b.paid);
+      // A legacy paid flag only applies to the present month, never every future month.
+      return !b.paidMonth && Boolean(b.paid) && month===cpMonthKey(new Date());
+    }
+    function cpBillsOn(date){
+      return bills.map((bill,index)=>({bill,index})).filter(({bill})=>cpBillDueOn(bill,date));
+    }
+    function cpUpdateBillScheduleUI(){
+      const once=document.getElementById('modalBillFrequency')?.value==='once';
+      const m=document.getElementById('billMonthlyDayGroup');
+      const o=document.getElementById('billOnceDateGroup');
+      if(m)m.style.display=once?'none':'block';
+      if(o)o.style.display=once?'block':'none';
+    }
+    function cpChangeCalendarMonth(delta){
+      cpCalendarVisible=new Date(cpCalendarVisible.getFullYear(),cpCalendarVisible.getMonth()+delta,1);
+      renderBills();
+    }
+    function cpCalendarToday(){
+      const today=new Date();
+      cpCalendarVisible=new Date(today.getFullYear(),today.getMonth(),1);
+      renderBills();
+    }
+    function cpOpenBillForDate(dateKey){
+      if(!cpValidDateKey(dateKey))return;
+      const parts=dateKey.split('-').map(Number);
+      cpCalendarVisible=new Date(parts[0],parts[1]-1,1);
+      closeCalendarModal();
+      openModal('bills');
+      document.getElementById('modalBillFrequency').value='once';
+      document.getElementById('modalBillDate').value=dateKey;
+      cpUpdateBillScheduleUI();
+    }
+    function cpRenderBillCalendar(){
+      const grid=document.getElementById('cp-bill-calendar');
+      if(!grid)return;
+      const year=cpCalendarVisible.getFullYear(),month=cpCalendarVisible.getMonth();
+      document.getElementById('cp-calendar-heading').textContent=
+        cpCalendarVisible.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+      grid.replaceChildren();
+      for(const name of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']){
+        const label=document.createElement('div');label.className='cal-day-header';
+        label.textContent=name;grid.appendChild(label);
+      }
+      const weekday=new Date(year,month,1).getDay();
+      for(let k=0;k<weekday;k++){
+        const blank=document.createElement('div');blank.className='cp-cal-blank';blank.setAttribute('aria-hidden','true');
+        grid.appendChild(blank);
+      }
+      let upcoming=0,paid=0,total=0;
+      const today=cpDateKey(new Date());
+      for(let d=1,last=new Date(year,month+1,0).getDate();d<=last;d++){
+        const date=new Date(year,month,d),dateKey=cpDateKey(date);
+        const due=cpBillsOn(date);
+        const done=due.filter(({bill})=>cpBillPaid(bill,date)).length;
+        total+=due.length;paid+=done;
+        if(due.length && dateKey>=today)upcoming+=due.length-done;
+        const cell=document.createElement('button');cell.type='button';
+        cell.className='cal-day cp-calendar-date';
+        if(due.length)cell.classList.add('has-event');
+        if(due.length&&done===due.length)cell.classList.add('all-paid');
+        if(dateKey===today)cell.classList.add('is-today');
+        const num=document.createElement('span');num.textContent=d;
+        cell.appendChild(num);
+        if(due.length){
+          const dot=document.createElement('span');dot.className='cp-cal-dot';
+          dot.textContent=due.length>1?String(due.length):'';
+          dot.setAttribute('aria-hidden','true');cell.appendChild(dot);
+        }
+        cell.setAttribute('aria-label',date.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})+
+          ', '+due.length+' bills'+(done?' ('+done+' paid)':''));
+        cell.addEventListener('click',()=>openCalendarDay(dateKey));
+        grid.appendChild(cell);
+      }
+      const summary=document.getElementById('cp-calendar-month-summary');
+      summary.textContent=total?paid+' of '+total+' bills paid this month · '+(total-paid)+' remaining':'No bills scheduled this month. Tap a date to add one.';
+    }
+    function renderBills(){
+      const container=document.getElementById('bills-list');
+      container.replaceChildren();
+      const ordered=bills.map((bill,index)=>({bill,index}));
+      ordered.forEach(({bill,index})=>{
+        const item=document.createElement('div');item.className='list-item cp-bill-item';
+        const top=document.createElement('div');top.className='item-top-row';
+        const info=document.createElement('div');info.className='item-info';
+        const title=document.createElement('div');title.className='title';title.textContent=bill.title||'Untitled bill';
+        const details=document.createElement('div');details.className='sub';
+        const day=Number(bill.day)||15;
+        details.textContent=(bill.frequency==='once'?'Due '+(bill.dueDate||'date not set'):'Every month · day '+day)+
+          (bill.sub?' · '+bill.sub:'');
+        info.append(title,details);
+        const right=document.createElement('div');right.className='item-right';
+        const amount=document.createElement('div');amount.className='item-amount';
+        amount.textContent='$'+(Math.abs(Number(bill.amount)||0)).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+        const edit=document.createElement('button');edit.type='button';edit.className='btn-action';edit.textContent='Edit';
+        edit.addEventListener('click',()=>openModal('bills',index));
+        right.append(amount,edit);top.append(info,right);item.appendChild(top);container.appendChild(item);
+      });
+      cpRenderBillCalendar();
     }
 
     /* --- Debt Chart --- */
@@ -2473,39 +2619,58 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
     }
 
     /* --- Calendar Popups --- */
-    function openCalendarDay(dayNum) {
-        const dayBills = bills.filter(b => b.day === dayNum);
-        document.getElementById('calModalTitle').innerText = `Scheduled Payments — Day ${dayNum}`;
-        const content = document.getElementById('calModalContent');
-
-        if (dayBills.length === 0) {
-            content.innerHTML = '<p style="padding: 10px 0;">No bills or reminders due on this day.</p>';
-        } else {
-            content.innerHTML = dayBills.map((b, idx) => `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color);">
-                    <div>
-                        <div style="color: #fff; font-weight: 600;">${b.title}</div>
-                        <div style="font-size: 0.8rem; color: var(--text-sub);">${b.sub}</div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="color: var(--accent-blue); font-weight: 700;">$${b.amount}</div>
-                        <label style="font-size: 0.75rem; cursor: pointer;">
-                            <input type="checkbox" ${b.paid ? 'checked' : ''} onchange="toggleBillPaid(${dayNum}, ${idx})"> Mark Paid
-                        </label>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        document.getElementById('calendarModalOverlay').classList.add('active');
+    function openCalendarDay(dateKey){
+      if(typeof dateKey==='number'){
+        dateKey=cpDateKey(new Date(cpCalendarVisible.getFullYear(),cpCalendarVisible.getMonth(),dateKey));
+      }
+      if(!cpValidDateKey(dateKey))return;
+      const [year,month,day]=dateKey.split('-').map(Number);
+      const date=new Date(year,month-1,day),matching=cpBillsOn(date);
+      document.getElementById('calModalTitle').textContent=
+        date.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+      const content=document.getElementById('calModalContent');
+      content.replaceChildren();
+      if(!matching.length){
+        const empty=document.createElement('p');
+        empty.className='cp-cal-empty';empty.textContent='No bills due on this date.';
+        content.appendChild(empty);
+      }
+      for(const {bill,index} of matching){
+        const row=document.createElement('div');row.className='cp-cal-bill-row';
+        const info=document.createElement('div');
+        const title=document.createElement('strong');title.textContent=bill.title||'Untitled bill';
+        const subtitle=document.createElement('small');subtitle.textContent=bill.sub||'Scheduled payment';
+        info.append(title,subtitle);
+        const actions=document.createElement('div');actions.className='cp-cal-bill-actions';
+        const amount=document.createElement('strong');amount.textContent='$'+Math.abs(Number(bill.amount)||0).toLocaleString('en-US',{maximumFractionDigits:2});
+        const label=document.createElement('label');label.className='cp-bill-paid-label';
+        const input=document.createElement('input');input.type='checkbox';
+        input.checked=cpBillPaid(bill,date);
+        input.addEventListener('change',()=>toggleBillPaid(dateKey,index));
+        label.append(input,document.createTextNode(' Paid'));
+        const edit=document.createElement('button');edit.type='button';edit.className='cp-bill-edit';edit.textContent='Edit';
+        edit.addEventListener('click',()=>{closeCalendarModal();openModal('bills',index)});
+        actions.append(amount,label,edit);row.append(info,actions);content.appendChild(row);
+      }
+      const add=document.createElement('button');add.type='button';
+      add.className='btn-add cp-cal-add';add.textContent='+ Add bill for this date';
+      add.addEventListener('click',()=>cpOpenBillForDate(dateKey));
+      content.appendChild(add);
+      document.getElementById('calendarModalOverlay').classList.add('active');
     }
-
-    function toggleBillPaid(dayNum, idx) {
-        const matchingBills = bills.filter(b => b.day === dayNum);
-        if (matchingBills[idx]) {
-            matchingBills[idx].paid = !matchingBills[idx].paid;
-            saveToStorage();
-        }
+    function toggleBillPaid(dateKey,index){
+      if(!cpValidDateKey(dateKey)||!bills[index])return;
+      const [year,month,day]=dateKey.split('-').map(Number);
+      const date=new Date(year,month-1,day);
+      if(!cpBillDueOn(bills[index],date))return;
+      const item=bills[index],key=cpMonthKey(date);
+      const next=!cpBillPaid(item,date);
+      item.paidMonths={...(item.paidMonths||{}),[key]:next};
+      item.paidMonth=key;
+      if(item.frequency==='once'||key===cpMonthKey(new Date()))item.paid=next;
+      saveToStorage();
+      renderBills();
+      openCalendarDay(dateKey);
     }
 
     function closeCalendarModal() {
@@ -2521,6 +2686,7 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
         const debtTermsGroup = document.getElementById('debtTermsGroup');
         const budgetOwnerGroup = document.getElementById('budgetOwnerGroup');
         const deleteBtn = document.getElementById('btnDelete');
+        document.getElementById('billScheduleGroup').style.display=category==='bills'?'block':'none';
 
         colorGroup.style.display = category === 'debts' ? 'flex' : 'none';
         budgetOwnerGroup.style.display = category === 'budget' ? 'flex' : 'none';
@@ -2540,6 +2706,11 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
             document.getElementById('modalInputSub').value = item.sub;
             document.getElementById('modalInputAmount').value = item.amount;
             if (category === 'budget') document.getElementById('modalBudgetOwner').value = item.owner === 'wife' ? 'wife' : 'general';
+            if (category === 'bills') {
+                document.getElementById('modalBillFrequency').value=item.frequency==='once'?'once':'monthly';
+                document.getElementById('modalBillDay').value=Number.isInteger(Number(item.day))?item.day:15;
+                document.getElementById('modalBillDate').value=item.dueDate||cpDateKey(cpCalendarVisible);
+            }
             if (category === 'debts') {
                 document.getElementById('modalDebtKind').value=cpIsRecurring(item)?'recurring':'debt';
                 document.getElementById('modalInputOriginal').value = item.original || item.amount;
@@ -2560,9 +2731,13 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
             document.getElementById('modalInputMinimum').value = '';
             document.getElementById('modalInputColor').value = category === 'debts' ? suggestDebtColor() : '#38bdf8';
             document.getElementById('modalBudgetOwner').value = 'general';
+            document.getElementById('modalBillFrequency').value='monthly';
+            document.getElementById('modalBillDay').value=15;
+            document.getElementById('modalBillDate').value=cpDateKey(new Date());
         }
 
         cpUpdateDebtKindUI();
+        cpUpdateBillScheduleUI();
         document.getElementById('modalOverlay').classList.add('active');
     }
 
@@ -2608,9 +2783,24 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{
             if (isEdit) budget[index] = newItem;
             else budget.push(newItem);
         } else if (category === 'bills') {
-            const newItem = { title, sub, amount, day: 15, paid: false };
-            if (isEdit) bills[index] = newItem;
+            const frequency=document.getElementById('modalBillFrequency').value==='once'?'once':'monthly';
+            const day=Number(document.getElementById('modalBillDay').value);
+            const dueDate=document.getElementById('modalBillDate').value;
+            if(frequency==='monthly' && (!Number.isInteger(day)||day<1||day>31))
+                return alert('Choose a due day from 1 to 31.');
+            if(frequency==='once' && !cpValidDateKey(dueDate))
+                return alert('Choose a valid one-time due date.');
+            const prior=isEdit?bills[index]:{};
+            const newItem={...prior,title,sub,amount:Math.abs(amount),
+                frequency,day:frequency==='monthly'?day:undefined,
+                dueDate:frequency==='once'?dueDate:undefined,
+                paid:isEdit?Boolean(prior.paid):false};
+            if(isEdit) bills[index]=newItem;
             else bills.push(newItem);
+            if(frequency==='once'){
+                const [year,month]=dueDate.split('-').map(Number);
+                cpCalendarVisible=new Date(year,month-1,1);
+            }
         }
 
         debtSelectedIndex = null;
