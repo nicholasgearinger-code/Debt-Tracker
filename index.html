@@ -1433,186 +1433,198 @@ body::after{background:radial-gradient(ellipse,rgba(66,193,164,.14),transparent 
 }
 
 </style>
-<style id="clearpath-soft-neumorphism">
+<style id="clearpath-liquid-glass-pro">
 
-/* ClearPath Soft Neumorphism — a cohesive, tactile Ocean Teal system.
-   Visual only: no edits to debts, budget, bills, storage or sync. */
-:root {
-  --bg-color:#102c36;--card-bg:#193c47;--border-color:#2b535c;
-  --text-main:#edf9f6;--text-sub:#b7d2d1;
-  --accent-blue:#75c9c0;--accent-green:#83dfbb;
-  --nm-base:#193e49;--nm-light:#28535d;--nm-shadow:#08232c;
-  --nm-highlight:rgba(151,222,210,.13);
+/* ClearPath Liquid Glass Pro — Ocean Teal, restrained optical depth.
+   Presentation-only replacement of Soft Neumorphism. */
+:root{
+ --bg-color:#071e2a;--card-bg:#133a47;--border-color:rgba(155,218,221,.20);
+ --text-main:#f0fbfa;--text-sub:#b2d0d4;
+ --accent-blue:#75d3d2;--accent-green:#80e1be;
+ --lgp-surface:rgba(36,93,108,.44);--lgp-dark:rgba(10,41,55,.77);
+ --lgp-edge:rgba(191,240,236,.24);
 }
-html{background:#102c36}
+html{background:#071d29}
 body{
-  color:var(--text-main);
-  background:linear-gradient(150deg,#153640 0%,#102b35 50%,#0d2832 100%);
-  background-attachment:scroll;
+ color:var(--text-main);
+ background:
+   radial-gradient(ellipse 520px 550px at -17% 8%,rgba(57,144,167,.19),transparent 72%),
+   radial-gradient(ellipse 440px 650px at 116% 61%,rgba(46,157,158,.15),transparent 75%),
+   linear-gradient(155deg,#0b2d3c 0%,#092633 46%,#071b28 100%);
+ background-attachment:fixed;
 }
-body::before,body::after,.lg3-atmosphere,.lg3-optics{display:none!important}
-.dashboard-container{isolation:isolate;position:relative;z-index:1}
+body::before,body::after{display:none!important}
+.lg3-atmosphere{display:block!important;opacity:.52}
+.lg3-orb{animation:none!important;filter:blur(31px);opacity:.38}
+.lg3-orb-a{background:radial-gradient(ellipse,rgba(72,178,211,.30),transparent 72%)}
+.lg3-orb-b{background:radial-gradient(ellipse,rgba(64,206,178,.28),transparent 74%)}
+.lg3-orb-c{background:radial-gradient(ellipse,rgba(60,140,179,.21),transparent 74%)}
+.lg3-orb-d{background:radial-gradient(ellipse,rgba(70,179,165,.21),transparent 73%)}
+.dashboard-container{position:relative;isolation:isolate;z-index:1}
 .cp-glass,.cp-mini-debt,.card,.list-item,.cp-forecast-summary,
 .debt-overview-card,#tab-budget .card:first-child,
 #chartLegend .legend-item,#budgetLegend .legend-item{
-  isolation:auto;
-  background:#1a3d48;
-  border:1px solid rgba(125,194,190,.075);
-  border-radius:22px;
-  -webkit-backdrop-filter:none;
-  backdrop-filter:none;
-  box-shadow:
-    11px 11px 24px rgba(5,24,32,.57),
-    -9px -9px 22px rgba(51,101,110,.34),
-    inset 1px 1px 0 rgba(167,226,219,.10);
+ position:relative;isolation:isolate;
+ background:
+   linear-gradient(176deg,rgba(235,255,253,.115),rgba(248,255,255,.02) 24%,transparent 53%),
+   linear-gradient(142deg,rgba(53,125,141,.44),rgba(25,75,92,.55) 55%,rgba(11,46,62,.75));
+ border:1px solid var(--lgp-edge);
+ border-radius:22px;
+ box-shadow:inset 0 1px 0 rgba(244,255,252,.22),
+            inset 0 -1px 0 rgba(4,27,37,.24),
+            0 15px 35px rgba(0,14,27,.27),
+            0 0 16px rgba(67,176,170,.045);
+ -webkit-backdrop-filter:blur(21px) saturate(140%);
+ backdrop-filter:blur(21px) saturate(140%);
 }
-.cp-glass::before,.cp-glass::after,.card::before,.card::after,
-.list-item::before,.list-item::after,.cp-mini-debt::after,
-.debt-overview-card::before,.debt-overview-card::after,
-#tab-budget .card:first-child::before,#tab-budget .card:first-child::after,
-.cp-forecast-summary::before,.cp-forecast-summary::after,
-#chartLegend .legend-item::before,#chartLegend .legend-item::after,
-#budgetLegend .legend-item::before,#budgetLegend .legend-item::after{
-  display:none!important;
+.cp-glass::before,.debt-overview-card::before,
+#tab-budget .card:first-child::before,.cp-forecast-summary::before{
+ display:block!important;
+ background:linear-gradient(180deg,rgba(250,255,255,.15),rgba(255,255,255,.018) 21%,transparent 49%);
+ opacity:.68;
+ pointer-events:none;
+}
+.cp-glass::after,.card::after,.list-item::after,
+.cp-mini-debt::after,.debt-overview-card::after,
+#tab-budget .card:first-child::after,.cp-forecast-summary::after,
+#chartLegend .legend-item::after,#budgetLegend .legend-item::after{
+ display:block!important;
+ background:linear-gradient(129deg,
+   rgba(206,255,246,.38),rgba(127,221,218,.14) 40%,
+   rgba(255,255,255,.08) 69%,rgba(101,207,207,.16));
+ opacity:.8;pointer-events:none;
 }
 .cp-snapshot-grid,.cp-projection-card,.cp-monthly-strip,
 .debt-overview-card,#tab-budget .card:first-child{
-  background:#1b404a;
-  border-radius:25px;
-  box-shadow:
-    13px 13px 29px rgba(4,22,29,.58),
-    -10px -10px 25px rgba(49,103,109,.36),
-    inset 1px 1px 0 rgba(177,232,222,.10);
+ background:
+   radial-gradient(ellipse at 8% 0%,rgba(154,229,227,.105),transparent 55%),
+   linear-gradient(169deg,rgba(255,255,255,.095),transparent 42%),
+   linear-gradient(139deg,rgba(49,120,138,.52),rgba(15,61,78,.75));
+ border-radius:25px;
+ box-shadow:inset 0 1px 0 rgba(240,255,253,.23),
+            0 17px 40px rgba(0,17,29,.29),
+            0 0 22px rgba(56,175,171,.05);
 }
 .cp-snapshot-grid::before,.cp-projection-card::before{display:none!important}
 .cp-snapshot-item + .cp-snapshot-item{
-  border-left:1px solid rgba(174,232,223,.12);
-  box-shadow:inset 1px 0 rgba(3,23,31,.17);
+ border-left:1px solid rgba(173,237,232,.16);
+ box-shadow:none;
 }
-.cp-forecast-summary,.cp-floating-chart-badge,
-#debtSelection,.cp-forecast-pill{
-  background:#173641;
-  border:1px solid rgba(127,194,187,.07);
-  box-shadow:inset 5px 5px 11px rgba(3,24,32,.42),
-             inset -5px -5px 11px rgba(49,99,105,.26);
-  border-radius:16px;
+.lg3-optics{
+ display:block!important;z-index:0!important;
+ background:
+   radial-gradient(ellipse 86% 39% at var(--lg3-x,23%) var(--lg3-y,-8%),rgba(246,255,255,.11),transparent 73%),
+   linear-gradient(155deg,rgba(255,255,255,.038),transparent 42%);
 }
-.cp-floating-chart-badge{box-shadow:5px 5px 12px rgba(4,24,30,.45),-3px -3px 10px rgba(51,102,108,.22),inset 1px 1px rgba(182,234,225,.10)}
-.cp-forecast-canvas{border-radius:19px}
-.cp-forecast-canvas::before{
-  content:"";position:absolute;inset:5px -2px 3px -2px;pointer-events:none;
-  border-radius:19px;background:#173641;
-  box-shadow:inset 6px 6px 12px rgba(3,23,31,.34),
-             inset -6px -6px 12px rgba(50,104,110,.23);
+.lg3-optics::before{
+ top:-72%;left:-14%;width:118%;height:79%;
+ background:linear-gradient(180deg,rgba(247,255,255,.075),transparent 84%);
+ border-bottom:1px solid rgba(229,255,254,.20);
+ box-shadow:none;
 }
-.cp-forecast-canvas canvas{position:relative;z-index:1}
+.lg3-optics::after{display:none!important}
 .cp-mini-debt{
-  background:#1b414b;
-  border-radius:19px;
-  box-shadow:7px 7px 15px rgba(3,25,32,.46),
-             -5px -5px 15px rgba(52,103,110,.28),inset 1px 1px rgba(181,236,225,.09);
+ background:
+   linear-gradient(170deg,rgba(255,255,255,.075),transparent 42%),
+   linear-gradient(135deg,rgba(39,104,117,.54),rgba(12,53,69,.72));
+ border-radius:19px;
+ box-shadow:inset 0 1px rgba(239,255,252,.14),
+            0 10px 22px rgba(0,15,27,.22);
 }
-.cp-mini-debt.cp-risk,.cp-mini-debt.cp-slow{background:#1b414b}
-.cp-mini-debt:before{
-  left:0;top:12px;bottom:12px;width:4px;
-  border-radius:0 8px 8px 0;
-  box-shadow:none;
+.cp-mini-debt.cp-risk{background:linear-gradient(160deg,rgba(119,60,82,.29),rgba(22,67,79,.65))}
+.cp-mini-debt.cp-slow{background:linear-gradient(160deg,rgba(145,108,61,.20),rgba(22,67,79,.65))}
+.cp-mini-debt::before{box-shadow:none}
+.cp-forecast-summary,.cp-floating-chart-badge,#debtSelection,.cp-forecast-pill{
+ background:linear-gradient(150deg,rgba(43,111,125,.30),rgba(7,49,63,.51));
+ border:1px solid rgba(165,230,224,.18);
+ border-radius:15px;
+ box-shadow:inset 0 1px rgba(244,255,252,.10),
+            0 5px 14px rgba(0,21,32,.15);
 }
-.cp-mini-debt.cp-risk:before{box-shadow:none}
-.cp-mini-debt.cp-slow:before{box-shadow:none}
+.cp-forecast-canvas{position:relative}
+.cp-forecast-canvas::before{display:none!important}
+.cp-forecast-canvas canvas{position:relative;z-index:1}
 .cp-mini-bar,.cp-impact-bar{
-  background:#12313c;
-  border-radius:999px;
-  box-shadow:inset 3px 3px 6px rgba(2,21,29,.44),
-             inset -2px -2px 5px rgba(48,103,108,.25);
+ background:rgba(6,40,52,.70);
+ box-shadow:inset 0 1px 3px rgba(0,16,25,.3);
 }
 .debt-overview-card .chart-container,#tab-budget .chart-container{
-  max-width:min(100%,322px);
-  margin:12px auto 17px;
-  padding:16px;
-  border-radius:50%;
-  background:#173843;
-  box-shadow:inset 9px 9px 19px rgba(4,24,32,.43),
-             inset -8px -8px 17px rgba(51,105,111,.27);
+ max-width:min(100%,320px);
+ margin:10px auto 14px;padding:8px;
+ border-radius:24px;
+ background:rgba(8,50,65,.19);
+ box-shadow:inset 0 1px rgba(219,255,252,.07);
 }
-.debt-overview-card .chart-container::before,#tab-budget .chart-container::before{display:none}
+.debt-overview-card .chart-container::before,#tab-budget .chart-container::before{
+ display:block!important;inset:14%;
+ background:radial-gradient(circle,rgba(94,220,204,.055),transparent 70%);
+ filter:blur(19px);
+}
 .debt-overview-card .chart-container canvas,#tab-budget .chart-container canvas{
-  filter:none;
+ filter:drop-shadow(0 6px 13px rgba(2,23,33,.18));
 }
-#chartLegend,#budgetLegend{gap:12px;margin-top:16px}
+#chartLegend,#budgetLegend{gap:9px;margin-top:13px}
 #chartLegend .legend-item,#budgetLegend .legend-item{
-  min-height:57px;padding:12px 14px;
-  border-radius:17px;background:#1b414b;
-  border:1px solid rgba(146,208,203,.07);
-  box-shadow:6px 6px 14px rgba(4,24,32,.43),
-             -5px -5px 13px rgba(53,106,111,.27);
+ min-height:56px;padding:11px 13px;border-radius:15px;
+ background:linear-gradient(172deg,rgba(255,255,255,.055),transparent 50%),
+            linear-gradient(135deg,rgba(30,91,104,.52),rgba(9,53,67,.68));
+ border:1px solid rgba(166,230,223,.16);
+ box-shadow:inset 0 1px rgba(255,255,255,.08),
+            0 6px 16px rgba(0,17,28,.13);
 }
-#chartLegend .legend-item.dimmed,#budgetLegend .legend-item.dimmed{opacity:.43}
-#chartLegend .legend-item:focus-visible,#budgetLegend .legend-item:focus-visible,
-button:focus-visible{outline:2px solid #93eddb;outline-offset:3px}
 .nav-buttons{
-  overflow:visible;
-  background:#193b46;
-  border:1px solid rgba(143,203,197,.12);
-  -webkit-backdrop-filter:none;backdrop-filter:none;
-  border-radius:24px;
-  box-shadow:9px 9px 23px rgba(3,19,27,.53),
-             -7px -7px 22px rgba(50,102,108,.31);
+ overflow:hidden;
+ background:linear-gradient(176deg,rgba(60,135,145,.65),rgba(10,48,64,.88));
+ border:1px solid rgba(172,233,228,.29);
+ border-radius:24px;
+ -webkit-backdrop-filter:blur(23px) saturate(145%);
+ backdrop-filter:blur(23px) saturate(145%);
+ box-shadow:inset 0 1px rgba(245,255,252,.22),
+            0 12px 28px rgba(0,14,25,.32);
 }
 .nav-buttons::before,.nav-buttons::after{display:none!important}
 .nav-buttons .btn{
-  border-radius:17px;color:#bcd7d6;
-  transition:background .18s ease,box-shadow .18s ease,color .18s ease;
+ border-radius:16px;color:#b8ddda;
+ transition:background .20s ease,box-shadow .20s ease,color .20s ease;
 }
 .nav-buttons .btn.active{
-  background:#173942;
-  border:1px solid rgba(146,207,199,.12);
-  color:#a3f1d8;text-shadow:none;
-  box-shadow:inset 5px 5px 11px rgba(3,22,30,.53),
-             inset -4px -4px 11px rgba(49,103,106,.31);
+ color:#c6fff0;
+ border:1px solid rgba(164,241,224,.31);
+ background:linear-gradient(161deg,rgba(124,213,202,.25),rgba(35,107,123,.37));
+ box-shadow:inset 0 1px rgba(242,255,251,.20),
+            0 4px 12px rgba(0,25,36,.18);
 }
-.nav-buttons .btn.active .nav-icon{color:#9cebd7;filter:none}
-.nav-buttons .btn:not(.active):hover{
-  background:#204854;
-  box-shadow:3px 3px 8px rgba(4,26,33,.28),
-             -3px -3px 8px rgba(49,101,108,.21);
-}
-.btn-add,.btn-action,.cp-view-all,
-button.primary,.btn-primary{
-  border-radius:13px;
-  box-shadow:4px 4px 10px rgba(4,24,31,.36),
-             -3px -3px 9px rgba(56,116,117,.24);
-}
-button:active,.btn-add:active,.btn-action:active{
-  box-shadow:inset 3px 3px 8px rgba(4,24,31,.48),
-             inset -3px -3px 7px rgba(57,113,117,.22);
+.nav-buttons .btn.active .nav-icon{color:#a5f3df;filter:none}
+.btn-add,.btn-action,.cp-view-all,button.primary,.btn-primary{
+ border-radius:12px;
+ box-shadow:inset 0 1px rgba(255,255,255,.14),
+            0 5px 12px rgba(0,21,32,.16);
 }
 input:not([type="checkbox"]):not([type="radio"]),select,textarea{
-  background:#153540;color:#e9f7f3;
-  border:1px solid rgba(150,213,205,.13);
-  border-radius:12px;
-  box-shadow:inset 4px 4px 9px rgba(4,25,32,.36),
-             inset -3px -3px 8px rgba(49,100,105,.23);
+ background:rgba(7,43,57,.78);color:#eafaf7;
+ border:1px solid rgba(142,221,211,.22);
+ border-radius:12px;
+ box-shadow:inset 0 2px 5px rgba(2,22,33,.24);
 }
-input:focus-visible,select:focus-visible,textarea:focus-visible{
-  outline:2px solid rgba(141,232,213,.6);outline-offset:1px;
+input:focus-visible,select:focus-visible,textarea:focus-visible,
+button:focus-visible,.legend-item:focus-visible{
+ outline:2px solid #a4f1dc;outline-offset:2px;
 }
-.cp-overline,.cp-forecast-pill{color:#91ddce}
-.cp-overview-debts-header h2,.card-title,.header h1{color:#f1faf6}
-.card-subtitle,.header p,.cp-projection-note,.cp-snapshot-label{color:#bad6d3}
+.cp-overline,.cp-forecast-pill{color:#9ee5d5}
+.header h1,.card-title,.cp-overview-debts-header h2{color:#f2fbfa}
+.header p,.card-subtitle,.cp-projection-note,.cp-snapshot-label{color:#bedad9}
 @media(max-width:390px){
- .cp-glass,.card,.debt-overview-card,#tab-budget .card:first-child{
-   box-shadow:8px 8px 19px rgba(4,22,29,.52),
-              -6px -6px 18px rgba(50,101,106,.30);
- }
- .debt-overview-card .chart-container,#tab-budget .chart-container{
-   max-width:min(100%,285px);padding:11px;
+ .cp-glass,.cp-mini-debt,.card,.list-item{
+  -webkit-backdrop-filter:blur(13px) saturate(125%);
+  backdrop-filter:blur(13px) saturate(125%);
  }
  .nav-buttons{width:calc(100% - 14px);padding:8px}
+ .debt-overview-card .chart-container,#tab-budget .chart-container{max-width:min(100%,288px)}
 }
 @media(prefers-reduced-motion:reduce){
- *,*::before,*::after{animation-duration:0s!important;transition-duration:0s!important}
  body{background-attachment:scroll}
+ .lg3-orb,.lg3-optics,.nav-buttons .btn{animation:none!important;transition:none!important}
+ .nav-buttons .btn,.card,.list-item{transition:none!important}
 }
 
 </style>
