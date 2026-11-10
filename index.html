@@ -1433,198 +1433,176 @@ body::after{background:radial-gradient(ellipse,rgba(66,193,164,.14),transparent 
 }
 
 </style>
-<style id="clearpath-liquid-glass-pro">
+<style id="clearpath-wallet-style">
 
-/* ClearPath Liquid Glass Pro — Ocean Teal, restrained optical depth.
-   Presentation-only replacement of Soft Neumorphism. */
+/* ClearPath Wallet — tactile layered cards, subdued Ocean Teal, no data changes. */
 :root{
- --bg-color:#071e2a;--card-bg:#133a47;--border-color:rgba(155,218,221,.20);
- --text-main:#f0fbfa;--text-sub:#b2d0d4;
- --accent-blue:#75d3d2;--accent-green:#80e1be;
- --lgp-surface:rgba(36,93,108,.44);--lgp-dark:rgba(10,41,55,.77);
- --lgp-edge:rgba(191,240,236,.24);
+ --bg-color:#091621;--card-bg:#172d39;--border-color:rgba(208,231,231,.12);
+ --text-main:#f4fafb;--text-sub:#b7ccd0;--accent-blue:#77ced0;--accent-green:#7bd7bb;
 }
-html{background:#071d29}
+html{background:#091621}
 body{
- color:var(--text-main);
  background:
-   radial-gradient(ellipse 520px 550px at -17% 8%,rgba(57,144,167,.19),transparent 72%),
-   radial-gradient(ellipse 440px 650px at 116% 61%,rgba(46,157,158,.15),transparent 75%),
-   linear-gradient(155deg,#0b2d3c 0%,#092633 46%,#071b28 100%);
- background-attachment:fixed;
+  radial-gradient(ellipse 340px 380px at 100% -10%,rgba(43,102,122,.13),transparent 73%),
+  linear-gradient(155deg,#101e2b,#0b1b27 45%,#08151f);
+ background-attachment:scroll;color:#f4fafb;
 }
-body::before,body::after{display:none!important}
-.lg3-atmosphere{display:block!important;opacity:.52}
-.lg3-orb{animation:none!important;filter:blur(31px);opacity:.38}
-.lg3-orb-a{background:radial-gradient(ellipse,rgba(72,178,211,.30),transparent 72%)}
-.lg3-orb-b{background:radial-gradient(ellipse,rgba(64,206,178,.28),transparent 74%)}
-.lg3-orb-c{background:radial-gradient(ellipse,rgba(60,140,179,.21),transparent 74%)}
-.lg3-orb-d{background:radial-gradient(ellipse,rgba(70,179,165,.21),transparent 73%)}
-.dashboard-container{position:relative;isolation:isolate;z-index:1}
-.cp-glass,.cp-mini-debt,.card,.list-item,.cp-forecast-summary,
+body::before,body::after,.lg3-atmosphere,.lg3-optics{display:none!important}
+.dashboard-container{position:relative;isolation:isolate}
+.cp-glass,.card,.list-item,.cp-mini-debt,.cp-forecast-summary,
 .debt-overview-card,#tab-budget .card:first-child,
 #chartLegend .legend-item,#budgetLegend .legend-item{
- position:relative;isolation:isolate;
- background:
-   linear-gradient(176deg,rgba(235,255,253,.115),rgba(248,255,255,.02) 24%,transparent 53%),
-   linear-gradient(142deg,rgba(53,125,141,.44),rgba(25,75,92,.55) 55%,rgba(11,46,62,.75));
- border:1px solid var(--lgp-edge);
+ position:relative;isolation:auto;
+ background:linear-gradient(158deg,#203a47,#152b37 70%,#132733);
+ border:1px solid rgba(192,223,224,.11);
+ -webkit-backdrop-filter:none;backdrop-filter:none;
+ box-shadow:0 11px 26px rgba(1,12,20,.28),inset 0 1px rgba(244,255,255,.07);
  border-radius:22px;
- box-shadow:inset 0 1px 0 rgba(244,255,252,.22),
-            inset 0 -1px 0 rgba(4,27,37,.24),
-            0 15px 35px rgba(0,14,27,.27),
-            0 0 16px rgba(67,176,170,.045);
- -webkit-backdrop-filter:blur(21px) saturate(140%);
- backdrop-filter:blur(21px) saturate(140%);
 }
-.cp-glass::before,.debt-overview-card::before,
-#tab-budget .card:first-child::before,.cp-forecast-summary::before{
- display:block!important;
- background:linear-gradient(180deg,rgba(250,255,255,.15),rgba(255,255,255,.018) 21%,transparent 49%);
- opacity:.68;
- pointer-events:none;
+.cp-glass::before,.cp-glass::after,.card::before,.card::after,
+.list-item::before,.list-item::after,.cp-mini-debt::after,
+.debt-overview-card::before,.debt-overview-card::after,
+#tab-budget .card:first-child::before,#tab-budget .card:first-child::after,
+.cp-forecast-summary::before,.cp-forecast-summary::after,
+#chartLegend .legend-item::before,#chartLegend .legend-item::after,
+#budgetLegend .legend-item::before,#budgetLegend .legend-item::after{
+ display:none!important;
 }
-.cp-glass::after,.card::after,.list-item::after,
-.cp-mini-debt::after,.debt-overview-card::after,
-#tab-budget .card:first-child::after,.cp-forecast-summary::after,
-#chartLegend .legend-item::after,#budgetLegend .legend-item::after{
- display:block!important;
- background:linear-gradient(129deg,
-   rgba(206,255,246,.38),rgba(127,221,218,.14) 40%,
-   rgba(255,255,255,.08) 69%,rgba(101,207,207,.16));
- opacity:.8;pointer-events:none;
-}
-.cp-snapshot-grid,.cp-projection-card,.cp-monthly-strip,
-.debt-overview-card,#tab-budget .card:first-child{
+/* Hero uses a dominant card followed by quieter summary rows. */
+.cp-snapshot-grid{
  background:
-   radial-gradient(ellipse at 8% 0%,rgba(154,229,227,.105),transparent 55%),
-   linear-gradient(169deg,rgba(255,255,255,.095),transparent 42%),
-   linear-gradient(139deg,rgba(49,120,138,.52),rgba(15,61,78,.75));
- border-radius:25px;
- box-shadow:inset 0 1px 0 rgba(240,255,253,.23),
-            0 17px 40px rgba(0,17,29,.29),
-            0 0 22px rgba(56,175,171,.05);
+   radial-gradient(ellipse at 88% 0%,rgba(178,238,226,.16),transparent 50%),
+   linear-gradient(118deg,#1c5964 0%,#164754 52%,#173641 100%);
+ border:1px solid rgba(155,223,218,.20);
+ border-radius:27px;
+ box-shadow:0 18px 36px rgba(0,15,24,.31),inset 0 1px rgba(255,255,255,.13);
+ padding:23px 13px;
 }
-.cp-snapshot-grid::before,.cp-projection-card::before{display:none!important}
-.cp-snapshot-item + .cp-snapshot-item{
- border-left:1px solid rgba(173,237,232,.16);
- box-shadow:none;
+.cp-snapshot-grid::before{display:none!important}
+.cp-snapshot-item + .cp-snapshot-item{border-left:1px solid rgba(213,249,245,.15);box-shadow:none}
+.cp-snapshot-icon{opacity:.9}
+.cp-snapshot-label{color:#c3e3e3}
+#cp-stat-debt{color:#f7ffff}
+#cp-stat-surplus{color:#a8efdb}
+.cp-monthly-strip{
+ background:#152d39;border-radius:18px;
+ box-shadow:none;border:1px solid rgba(179,213,215,.105);
 }
-.lg3-optics{
- display:block!important;z-index:0!important;
- background:
-   radial-gradient(ellipse 86% 39% at var(--lg3-x,23%) var(--lg3-y,-8%),rgba(246,255,255,.11),transparent 73%),
-   linear-gradient(155deg,rgba(255,255,255,.038),transparent 42%);
+.cp-monthly-strip>div+div{border-left:1px solid rgba(196,219,222,.12);box-shadow:none}
+.cp-projection-card,.debt-overview-card,#tab-budget .card:first-child{
+ background:linear-gradient(155deg,#1c3642,#132935);
+ border-radius:23px;
+ box-shadow:0 10px 27px rgba(1,13,22,.23),inset 0 1px rgba(248,255,255,.06);
 }
-.lg3-optics::before{
- top:-72%;left:-14%;width:118%;height:79%;
- background:linear-gradient(180deg,rgba(247,255,255,.075),transparent 84%);
- border-bottom:1px solid rgba(229,255,254,.20);
- box-shadow:none;
-}
-.lg3-optics::after{display:none!important}
-.cp-mini-debt{
- background:
-   linear-gradient(170deg,rgba(255,255,255,.075),transparent 42%),
-   linear-gradient(135deg,rgba(39,104,117,.54),rgba(12,53,69,.72));
- border-radius:19px;
- box-shadow:inset 0 1px rgba(239,255,252,.14),
-            0 10px 22px rgba(0,15,27,.22);
-}
-.cp-mini-debt.cp-risk{background:linear-gradient(160deg,rgba(119,60,82,.29),rgba(22,67,79,.65))}
-.cp-mini-debt.cp-slow{background:linear-gradient(160deg,rgba(145,108,61,.20),rgba(22,67,79,.65))}
-.cp-mini-debt::before{box-shadow:none}
+.cp-projection-card::before{display:none!important}
 .cp-forecast-summary,.cp-floating-chart-badge,#debtSelection,.cp-forecast-pill{
- background:linear-gradient(150deg,rgba(43,111,125,.30),rgba(7,49,63,.51));
- border:1px solid rgba(165,230,224,.18);
- border-radius:15px;
- box-shadow:inset 0 1px rgba(244,255,252,.10),
-            0 5px 14px rgba(0,21,32,.15);
+ background:rgba(9,28,40,.52);border:1px solid rgba(158,212,210,.13);
+ border-radius:14px;box-shadow:none;
 }
-.cp-forecast-canvas{position:relative}
 .cp-forecast-canvas::before{display:none!important}
 .cp-forecast-canvas canvas{position:relative;z-index:1}
-.cp-mini-bar,.cp-impact-bar{
- background:rgba(6,40,52,.70);
- box-shadow:inset 0 1px 3px rgba(0,16,25,.3);
+.cp-overview-debts-header{padding:13px 2px 1px}
+.cp-overview-debts-header h2{font-size:1.52rem;letter-spacing:-.035em}
+.cp-overview-debts-header .cp-overline{font-size:.65rem;color:#93c9ca}
+.cp-debt-section-note{color:#a9c5c9}
+.cp-overview-debt-list{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+/* Wallet-inspired account deck; keep ALL fields exposed rather than overlapping. */
+.cp-overview-debt-list .cp-mini-debt{
+ min-height:172px;display:grid;gap:12px;
+ padding:19px 18px 17px;border-radius:23px;
+ background:
+  radial-gradient(ellipse at 90% -5%,rgba(216,255,247,.23),transparent 47%),
+  linear-gradient(130deg,#287a7e,#205964 62%,#153845);
+ border:1px solid rgba(200,243,235,.24);
+ box-shadow:0 10px 23px rgba(0,12,22,.26),inset 0 1px rgba(252,255,253,.18);
+}
+.cp-overview-debt-list .cp-mini-debt:nth-child(4n+2){
+ background:radial-gradient(ellipse at 94% -8%,rgba(211,245,255,.21),transparent 47%),
+            linear-gradient(128deg,#386d87,#234e70 62%,#182f50);
+}
+.cp-overview-debt-list .cp-mini-debt:nth-child(4n+3){
+ background:radial-gradient(ellipse at 94% -8%,rgba(238,252,242,.20),transparent 47%),
+            linear-gradient(133deg,#406e69,#275550 62%,#203c44);
+}
+.cp-overview-debt-list .cp-mini-debt:nth-child(4n+4){
+ background:radial-gradient(ellipse at 94% -8%,rgba(245,249,255,.16),transparent 47%),
+            linear-gradient(132deg,#426b7b,#294955 62%,#1c3441);
+}
+.cp-mini-debt::before{top:0!important;bottom:auto!important;left:0!important;width:100%!important;height:3px;border-radius:23px 23px 0 0!important;box-shadow:none!important}
+.cp-mini-debt.cp-risk::before{background:#f5a5af}
+.cp-mini-debt.cp-slow::before{background:#e2c18a}
+.cp-mini-debt.cp-healthy::before{background:#94e9d1}
+.cp-mini-debt-top{align-items:start}
+.cp-mini-debt-top strong{font-size:1.04rem;letter-spacing:-.012em;color:#f9ffff}
+.cp-mini-debt-top span{
+ font-size:.66rem;color:#e2f5f3;background:rgba(3,21,30,.21);
+ border:1px solid rgba(245,255,255,.15);border-radius:999px;padding:5px 8px;
+}
+.cp-mini-meta{gap:9px}
+.cp-mini-meta>div{min-width:0}
+.cp-mini-meta span{color:#d1e6e8}
+.cp-mini-meta strong{color:#fbffff}
+.cp-mini-foot{color:#d0e6e4}
+.cp-mini-bar{background:rgba(5,27,39,.37);box-shadow:inset 0 1px 3px rgba(1,18,26,.2)}
+/* Transaction-style rows beneath the featured deck. */
+#tab-debts .list-item,#tab-budget .list-item,#tab-bills .list-item{
+ border-radius:18px;
+ background:linear-gradient(150deg,#203744,#172d39);
+ box-shadow:0 5px 16px rgba(0,11,21,.16);
+}
+#tab-debts .list-item:hover,#tab-budget .list-item:hover,#tab-bills .list-item:hover{
+ border-color:rgba(164,220,216,.3);transform:none;
 }
 .debt-overview-card .chart-container,#tab-budget .chart-container{
- max-width:min(100%,320px);
- margin:10px auto 14px;padding:8px;
- border-radius:24px;
- background:rgba(8,50,65,.19);
- box-shadow:inset 0 1px rgba(219,255,252,.07);
+ background:transparent;border:0;box-shadow:none;
+ max-width:min(100%,312px);padding:4px;margin:7px auto 14px;border-radius:20px;
 }
-.debt-overview-card .chart-container::before,#tab-budget .chart-container::before{
- display:block!important;inset:14%;
- background:radial-gradient(circle,rgba(94,220,204,.055),transparent 70%);
- filter:blur(19px);
-}
-.debt-overview-card .chart-container canvas,#tab-budget .chart-container canvas{
- filter:drop-shadow(0 6px 13px rgba(2,23,33,.18));
-}
-#chartLegend,#budgetLegend{gap:9px;margin-top:13px}
+.debt-overview-card .chart-container::before,#tab-budget .chart-container::before{display:none!important}
+.debt-overview-card .chart-container canvas,#tab-budget .chart-container canvas{filter:none}
+#chartLegend,#budgetLegend{gap:7px;margin-top:12px}
 #chartLegend .legend-item,#budgetLegend .legend-item{
- min-height:56px;padding:11px 13px;border-radius:15px;
- background:linear-gradient(172deg,rgba(255,255,255,.055),transparent 50%),
-            linear-gradient(135deg,rgba(30,91,104,.52),rgba(9,53,67,.68));
- border:1px solid rgba(166,230,223,.16);
- box-shadow:inset 0 1px rgba(255,255,255,.08),
-            0 6px 16px rgba(0,17,28,.13);
+ min-height:53px;padding:10px 12px;border-radius:12px;
+ background:#182f3a;border:1px solid rgba(193,223,222,.075);
+ box-shadow:none;
 }
+#chartLegend .legend-label,#budgetLegend .legend-label{color:#e6f1f1}
+#chartLegend .legend-amount,#budgetLegend .legend-amount{color:#f5fafb}
 .nav-buttons{
+ background:rgba(19,38,50,.97);
+ border:1px solid rgba(173,216,216,.19);
+ border-radius:21px;
+ -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+ box-shadow:0 12px 28px rgba(0,10,19,.39);
  overflow:hidden;
- background:linear-gradient(176deg,rgba(60,135,145,.65),rgba(10,48,64,.88));
- border:1px solid rgba(172,233,228,.29);
- border-radius:24px;
- -webkit-backdrop-filter:blur(23px) saturate(145%);
- backdrop-filter:blur(23px) saturate(145%);
- box-shadow:inset 0 1px rgba(245,255,252,.22),
-            0 12px 28px rgba(0,14,25,.32);
 }
 .nav-buttons::before,.nav-buttons::after{display:none!important}
-.nav-buttons .btn{
- border-radius:16px;color:#b8ddda;
- transition:background .20s ease,box-shadow .20s ease,color .20s ease;
-}
+.nav-buttons .btn{color:#9cbac2;border-radius:13px;transition:background .18s ease,color .18s ease}
 .nav-buttons .btn.active{
- color:#c6fff0;
- border:1px solid rgba(164,241,224,.31);
- background:linear-gradient(161deg,rgba(124,213,202,.25),rgba(35,107,123,.37));
- box-shadow:inset 0 1px rgba(242,255,251,.20),
-            0 4px 12px rgba(0,25,36,.18);
+ background:#27505b;color:#baf0e0;
+ border:1px solid rgba(145,228,213,.18);
+ box-shadow:none;text-shadow:none;
 }
-.nav-buttons .btn.active .nav-icon{color:#a5f3df;filter:none}
+.nav-buttons .btn.active .nav-icon{color:#baf0e0;filter:none}
 .btn-add,.btn-action,.cp-view-all,button.primary,.btn-primary{
- border-radius:12px;
- box-shadow:inset 0 1px rgba(255,255,255,.14),
-            0 5px 12px rgba(0,21,32,.16);
+ border-radius:11px;box-shadow:none;
 }
 input:not([type="checkbox"]):not([type="radio"]),select,textarea{
- background:rgba(7,43,57,.78);color:#eafaf7;
- border:1px solid rgba(142,221,211,.22);
- border-radius:12px;
- box-shadow:inset 0 2px 5px rgba(2,22,33,.24);
+ background:#112733;color:#f1faf9;border:1px solid rgba(185,222,219,.17);
+ border-radius:11px;box-shadow:none;
 }
-input:focus-visible,select:focus-visible,textarea:focus-visible,
-button:focus-visible,.legend-item:focus-visible{
- outline:2px solid #a4f1dc;outline-offset:2px;
-}
-.cp-overline,.cp-forecast-pill{color:#9ee5d5}
-.header h1,.card-title,.cp-overview-debts-header h2{color:#f2fbfa}
-.header p,.card-subtitle,.cp-projection-note,.cp-snapshot-label{color:#bedad9}
+:where(button,input,select,textarea,.legend-item):focus-visible{outline:2px solid #a3e7da;outline-offset:2px}
+.cp-overline{color:#92d1d0}
+.card-title,.header h1,.cp-overview-debts-header h2{color:#f4fafb}
+.header p,.card-subtitle,.cp-projection-note,.cp-snapshot-label{color:#bdd1d4}
 @media(max-width:390px){
- .cp-glass,.cp-mini-debt,.card,.list-item{
-  -webkit-backdrop-filter:blur(13px) saturate(125%);
-  backdrop-filter:blur(13px) saturate(125%);
- }
+ .cp-snapshot-grid{padding:19px 9px}
+ .cp-overview-debt-list .cp-mini-debt{padding:17px 14px}
+ .cp-mini-meta{gap:6px}
+ .cp-mini-debt-top strong{font-size:.97rem}
  .nav-buttons{width:calc(100% - 14px);padding:8px}
- .debt-overview-card .chart-container,#tab-budget .chart-container{max-width:min(100%,288px)}
 }
 @media(prefers-reduced-motion:reduce){
- body{background-attachment:scroll}
- .lg3-orb,.lg3-optics,.nav-buttons .btn{animation:none!important;transition:none!important}
- .nav-buttons .btn,.card,.list-item{transition:none!important}
+ .nav-buttons .btn,.cp-mini-debt,.card,.list-item{animation:none!important;transition:none!important}
 }
 
 </style>
